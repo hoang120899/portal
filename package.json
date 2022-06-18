@@ -1,0 +1,73 @@
+{
+  "name": "portal.fetch",
+  "author": "fetch",
+  "version": "3.4.0",
+  "description": "Portal project",
+  "private": true,
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix"
+    ],
+    "*.{html,js}": [
+      "prettier --write"
+    ]
+  },
+  "scripts": {
+    "lint": "next lint",
+    "lint:es": "eslint --ext .js,.jsx .",
+    "lint:fix": "eslint --fix --ext .js,.jsx .",
+    "dev": "next dev -p 3034",
+    "start": "next start",
+    "build": "next build",
+    "build-netlify": "next build && cp -r .next _next && mv _next .next/",
+    "export": "yarn build && next export -o _static",
+    "clear-all": "rm -rf .next _static node_modules",
+    "re-start": "rm -rf .next _static node_modules && yarn install && yarn dev",
+    "re-build": "rm -rf .next _static node_modules && yarn install && yarn build",
+    "analyzer": "ANALYZE=true yarn build",
+    "prepare": "husky install",
+    "lint:css": "stylelint --fix **/*.{scss,css}",
+    "pre-commit": "lint-staged --allow-empty && yarn lint:css --allow-empty-input"
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.7.1",
+    "@emotion/react": "^11.9.0",
+    "@emotion/server": "^11.4.0",
+    "@emotion/styled": "^11.8.1",
+    "@iconify/react": "^3.2.1",
+    "@mui/material": "^5.6.0",
+    "@next/bundle-analyzer": "^12.1.6",
+    "change-case": "^4.1.2",
+    "cookie": "^0.4.2",
+    "date-fns": "^2.28.0",
+    "framer-motion": "^6.2.9",
+    "js-cookie": "^3.0.1",
+    "next": "^12.1.4",
+    "nprogress": "^0.2.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.2",
+    "react-lazy-load-image-component": "^1.5.4",
+    "simplebar": "^5.3.6",
+    "simplebar-react": "^2.3.6",
+    "stylis": "^4.1.0",
+    "stylis-plugin-rtl": "^2.1.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
+    "@next/eslint-plugin-next": "^12.1.4",
+    "@trivago/prettier-plugin-sort-imports": "^3.2.0",
+    "eslint": "^8.9.0",
+    "eslint-config-next": "^12.1.4",
+    "eslint-config-prettier": "^8.4.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.2",
+    "prettier": "2.5.1",
+    "sass": "^1.52.3",
+    "stylelint": "^14.9.1",
+    "stylelint-config-prettier-scss": "^0.0.1",
+    "stylelint-config-standard-scss": "^4.0.0",
+    "stylelint-order": "^5.0.0",
+    "typescript": "^4.5.5"
+  }
+}
