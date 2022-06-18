@@ -17,6 +17,7 @@ import MotionLazyContainer from '@/components/animate/MotionLazyContainer'
 import ThemeSettings from '@/components/settings'
 // contexts
 import { CollapseDrawerProvider } from '@/contexts/CollapseDrawerContext'
+import { AuthProvider } from '@/contexts/JWTContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 // theme
 import ThemeProvider from '@/theme'
@@ -40,18 +41,20 @@ export default function MyApp(props) {
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
 
-      <CollapseDrawerProvider>
-        <SettingsProvider defaultSettings={settings}>
-          <MotionLazyContainer>
-            <ThemeProvider>
-              <ThemeSettings>
-                <ProgressBar />
-                {getLayout(<Component {...pageProps} />)}
-              </ThemeSettings>
-            </ThemeProvider>
-          </MotionLazyContainer>
-        </SettingsProvider>
-      </CollapseDrawerProvider>
+      <AuthProvider>
+        <CollapseDrawerProvider>
+          <SettingsProvider defaultSettings={settings}>
+            <MotionLazyContainer>
+              <ThemeProvider>
+                <ThemeSettings>
+                  <ProgressBar />
+                  {getLayout(<Component {...pageProps} />)}
+                </ThemeSettings>
+              </ThemeProvider>
+            </MotionLazyContainer>
+          </SettingsProvider>
+        </CollapseDrawerProvider>
+      </AuthProvider>
     </>
   )
 }
