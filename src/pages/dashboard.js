@@ -1,8 +1,9 @@
 import React from 'react'
 
-import { Container, Typography } from '@mui/material'
+import { Container } from '@mui/material'
 
 // components
+import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
 import Page from '@/components/Page'
 // hooks
 import useSettings from '@/hooks/useSettings'
@@ -19,9 +20,7 @@ export default function PageOne() {
   return (
     <Page title='Dashboard'>
       <Container maxWidth={themeStretch ? false : 'xl'}>
-        <Typography variant='h3' component='h1' paragraph>
-          Dashboard
-        </Typography>
+        <HeaderBreadcrumbs heading='Dashboard' />
       </Container>
     </Page>
   )

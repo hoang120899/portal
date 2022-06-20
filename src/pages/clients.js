@@ -1,13 +1,16 @@
 import React from 'react'
 
-import { Container, Typography } from '@mui/material'
+import { Container } from '@mui/material'
 
 // components
+import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
 import Page from '@/components/Page'
 // hooks
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
+// routes
+import { PATH_DASHBOARD } from '@/routes/paths'
 
 PageOne.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>
@@ -19,9 +22,16 @@ export default function PageOne() {
   return (
     <Page title='Clients'>
       <Container maxWidth={themeStretch ? false : 'xl'}>
-        <Typography variant='h3' component='h1' paragraph>
-          Clients
-        </Typography>
+        <HeaderBreadcrumbs
+          heading='List client'
+          links={[
+            {
+              name: 'Dashboard',
+              href: PATH_DASHBOARD.dashboard.root,
+            },
+            { name: 'List client' },
+          ]}
+        />
       </Container>
     </Page>
   )
