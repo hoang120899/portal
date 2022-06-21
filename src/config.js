@@ -49,3 +49,8 @@ export const defaultSettings = {
   themeColorPresets: 'default',
   themeStretch: false,
 }
+
+// PAGINATION
+export const PAGINATION = [5, 10, 25]
+
+export const defaultPagination = PAGINATION[1] // 10

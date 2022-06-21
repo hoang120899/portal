@@ -1,8 +1,10 @@
 import { useState } from 'react'
 
+import { defaultPagination } from '@/config'
+
 export default function useTable({
   defaultCurrentPage = 0,
-  defaultRowsPerPage = 5,
+  defaultRowsPerPage = defaultPagination,
 }) {
   const [page, setPage] = useState(defaultCurrentPage)
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage)

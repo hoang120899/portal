@@ -12,6 +12,8 @@ import {
   TableNoData,
   TableSkeleton,
 } from '@/components/table'
+// config
+import { defaultPagination } from '@/config'
 // hooks
 import useTable, { emptyRows } from '@/hooks/useTable'
 
@@ -31,7 +33,7 @@ BasicTable.propTypes = {
 export default function BasicTable({
   columns = [],
   dataSource = [],
-  defaultRowsPerPage = 5,
+  defaultRowsPerPage = defaultPagination,
   isLoading = false,
   heightEmptyRow,
   heightSkeletonRow,
