@@ -13,7 +13,7 @@ RHFSearchTextField.propTypes = {
   placeholder: PropTypes.string,
 }
 
-export default function RHFSearchTextField({ name, placeholder }) {
+export default function RHFSearchTextField({ name, placeholder, ...other }) {
   return (
     <RHFTextField
       name={name}
@@ -28,6 +28,7 @@ export default function RHFSearchTextField({ name, placeholder }) {
           </InputAdornment>
         ),
       }}
+      {...other}
     />
   )
 }
