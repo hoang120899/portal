@@ -1,7 +1,7 @@
 import React from 'react'
 
 // @mui
-import { MenuItem } from '@mui/material'
+import { Divider, MenuItem } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
@@ -13,18 +13,19 @@ RHFBasicSelect.propTypes = {
   hasBlankOption: PropTypes.bool,
 }
 
+const styles = {
+  mx: 1,
+  my: 0.5,
+  borderRadius: 0.75,
+  typography: 'body2',
+}
+
 export default function RHFBasicSelect({
   name,
   options = [],
   hasBlankOption = false,
   ...other
 }) {
-  const styles = {
-    mx: 1,
-    my: 0.5,
-    borderRadius: 0.75,
-    typography: 'body2',
-  }
   const destOptions = React.useMemo(
     () =>
       options.map((option) => {
@@ -43,6 +44,33 @@ export default function RHFBasicSelect({
       }),
     [options]
   )
+
+  const render = React.useMemo(
+    () =>
+      [
+        hasBlankOption && (
+          <MenuItem
+            key='blank_default_option'
+            value=''
+            sx={{
+              fontStyle: 'italic',
+              color: 'text.secondary',
+              ...styles,
+            }}
+          >
+            None
+          </MenuItem>
+        ),
+        hasBlankOption && <Divider key='divider' />,
+        destOptions.map((option) => (
+          <MenuItem key={option.value} value={option.value} sx={styles}>
+            {option.displayName}
+          </MenuItem>
+        )),
+      ].filter(Boolean),
+    [hasBlankOption, destOptions]
+  )
+
   return (
     <RHFSelect
       name={name}
@@ -53,16 +81,7 @@ export default function RHFBasicSelect({
       }}
       {...other}
     >
-      {hasBlankOption && (
-        <MenuItem value='' sx={styles}>
-          None
-        </MenuItem>
-      )}
-      {destOptions.map((option) => (
-        <MenuItem key={option.value} value={option.value} sx={styles}>
-          {option.displayName}
-        </MenuItem>
-      ))}
+      {render}
     </RHFSelect>
   )
 }
