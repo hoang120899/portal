@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 const Page = forwardRef(({ children, title = '', meta, ...other }, ref) => (
   <>
     <Head>
-      <title>{`${title} | Minimal-UI`}</title>
+      <title>{`${title} | Talent Acquisition Portal`}</title>
       {meta}
     </Head>
 
