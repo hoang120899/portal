@@ -1,5 +1,14 @@
 export default function Input(theme) {
   return {
+    MuiInputLabel: {
+      styleOverrides: {
+        asterisk: {
+          '&.MuiInputLabel-asterisk': {
+            color: theme.palette.error.main,
+          },
+        },
+      },
+    },
     MuiInputBase: {
       styleOverrides: {
         root: {
