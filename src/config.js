@@ -54,3 +54,6 @@ export const defaultSettings = {
 export const PAGINATION = [5, 10, 25]
 
 export const defaultPagination = PAGINATION[1] // 10
+
+// DATETIME FORMAT
+export const DATE_FORMAT = 'dd/MM/yyyy'

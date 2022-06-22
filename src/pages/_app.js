@@ -2,6 +2,10 @@
 import App from 'next/app'
 import Head from 'next/head'
 
+// @mui
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+
 import cookie from 'cookie'
 import PropTypes from 'prop-types'
 // lazy image
@@ -42,18 +46,20 @@ export default function MyApp(props) {
       </Head>
 
       <AuthProvider>
-        <CollapseDrawerProvider>
-          <SettingsProvider defaultSettings={settings}>
-            <MotionLazyContainer>
-              <ThemeProvider>
-                <ThemeSettings>
-                  <ProgressBar />
-                  {getLayout(<Component {...pageProps} />)}
-                </ThemeSettings>
-              </ThemeProvider>
-            </MotionLazyContainer>
-          </SettingsProvider>
-        </CollapseDrawerProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <CollapseDrawerProvider>
+            <SettingsProvider defaultSettings={settings}>
+              <MotionLazyContainer>
+                <ThemeProvider>
+                  <ThemeSettings>
+                    <ProgressBar />
+                    {getLayout(<Component {...pageProps} />)}
+                  </ThemeSettings>
+                </ThemeProvider>
+              </MotionLazyContainer>
+            </SettingsProvider>
+          </CollapseDrawerProvider>
+        </LocalizationProvider>
       </AuthProvider>
     </>
   )
