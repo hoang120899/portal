@@ -22,6 +22,7 @@ import ThemeSettings from '@/components/settings'
 // contexts
 import { CollapseDrawerProvider } from '@/contexts/CollapseDrawerContext'
 import { AuthProvider } from '@/contexts/JWTContext'
+import { RoleProvider } from '@/contexts/RoleContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 // theme
 import ThemeProvider from '@/theme'
@@ -46,20 +47,22 @@ export default function MyApp(props) {
       </Head>
 
       <AuthProvider>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <CollapseDrawerProvider>
-            <SettingsProvider defaultSettings={settings}>
-              <MotionLazyContainer>
-                <ThemeProvider>
-                  <ThemeSettings>
-                    <ProgressBar />
-                    {getLayout(<Component {...pageProps} />)}
-                  </ThemeSettings>
-                </ThemeProvider>
-              </MotionLazyContainer>
-            </SettingsProvider>
-          </CollapseDrawerProvider>
-        </LocalizationProvider>
+        <RoleProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <CollapseDrawerProvider>
+              <SettingsProvider defaultSettings={settings}>
+                <MotionLazyContainer>
+                  <ThemeProvider>
+                    <ThemeSettings>
+                      <ProgressBar />
+                      {getLayout(<Component {...pageProps} />)}
+                    </ThemeSettings>
+                  </ThemeProvider>
+                </MotionLazyContainer>
+              </SettingsProvider>
+            </CollapseDrawerProvider>
+          </LocalizationProvider>
+        </RoleProvider>
       </AuthProvider>
     </>
   )

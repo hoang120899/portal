@@ -4,6 +4,9 @@ import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
+// hook
+import useRole from '@/hooks/useRole'
+
 //
 import { NavListRoot } from './NavList'
 
@@ -30,6 +33,7 @@ export default function NavSectionVertical({
   isCollapse = false,
   ...other
 }) {
+  const { checkAccessPermission } = useRole()
   return (
     <Box {...other}>
       {navConfig.map((group, groupIndex) => (
@@ -48,13 +52,17 @@ export default function NavSectionVertical({
             {group.subheader}
           </ListSubheaderStyle>
 
-          {group.items.map((list) => (
-            <NavListRoot
-              key={list.title + list.path}
-              list={list}
-              isCollapse={isCollapse}
-            />
-          ))}
+          {group.items.map((list) => {
+            const hasAccessPermission = checkAccessPermission(list?.roles)
+            if (!hasAccessPermission) return null
+            return (
+              <NavListRoot
+                key={list.title + list.path}
+                list={list}
+                isCollapse={isCollapse}
+              />
+            )
+          })}
         </List>
       ))}
     </Box>

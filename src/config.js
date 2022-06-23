@@ -59,3 +59,55 @@ export const defaultPagination = PAGINATION[1] // 10
 export const DATE_FORMAT = 'dd/MM/yyyy'
 export const DATETIME_FORMAT = 'dd/MM/yyyy hh:mm'
 export const DATETIME_FORMAT_AMPM = 'dd/MM/yyyy hh:mm a'
+
+// User setting
+export const PAGES = {
+  Dashboard: 'Dashboard',
+  Notification: 'Notification',
+  Candidates: 'Candidates',
+  Interview: 'Interview',
+  Board: 'Board',
+  Caculator: 'Caculator',
+  Recruiter: 'External recruiter',
+  Jobs: 'Jobs',
+  Clients: 'Clients',
+  Users: 'Users',
+  Task: 'Task',
+  Blogs: 'Blogs',
+}
+
+// ROLE AND PERMISSION
+export const ROLE = {
+  DIRECTOR: 'Director',
+  LEADER: 'Leader',
+  MEMBER: 'Member',
+  ADMIN: 'Admin',
+  BLOGER: 'Bloger',
+}
+
+export const ROLE_BY_PAGES = [
+  {
+    pageNames: [
+      PAGES.Dashboard,
+      PAGES.Notification,
+      PAGES.Candidates,
+      PAGES.Interview,
+      PAGES.Board,
+      PAGES.Caculator,
+      PAGES.Recruiter,
+    ],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
+  },
+  {
+    pageNames: [PAGES.Jobs, PAGES.Clients, PAGES.Users],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER],
+  },
+  {
+    pageNames: [PAGES.Task],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.ADMIN],
+  },
+  {
+    pageNames: [PAGES.Blogs],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.BLOGER],
+  },
+]

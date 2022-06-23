@@ -1,6 +1,10 @@
 // components
 import Iconify from '@/components/Iconify'
 import SvgIconStyle from '@/components/SvgIconStyle'
+// config
+import { PAGES } from '@/config'
+// utils
+import { getListRoles } from '@/utils/role'
 
 const getIcon = (name) => (
   <SvgIconStyle
@@ -28,31 +32,85 @@ const ICONS = {
   interview: getIconByIconify('eva:video-fill'),
 }
 
+const ROLES = getListRoles()
+
 const sidebarConfig = [
   // GENERAL
   {
     // subheader: 'general v3.4.0',
     items: [
-      { title: 'Dashboard', path: '/dashboard', icon: ICONS.dashboard },
       {
-        title: 'Notification',
+        title: PAGES.Dashboard,
+        path: '/dashboard',
+        icon: ICONS.dashboard,
+        roles: ROLES[PAGES.Dashboard],
+      },
+      {
+        title: PAGES.Notification,
         path: '/notification',
         icon: ICONS.notification,
+        roles: ROLES[PAGES.Notification],
       },
-      { title: 'Task', path: '/task', icon: ICONS.calendar },
-      { title: 'Jobs', path: '/jobs', icon: ICONS.job },
-      { title: 'Clients', path: '/clients', icon: ICONS.client },
-      { title: 'Candidates', path: '/candidates', icon: ICONS.invoice },
-      { title: 'Users', path: '/users', icon: ICONS.user },
-      { title: 'Interview', path: '/interview', icon: ICONS.interview },
-      { title: 'Board', path: '/board', icon: ICONS.kanban },
-      { title: 'Caculator', path: '/caculator', icon: ICONS.caculator },
       {
-        title: 'External recruiter',
+        title: PAGES.Task,
+        path: '/task',
+        icon: ICONS.calendar,
+        roles: ROLES[PAGES.Task],
+      },
+      {
+        title: PAGES.Jobs,
+        path: '/jobs',
+        icon: ICONS.job,
+        roles: ROLES[PAGES.Jobs],
+      },
+      {
+        title: PAGES.Clients,
+        path: '/clients',
+        icon: ICONS.client,
+        roles: ROLES[PAGES.Clients],
+      },
+      {
+        title: PAGES.Candidates,
+        path: '/candidates',
+        icon: ICONS.invoice,
+        roles: ROLES[PAGES.Candidates],
+      },
+      {
+        title: PAGES.Users,
+        path: '/users',
+        icon: ICONS.user,
+        roles: ROLES[PAGES.Users],
+      },
+      {
+        title: PAGES.Interview,
+        path: '/interview',
+        icon: ICONS.interview,
+        roles: ROLES[PAGES.Interview],
+      },
+      {
+        title: PAGES.Board,
+        path: '/board',
+        icon: ICONS.kanban,
+        roles: ROLES[PAGES.Board],
+      },
+      {
+        title: PAGES.Caculator,
+        path: '/caculator',
+        icon: ICONS.caculator,
+        roles: ROLES[PAGES.Caculator],
+      },
+      {
+        title: PAGES.Recruiter,
         path: '/recruiter',
         icon: ICONS.recruiter,
+        roles: ROLES[PAGES.Recruiter],
       },
-      { title: 'Blogs', path: '/blogs', icon: ICONS.blog },
+      {
+        title: PAGES.Blogs,
+        path: '/blogs',
+        icon: ICONS.blog,
+        roles: ROLES[PAGES.Blogs],
+      },
     ],
   },
 ]

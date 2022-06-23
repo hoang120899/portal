@@ -5,6 +5,9 @@ import { Stack } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
+// hook
+import useRole from '@/hooks/useRole'
+
 //
 import { NavListRoot } from './NavList'
 
@@ -22,6 +25,7 @@ NavSectionHorizontal.propTypes = {
 }
 
 function NavSectionHorizontal({ navConfig }) {
+  const { checkAccessPermission } = useRole()
   return (
     <Stack
       direction='row'
@@ -31,9 +35,11 @@ function NavSectionHorizontal({ navConfig }) {
       <Stack direction='row' sx={{ ...hideScrollbar, py: 1 }}>
         {navConfig.map((group) => (
           <Stack key={group.subheader} direction='row' flexShrink={0}>
-            {group.items.map((list) => (
-              <NavListRoot key={list.title + list.path} list={list} />
-            ))}
+            {group.items.map((list) => {
+              const hasAccessPermission = checkAccessPermission(list?.roles)
+              if (!hasAccessPermission) return null
+              return <NavListRoot key={list.title + list.path} list={list} />
+            })}
           </Stack>
         ))}
       </Stack>
