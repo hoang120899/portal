@@ -12,11 +12,11 @@ import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
 
-PageOne.getLayout = function getLayout(page) {
+Caculator.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>
 }
 
-export default function PageOne() {
+export default function Caculator() {
   const { themeStretch } = useSettings()
 
   return (

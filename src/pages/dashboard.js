@@ -10,11 +10,11 @@ import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
 
-PageOne.getLayout = function getLayout(page) {
+Dashboard.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>
 }
 
-export default function PageOne() {
+export default function Dashboard() {
   const { themeStretch } = useSettings()
 
   return (

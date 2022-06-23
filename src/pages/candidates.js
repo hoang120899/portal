@@ -12,11 +12,11 @@ import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
 
-PageOne.getLayout = function getLayout(page) {
+Candidates.getLayout = function getLayout(page) {
   return <Layout>{page}</Layout>
 }
 
-export default function PageOne() {
+export default function Candidates() {
   const { themeStretch } = useSettings()
 
   return (
