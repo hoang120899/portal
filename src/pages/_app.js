@@ -18,6 +18,7 @@ import 'react-quill/dist/quill.snow.css'
 import 'simplebar/src/simplebar.css'
 
 // components
+import NotistackProvider from '@/components/NotistackProvider'
 import ProgressBar from '@/components/ProgressBar'
 import MotionLazyContainer from '@/components/animate/MotionLazyContainer'
 import ThemeSettings from '@/components/settings'
@@ -56,8 +57,10 @@ export default function MyApp(props) {
                 <MotionLazyContainer>
                   <ThemeProvider>
                     <ThemeSettings>
-                      <ProgressBar />
-                      {getLayout(pageProps, <Component {...pageProps} />)}
+                      <NotistackProvider>
+                        <ProgressBar />
+                        {getLayout(pageProps, <Component {...pageProps} />)}
+                      </NotistackProvider>
                     </ThemeSettings>
                   </ThemeProvider>
                 </MotionLazyContainer>
