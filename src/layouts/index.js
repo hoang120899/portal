@@ -7,12 +7,13 @@ import DashboardLayout from '@/layouts/dashboard'
 
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
+  roles: PropTypes.arrayOf(PropTypes.string), // Example ['Admin', 'Leader']
 }
 
-export default function Layout({ children }) {
+export default function Layout({ roles, children }) {
   return (
     <AuthGuard>
-      <DashboardLayout> {children} </DashboardLayout>
+      <DashboardLayout roles={roles}> {children} </DashboardLayout>
     </AuthGuard>
   )
 }

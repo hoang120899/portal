@@ -38,7 +38,7 @@ MyApp.propTypes = {
 export default function MyApp(props) {
   const { Component, pageProps, settings } = props
 
-  const getLayout = Component.getLayout ?? ((page) => page)
+  const getLayout = Component.getLayout ?? ((pageProps, page) => page)
 
   return (
     <>
@@ -55,7 +55,7 @@ export default function MyApp(props) {
                   <ThemeProvider>
                     <ThemeSettings>
                       <ProgressBar />
-                      {getLayout(<Component {...pageProps} />)}
+                      {getLayout(pageProps, <Component {...pageProps} />)}
                     </ThemeSettings>
                   </ThemeProvider>
                 </MotionLazyContainer>

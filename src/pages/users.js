@@ -5,28 +5,40 @@ import { Container } from '@mui/material'
 // components
 import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
 import Page from '@/components/Page'
+// config
+import { PAGES } from '@/config'
 // hooks
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
+// utils
+import { getRolesByPage } from '@/utils/role'
 
-Users.getLayout = function getLayout(page) {
-  return <Layout>{page}</Layout>
+Users.getLayout = function getLayout({ roles = [] }, page) {
+  return <Layout roles={roles}>{page}</Layout>
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      roles: getRolesByPage(PAGES.Users),
+    },
+  }
 }
 
 export default function Users() {
   const { themeStretch } = useSettings()
 
   return (
-    <Page title='Users'>
+    <Page title={PAGES.Users}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
           heading='List users'
           links={[
             {
-              name: 'Dashboard',
+              name: PAGES.Dashboard,
               href: PATH_DASHBOARD.dashboard.root,
             },
             { name: 'List users' },

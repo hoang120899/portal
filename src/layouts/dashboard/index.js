@@ -8,6 +8,8 @@ import PropTypes from 'prop-types'
 
 // config
 import { HEADER, NAVBAR } from '@/config'
+// guards
+import RoleBasedGuard from '@/guards/RoleBasedGuard'
 // hooks
 import useCollapseDrawer from '@/hooks/useCollapseDrawer'
 import useResponsive from '@/hooks/useResponsive'
@@ -41,9 +43,10 @@ const MainStyle = styled('main', {
 
 DashboardLayout.propTypes = {
   children: PropTypes.node.isRequired,
+  roles: PropTypes.arrayOf(PropTypes.string), // Example ['Admin', 'Leader']
 }
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ roles, children }) {
   const { collapseClick, isCollapse } = useCollapseDrawer()
 
   const { themeLayout } = useSettings()
@@ -108,7 +111,9 @@ export default function DashboardLayout({ children }) {
         onCloseSidebar={() => setOpen(false)}
       />
 
-      <MainStyle collapseClick={collapseClick}>{children}</MainStyle>
+      <MainStyle collapseClick={collapseClick}>
+        <RoleBasedGuard roles={roles}>{children}</RoleBasedGuard>
+      </MainStyle>
     </Box>
   )
 }
