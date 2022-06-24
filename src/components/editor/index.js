@@ -7,6 +7,8 @@ import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
+import '@/utils/highlight'
+
 //
 import EditorToolbar, { formats } from './EditorToolbar'
 

@@ -12,6 +12,8 @@ import PropTypes from 'prop-types'
 import 'react-lazy-load-image-component/src/effects/black-and-white.css'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import 'react-lazy-load-image-component/src/effects/opacity.css'
+// editor
+import 'react-quill/dist/quill.snow.css'
 // scroll bar
 import 'simplebar/src/simplebar.css'
 
