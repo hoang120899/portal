@@ -19,4 +19,31 @@ export const PATH_AUTH = {
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   dashboard: path(ROOTS_DASHBOARD, 'dashboard'),
+  notification: path(ROOTS_DASHBOARD, 'notification'),
+  task: {
+    root: path(ROOTS_DASHBOARD, 'task'),
+  },
+  jobs: {
+    root: path(ROOTS_DASHBOARD, 'jobs'),
+  },
+  clients: {
+    root: path(ROOTS_DASHBOARD, 'clients'),
+  },
+  candidates: path(ROOTS_DASHBOARD, 'candidates'),
+  users: {
+    root: path(ROOTS_DASHBOARD, 'users'),
+  },
+  interview: {
+    root: path(ROOTS_DASHBOARD, 'interview'),
+  },
+  board: {
+    root: path(ROOTS_DASHBOARD, 'board'),
+  },
+  caculator: path(ROOTS_DASHBOARD, 'caculator'),
+  recruiter: {
+    root: path(ROOTS_DASHBOARD, 'recruiter'),
+  },
+  blogs: {
+    root: path(ROOTS_DASHBOARD, 'blogs'),
+  },
 }
