@@ -39,7 +39,7 @@ export default function Users() {
           links={[
             {
               name: PAGES.Dashboard,
-              href: PATH_DASHBOARD.dashboard.root,
+              href: PATH_DASHBOARD.dashboard,
             },
             { name: 'List users' },
           ]}

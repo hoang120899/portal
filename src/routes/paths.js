@@ -18,7 +18,5 @@ export const PATH_AUTH = {
 
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
-  dashboard: {
-    root: path(ROOTS_DASHBOARD, 'dashboard'),
-  },
+  dashboard: path(ROOTS_DASHBOARD, 'dashboard'),
 }

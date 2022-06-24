@@ -39,7 +39,7 @@ export default function Blogs() {
           links={[
             {
               name: PAGES.Dashboard,
-              href: PATH_DASHBOARD.dashboard.root,
+              href: PATH_DASHBOARD.dashboard,
             },
             { name: 'List blog' },
           ]}
