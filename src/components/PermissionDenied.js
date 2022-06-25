@@ -4,7 +4,7 @@ import { Container, Typography } from '@mui/material'
 import { m } from 'framer-motion'
 
 // assets
-import { ForbiddenIllustration } from '@/assets'
+import ForbiddenIllustration from '@/assets/illustration_403'
 // components
 import { MotionContainer, varBounce } from '@/components/animate'
 

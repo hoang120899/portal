@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles'
 import { m } from 'framer-motion'
 
 // assets
-import { ForbiddenIllustration } from '@/assets'
+import ForbiddenIllustration from '@/assets/illustration_403'
 // components
 import Page from '@/components/Page'
 import { MotionContainer, varBounce } from '@/components/animate'
@@ -25,7 +25,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }))
 
-Page403.getLayout = function getLayout(page) {
+Page403.getLayout = function getLayout(data, page) {
   return <Layout variant='logoOnly'>{page}</Layout>
 }
 

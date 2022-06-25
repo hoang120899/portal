@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles'
 import { m } from 'framer-motion'
 
 // assets
-import { SeverErrorIllustration } from '@/assets'
+import SeverErrorIllustration from '@/assets/illustration_500'
 // components
 import Page from '@/components/Page'
 import { MotionContainer, varBounce } from '@/components/animate'
@@ -25,7 +25,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }))
 
-Page500.getLayout = function getLayout(page) {
+Page500.getLayout = function getLayout(data, page) {
   return <Layout variant='logoOnly'>{page}</Layout>
 }
 

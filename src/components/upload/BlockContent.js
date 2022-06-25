@@ -2,7 +2,7 @@
 import { Box, Stack, Typography } from '@mui/material'
 
 // assets
-import { UploadIllustration } from '@/assets'
+import UploadIllustration from '@/assets/illustration_upload'
 
 export default function BlockContent() {
   return (

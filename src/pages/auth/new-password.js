@@ -3,7 +3,7 @@ import { Box, Container, Link, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 // assets
-import { SentIcon } from '@/assets'
+import SentIcon from '@/assets/icon_sent'
 // components
 import Page from '@/components/Page'
 // layouts
