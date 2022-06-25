@@ -29,6 +29,7 @@ import { CollapseDrawerProvider } from '@/contexts/CollapseDrawerContext'
 import { AuthProvider } from '@/contexts/JWTContext'
 import { RoleProvider } from '@/contexts/RoleContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
+import { SocketProvider } from '@/contexts/SocketContext'
 // redux
 import { store } from '@/redux/store'
 // theme
@@ -63,8 +64,10 @@ export default function MyApp(props) {
                     <ThemeProvider>
                       <ThemeSettings>
                         <NotistackProvider>
-                          <ProgressBar />
-                          {getLayout(pageProps, <Component {...pageProps} />)}
+                          <SocketProvider>
+                            <ProgressBar />
+                            {getLayout(pageProps, <Component {...pageProps} />)}
+                          </SocketProvider>
                         </NotistackProvider>
                       </ThemeSettings>
                     </ThemeProvider>

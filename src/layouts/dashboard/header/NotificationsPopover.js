@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // @mui
 import {
@@ -27,17 +27,28 @@ import Iconify from '@/components/Iconify'
 import MenuPopover from '@/components/MenuPopover'
 import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
+// hooks
+import useSocket from '@/hooks/useSocket'
 // utils
 import { fToNow } from '@/utils/formatTime'
 
 export default function NotificationsPopover() {
   const [notifications, setNotifications] = useState(_notifications)
+  const { socket } = useSocket()
 
   const totalUnRead = notifications.filter(
     (item) => item.isUnRead === true
   ).length
 
   const [open, setOpen] = useState(null)
+
+  useEffect(() => {
+    if (!socket) return
+    socket.on('connect', function () {
+      // eslint-disable-next-line no-console
+      console.log('Successfully connected!', socket.id)
+    })
+  }, [socket])
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget)

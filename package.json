@@ -67,6 +67,7 @@
     "redux": "^4.2.0",
     "simplebar": "^5.3.6",
     "simplebar-react": "^2.3.6",
+    "socket.io-client": "^4.5.1",
     "stylis": "^4.1.0",
     "stylis-plugin-rtl": "^2.1.1",
     "yup": "^0.32.11"
