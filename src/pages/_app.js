@@ -14,6 +14,8 @@ import 'react-lazy-load-image-component/src/effects/blur.css'
 import 'react-lazy-load-image-component/src/effects/opacity.css'
 // editor
 import 'react-quill/dist/quill.snow.css'
+//
+import { Provider as ReduxProvider } from 'react-redux'
 // scroll bar
 import 'simplebar/src/simplebar.css'
 
@@ -27,6 +29,8 @@ import { CollapseDrawerProvider } from '@/contexts/CollapseDrawerContext'
 import { AuthProvider } from '@/contexts/JWTContext'
 import { RoleProvider } from '@/contexts/RoleContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
+// redux
+import { store } from '@/redux/store'
 // theme
 import ThemeProvider from '@/theme'
 // utils
@@ -50,24 +54,26 @@ export default function MyApp(props) {
       </Head>
 
       <AuthProvider>
-        <RoleProvider>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <CollapseDrawerProvider>
-              <SettingsProvider defaultSettings={settings}>
-                <MotionLazyContainer>
-                  <ThemeProvider>
-                    <ThemeSettings>
-                      <NotistackProvider>
-                        <ProgressBar />
-                        {getLayout(pageProps, <Component {...pageProps} />)}
-                      </NotistackProvider>
-                    </ThemeSettings>
-                  </ThemeProvider>
-                </MotionLazyContainer>
-              </SettingsProvider>
-            </CollapseDrawerProvider>
-          </LocalizationProvider>
-        </RoleProvider>
+        <ReduxProvider store={store}>
+          <RoleProvider>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <CollapseDrawerProvider>
+                <SettingsProvider defaultSettings={settings}>
+                  <MotionLazyContainer>
+                    <ThemeProvider>
+                      <ThemeSettings>
+                        <NotistackProvider>
+                          <ProgressBar />
+                          {getLayout(pageProps, <Component {...pageProps} />)}
+                        </NotistackProvider>
+                      </ThemeSettings>
+                    </ThemeProvider>
+                  </MotionLazyContainer>
+                </SettingsProvider>
+              </CollapseDrawerProvider>
+            </LocalizationProvider>
+          </RoleProvider>
+        </ReduxProvider>
       </AuthProvider>
     </>
   )
