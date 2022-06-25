@@ -1,11 +1,8 @@
 import { useState } from 'react'
 
-// next
-import NextLink from 'next/link'
-
 // @mui
 import { LoadingButton } from '@mui/lab'
-import { Alert, IconButton, InputAdornment, Link, Stack } from '@mui/material'
+import { Alert, IconButton, InputAdornment, Stack } from '@mui/material'
 
 // form
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -14,21 +11,21 @@ import * as Yup from 'yup'
 
 // components
 import Iconify from '@/components/Iconify'
-import { FormProvider, RHFCheckbox, RHFTextField } from '@/components/hook-form'
+import { FormProvider, RHFTextField } from '@/components/hook-form'
 // hooks
 import useAuth from '@/hooks/useAuth'
 import useIsMountedRef from '@/hooks/useIsMountedRef'
-// routes
-import { PATH_AUTH } from '@/routes/paths'
 
-export default function LoginForm() {
-  const { login } = useAuth()
+export default function RegisterForm() {
+  const { register } = useAuth()
 
   const isMountedRef = useIsMountedRef()
 
   const [showPassword, setShowPassword] = useState(false)
 
-  const LoginSchema = Yup.object().shape({
+  const RegisterSchema = Yup.object().shape({
+    firstName: Yup.string().required('First name required'),
+    lastName: Yup.string().required('Last name required'),
     email: Yup.string()
       .email('Email must be a valid email address')
       .required('Email is required'),
@@ -36,13 +33,14 @@ export default function LoginForm() {
   })
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
-    remember: true,
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
   }
 
   const methods = useForm({
-    resolver: yupResolver(LoginSchema),
+    resolver: yupResolver(RegisterSchema),
     defaultValues,
   })
 
@@ -55,10 +53,9 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     try {
-      await login(data.email, data.password)
+      await register(data.email, data.password, data.firstName, data.lastName)
     } catch (error) {
       reset()
-
       if (isMountedRef.current) {
         setError('afterSubmit', { ...error, message: error.message })
       }
@@ -72,6 +69,11 @@ export default function LoginForm() {
           <Alert severity='error'>{errors.afterSubmit.message}</Alert>
         )}
 
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <RHFTextField name='firstName' label='First name' />
+          <RHFTextField name='lastName' label='Last name' />
+        </Stack>
+
         <RHFTextField name='email' label='Email address' />
 
         <RHFTextField
@@ -82,8 +84,8 @@ export default function LoginForm() {
             endAdornment: (
               <InputAdornment position='end'>
                 <IconButton
-                  onClick={() => setShowPassword(!showPassword)}
                   edge='end'
+                  onClick={() => setShowPassword(!showPassword)}
                 >
                   <Iconify
                     icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'}
@@ -93,29 +95,17 @@ export default function LoginForm() {
             ),
           }}
         />
-      </Stack>
 
-      <Stack
-        direction='row'
-        alignItems='center'
-        justifyContent='space-between'
-        sx={{ my: 2 }}
-      >
-        <RHFCheckbox name='remember' label='Remember me' />
-        <NextLink href={PATH_AUTH.resetPassword} passHref>
-          <Link variant='subtitle2'>Forgot password?</Link>
-        </NextLink>
+        <LoadingButton
+          fullWidth
+          size='large'
+          type='submit'
+          variant='contained'
+          loading={isSubmitting}
+        >
+          Register
+        </LoadingButton>
       </Stack>
-
-      <LoadingButton
-        fullWidth
-        size='large'
-        type='submit'
-        variant='contained'
-        loading={isSubmitting}
-      >
-        Login
-      </LoadingButton>
     </FormProvider>
   )
 }

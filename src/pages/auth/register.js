@@ -2,7 +2,7 @@
 import NextLink from 'next/link'
 
 // @mui
-import { Box, Card, Container, Link, Stack, Typography } from '@mui/material'
+import { Box, Card, Container, Link, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 // components
@@ -16,7 +16,7 @@ import useResponsive from '@/hooks/useResponsive'
 // routes
 import { PATH_AUTH } from '@/routes/paths'
 // sections
-import { LoginForm } from '@/sections/auth/login'
+import { RegisterForm } from '@/sections/auth/register'
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -59,21 +59,22 @@ const ContentStyle = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }))
 
-export default function Login() {
-  const mdUp = useResponsive('up', 'md')
+export default function Register() {
   const smUp = useResponsive('up', 'sm')
+
+  const mdUp = useResponsive('up', 'md')
 
   return (
     <GuestGuard>
-      <Page title='Login'>
+      <Page title='Register'>
         <RootStyle>
           <HeaderStyle>
             <Logo />
             {smUp && (
               <Typography variant='body2' sx={{ mt: { md: -2 } }}>
-                Don’t have an account? {''}
-                <NextLink href={PATH_AUTH.register} passHref>
-                  <Link variant='subtitle2'>Get started</Link>
+                Already have an account? {''}
+                <NextLink href={PATH_AUTH.login} passHref>
+                  <Link variant='subtitle2'>Login</Link>
                 </NextLink>
               </Typography>
             )}
@@ -82,36 +83,53 @@ export default function Login() {
           {mdUp && (
             <SectionStyle>
               <Typography variant='h3' sx={{ px: 5, mt: 10, mb: 5 }}>
-                Hi, Welcome Back
+                Manage the job more effectively with Minimal
               </Typography>
               <Image
                 visibleByDefault
                 disabledEffect
-                src='/assets/illustrations/illustration_login.png'
-                alt='login'
+                alt='register'
+                src='/assets/illustrations/illustration_register.png'
               />
             </SectionStyle>
           )}
 
-          <Container maxWidth='sm'>
+          <Container>
             <ContentStyle>
-              <Stack direction='row' alignItems='center' sx={{ mb: 5 }}>
+              <Box sx={{ mb: 5, display: 'flex', alignItems: 'center' }}>
                 <Box sx={{ flexGrow: 1 }}>
                   <Typography variant='h4' gutterBottom>
-                    Sign in to Minimal
+                    Get started absolutely free.
                   </Typography>
                   <Typography sx={{ color: 'text.secondary' }}>
-                    Enter your details below.
+                    Free forever. No credit card needed.
                   </Typography>
                 </Box>
-              </Stack>
-              <LoginForm />
+              </Box>
+
+              <RegisterForm />
+
+              <Typography
+                variant='body2'
+                align='center'
+                sx={{ color: 'text.secondary', mt: 3 }}
+              >
+                By registering, I agree to Minimal&nbsp;
+                <Link underline='always' color='text.primary' href='#'>
+                  Terms of Service
+                </Link>
+                {''} and {''}
+                <Link underline='always' color='text.primary' href='#'>
+                  Privacy Policy
+                </Link>
+                .
+              </Typography>
 
               {!smUp && (
-                <Typography variant='body2' align='center' sx={{ mt: 3 }}>
-                  Don’t have an account?{' '}
-                  <NextLink href={PATH_AUTH.register} passHref>
-                    <Link variant='subtitle2'>Get started</Link>
+                <Typography variant='body2' sx={{ mt: 3, textAlign: 'center' }}>
+                  Already have an account?{' '}
+                  <NextLink href={PATH_AUTH.login} passHref>
+                    <Link variant='subtitle2'>Login</Link>
                   </NextLink>
                 </Typography>
               )}
