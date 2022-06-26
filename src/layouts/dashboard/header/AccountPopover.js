@@ -2,7 +2,9 @@ import { useState } from 'react'
 
 // next
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 
+// @mui
 import {
   Avatar,
   Box,
@@ -11,13 +13,17 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-// @mui
 import { alpha } from '@mui/material/styles'
+
+import { useSnackbar } from 'notistack'
 
 // components
 import MenuPopover from '@/components/MenuPopover'
 import { IconButtonAnimate } from '@/components/animate'
-import { PATH_DASHBOARD } from '@/routes/paths'
+// hooks
+import useAuth from '@/hooks/useAuth'
+import useIsMountedRef from '@/hooks/useIsMountedRef'
+import { PATH_AUTH, PATH_DASHBOARD } from '@/routes/paths'
 
 const MENU_OPTIONS = [
   {
@@ -31,6 +37,11 @@ const MENU_OPTIONS = [
 ]
 
 export default function AccountPopover() {
+  const router = useRouter()
+  const { logout } = useAuth()
+  const isMountedRef = useIsMountedRef()
+  const { enqueueSnackbar } = useSnackbar()
+
   const [open, setOpen] = useState(null)
 
   const handleOpen = (event) => {
@@ -39,6 +50,19 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.replace(PATH_AUTH.login)
+
+      if (isMountedRef.current) {
+        handleClose()
+      }
+    } catch (error) {
+      enqueueSnackbar('Unable to logout!', { variant: 'error' })
+    }
   }
 
   return (
@@ -103,7 +127,9 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem sx={{ m: 1 }}>Logout</MenuItem>
+        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
+          Logout
+        </MenuItem>
       </MenuPopover>
     </>
   )
