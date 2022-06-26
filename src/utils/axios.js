@@ -6,6 +6,7 @@ import { PATH_AUTH } from '@/routes/paths'
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_HOST_API_KEY || '',
   timeout: 5000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',
     'Access-Control-Allow-Origin': '*',
