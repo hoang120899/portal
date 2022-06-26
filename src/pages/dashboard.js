@@ -11,6 +11,8 @@ import { PAGES } from '@/config'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
+// sections
+import DashboardActiveJob from '@/sections/dashboard/active-job'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -33,6 +35,7 @@ export default function Dashboard() {
     <Page title={PAGES.Dashboard}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs heading={PAGES.Dashboard} />
+        <DashboardActiveJob />
       </Container>
     </Page>
   )
