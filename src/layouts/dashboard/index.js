@@ -112,7 +112,11 @@ export default function DashboardLayout({ roles, children }) {
       />
 
       <MainStyle collapseClick={collapseClick}>
-        <RoleBasedGuard roles={roles}>{children}</RoleBasedGuard>
+        {!roles || !Array.isArray(roles) ? (
+          children
+        ) : (
+          <RoleBasedGuard roles={roles}>{children}</RoleBasedGuard>
+        )}
       </MainStyle>
     </Box>
   )

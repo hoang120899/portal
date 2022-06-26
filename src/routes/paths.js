@@ -35,6 +35,7 @@ export const PATH_DASHBOARD = {
   candidates: path(ROOTS_DASHBOARD, 'candidates'),
   users: {
     root: path(ROOTS_DASHBOARD, 'users'),
+    account: path(ROOTS_DASHBOARD, 'users/account'),
   },
   interview: {
     root: path(ROOTS_DASHBOARD, 'interview'),

@@ -17,11 +17,16 @@ import { alpha } from '@mui/material/styles'
 // components
 import MenuPopover from '@/components/MenuPopover'
 import { IconButtonAnimate } from '@/components/animate'
+import { PATH_DASHBOARD } from '@/routes/paths'
 
 const MENU_OPTIONS = [
   {
-    label: 'Profile',
+    label: 'Home',
     linkTo: '/',
+  },
+  {
+    label: 'Settings',
+    linkTo: PATH_DASHBOARD.users.account,
   },
 ]
 

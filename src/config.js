@@ -74,6 +74,7 @@ export const PAGES = {
   Users: 'Users',
   Task: 'Task',
   Blogs: 'Blogs',
+  Account: 'Account',
 }
 
 // ROLE AND PERMISSION
