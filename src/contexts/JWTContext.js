@@ -1,10 +1,17 @@
 import { createContext, useEffect, useReducer } from 'react'
 
+import jwtDecode from 'jwt-decode'
 import PropTypes from 'prop-types'
 
+import { API_LOGIN, API_REFRESH_TOKEN, API_USER_INFO } from '@/routes/api'
 // utils
-import axios from '@/utils/axios'
-import { isValidToken, setSession } from '@/utils/jwt'
+import { _getApi, _postApi } from '@/utils/axios'
+import {
+  isValidToken,
+  setRefreshToken,
+  setRememberMe,
+  setSession,
+} from '@/utils/jwt'
 
 const initialState = {
   isAuthenticated: false,
@@ -64,10 +71,8 @@ function AuthProvider({ children }) {
             : ''
 
         if (accessToken && isValidToken(accessToken)) {
+          const user = await getUserInfo(accessToken)
           setSession(accessToken)
-
-          const response = await axios.get('/api/account/my-account')
-          const { user } = response.data
 
           dispatch({
             type: 'INITIALIZE',
@@ -99,13 +104,24 @@ function AuthProvider({ children }) {
     initialize()
   }, [])
 
-  const login = async (email, password) => {
-    const response = await axios.post('/api/account/login', {
+  const login = async (email, password, remember) => {
+    const { data: { refreshToken } = {} } = await _postApi(API_LOGIN, {
       email,
       password,
     })
-    const { accessToken, user } = response.data
+    const { data: { accessToken } = {} } = await _postApi(
+      API_REFRESH_TOKEN,
+      null,
+      {
+        headers: {
+          'X-Refresh-Token': refreshToken,
+        },
+      }
+    )
+    const user = await getUserInfo(accessToken)
 
+    setRememberMe(remember)
+    setRefreshToken(refreshToken)
     setSession(accessToken)
 
     dispatch({
@@ -117,8 +133,28 @@ function AuthProvider({ children }) {
   }
 
   const logout = async () => {
+    setRememberMe(null)
+    setRefreshToken(null)
     setSession(null)
     dispatch({ type: 'LOGOUT' })
+  }
+
+  const getUserInfo = async (accessToken) => {
+    const decoded = jwtDecode(accessToken)
+    const {
+      email,
+      name: displayName = '',
+      Role: { id: roleId, name: role } = {},
+      id: userId,
+    } = await _getApi(`${API_USER_INFO}/${decoded.userId}`)
+
+    return {
+      email,
+      displayName,
+      role,
+      roleId,
+      userId,
+    }
   }
 
   return (

@@ -1,2 +1,3 @@
-export const API_LOGIN = '/api/sigin'
-export const API_VERIFY_USER_INFO = '/api/checklogin/browser'
+export const API_LOGIN = '/api/login'
+export const API_REFRESH_TOKEN = '/api/refreshToken'
+export const API_USER_INFO = '/api/users'

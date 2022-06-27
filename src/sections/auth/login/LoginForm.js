@@ -9,6 +9,7 @@ import { Alert, IconButton, InputAdornment, Link, Stack } from '@mui/material'
 
 // form
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useSnackbar } from 'notistack'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 
@@ -23,6 +24,7 @@ import { PATH_AUTH } from '@/routes/paths'
 
 export default function LoginForm() {
   const { login } = useAuth()
+  const { enqueueSnackbar } = useSnackbar()
 
   const isMountedRef = useIsMountedRef()
 
@@ -36,8 +38,8 @@ export default function LoginForm() {
   })
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
+    email: '',
+    password: '',
     remember: true,
   }
 
@@ -47,7 +49,6 @@ export default function LoginForm() {
   })
 
   const {
-    reset,
     setError,
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -55,12 +56,15 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     try {
-      await login(data.email, data.password)
+      await login(data.email, data.password, data.remember)
+      enqueueSnackbar('Login success!')
     } catch (error) {
-      reset()
-
       if (isMountedRef.current) {
-        setError('afterSubmit', { ...error, message: error.message })
+        const message =
+          error?.validation?.body?.message ||
+          error?.data?.message ||
+          error?.message
+        setError('afterSubmit', { ...error, message })
       }
     }
   }

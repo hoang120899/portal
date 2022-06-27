@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // routes
-import { PATH_AUTH } from '@/routes/paths'
+// import { PATH_AUTH } from '@/routes/paths'
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_HOST_API_KEY || '',
@@ -19,7 +19,7 @@ axiosInstance.interceptors.response.use(
     if (error.response.status === 401) {
       //1. Redirect to login page or
       //2. Request refresh token
-      window.location.href = PATH_AUTH.login
+      // window.location.href = PATH_AUTH.login
       return
     }
     return Promise.reject(
@@ -29,36 +29,19 @@ axiosInstance.interceptors.response.use(
 )
 
 export const _getApi = (url, data) =>
-  axiosInstance
-    .get(url, {
-      params: data,
-    })
-    .then((response) => response.data)
-    .catch((error) => error)
+  axiosInstance.get(url, data).then((response) => response.data)
 
-export const _postApi = (url, data) =>
-  axiosInstance
-    .post(url, data)
-    .then((response) => response.data)
-    .catch((error) => error)
+export const _postApi = (url, data, headers = {}) =>
+  axiosInstance.post(url, data, headers).then((response) => response.data)
 
 export const _putApi = (url, data) =>
-  axiosInstance
-    .put(url, data)
-    .then((response) => response.data)
-    .catch((error) => error)
+  axiosInstance.put(url, data).then((response) => response.data)
 
 export const _patchApi = (url, data) =>
-  axiosInstance
-    .patch(url, data)
-    .then((response) => response.data)
-    .catch((error) => error)
+  axiosInstance.patch(url, data).then((response) => response.data)
 
 export const _deleteApi = (url) =>
-  axiosInstance
-    .delete(url)
-    .then((response) => response.data)
-    .catch((error) => error)
+  axiosInstance.delete(url).then((response) => response.data)
 
 export const _uploadApi = (url, data) =>
   axiosInstance
@@ -68,6 +51,5 @@ export const _uploadApi = (url, data) =>
       },
     })
     .then((response) => response.data)
-    .catch((error) => error)
 
 export default axiosInstance

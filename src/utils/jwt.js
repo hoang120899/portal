@@ -50,4 +50,20 @@ const setSession = (accessToken) => {
   }
 }
 
-export { isValidToken, setSession }
+const setRememberMe = (rememberMe) => {
+  if (typeof rememberMe === 'boolean') {
+    localStorage.setItem('isRememberMe', rememberMe)
+  } else {
+    localStorage.removeItem('isRememberMe')
+  }
+}
+
+const setRefreshToken = (refreshToken) => {
+  if (refreshToken) {
+    localStorage.setItem('refreshToken', refreshToken)
+  } else {
+    localStorage.removeItem('refreshToken')
+  }
+}
+
+export { isValidToken, setSession, setRefreshToken, setRememberMe }
