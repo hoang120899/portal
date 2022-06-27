@@ -1,8 +1,7 @@
 import jwtDecode from 'jwt-decode'
 
 // routes
-import { PATH_AUTH } from '@/routes/paths'
-
+// import { PATH_AUTH } from '@/routes/paths'
 //
 import axios from './axios'
 
@@ -30,9 +29,9 @@ const handleTokenExpired = (exp) => {
     // eslint-disable-next-line no-alert
     alert('Token expired')
 
-    localStorage.removeItem('accessToken')
+    // localStorage.removeItem('accessToken')
 
-    window.location.href = PATH_AUTH.login
+    // window.location.href = PATH_AUTH.login
   }, timeLeft)
 }
 
