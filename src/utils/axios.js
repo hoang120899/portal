@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-// routes
-// import { PATH_AUTH } from '@/routes/paths'
+import { handleRefreshToken } from './jwt'
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_HOST_API_KEY || '',
@@ -17,9 +16,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response.status === 401) {
-      //1. Redirect to login page or
-      //2. Request refresh token
-      // window.location.href = PATH_AUTH.login
+      handleRefreshToken()
       return
     }
     return Promise.reject(

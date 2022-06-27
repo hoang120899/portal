@@ -1,9 +1,11 @@
 import jwtDecode from 'jwt-decode'
 
 // routes
-// import { PATH_AUTH } from '@/routes/paths'
+import { API_REFRESH_TOKEN } from '@/routes/api'
+import { PATH_AUTH } from '@/routes/paths'
+
 //
-import axios from './axios'
+import axios, { _postApi } from './axios'
 
 const isValidToken = (accessToken) => {
   if (!accessToken) return false
@@ -26,12 +28,7 @@ const handleTokenExpired = (exp) => {
   clearTimeout(expiredTimer)
 
   expiredTimer = setTimeout(() => {
-    // eslint-disable-next-line no-alert
-    alert('Token expired')
-
-    // localStorage.removeItem('accessToken')
-
-    // window.location.href = PATH_AUTH.login
+    handleRefreshToken()
   }, timeLeft)
 }
 
@@ -65,4 +62,38 @@ const setRefreshToken = (refreshToken) => {
   }
 }
 
-export { isValidToken, setSession, setRefreshToken, setRememberMe }
+const handleRefreshToken = async () => {
+  try {
+    const isRememberMe = JSON.parse(localStorage.getItem('isRememberMe'))
+
+    if (!isRememberMe) {
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      window.location.href = PATH_AUTH.login
+      return
+    }
+
+    const refreshToken = localStorage.getItem('refreshToken')
+    const { data: { accessToken } = {} } = await _postApi(
+      API_REFRESH_TOKEN,
+      null,
+      {
+        headers: {
+          'X-Refresh-Token': refreshToken,
+        },
+      }
+    )
+    setSession(accessToken)
+    window.location.reload()
+  } catch (error) {
+    //  TODO
+  }
+}
+
+export {
+  isValidToken,
+  setSession,
+  setRefreshToken,
+  setRememberMe,
+  handleRefreshToken,
+}
