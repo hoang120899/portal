@@ -1,3 +1,5 @@
 export const API_LOGIN = '/api/login'
 export const API_REFRESH_TOKEN = '/api/refreshToken'
 export const API_USER_INFO = '/api/users'
+export const API_ADMIN_USER_LIST = '/api/admin/user/list'
+export const API_ADMIN_ALL_NOTIFY = '/api/v1/admin/all-notification'

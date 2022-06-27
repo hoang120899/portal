@@ -2,12 +2,11 @@ import { useState } from 'react'
 
 import { defaultPagination } from '@/config'
 
-export default function useTable({
-  defaultCurrentPage = 0,
-  defaultRowsPerPage = defaultPagination,
-}) {
-  const [page, setPage] = useState(defaultCurrentPage)
-  const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage)
+export default function useTable(props) {
+  const [page, setPage] = useState(props?.defaultCurrentPage || 0)
+  const [rowsPerPage, setRowsPerPage] = useState(
+    props?.defaultRowsPerPage || defaultPagination
+  )
 
   const onChangePage = (event, newPage) => {
     setPage(newPage)
@@ -29,5 +28,5 @@ export default function useTable({
 }
 
 export function emptyRows(page, rowsPerPage, arrayLength) {
-  return page > 0 ? Math.max(0, (1 + page) * rowsPerPage - arrayLength) : 0
+  return page > 0 ? Math.max(0, rowsPerPage - arrayLength) : 0
 }

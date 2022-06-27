@@ -31,7 +31,7 @@ export default function RHFBasicSelect({
       options.map((option) => {
         // check object
         if (typeof option === 'object' && option !== null) {
-          const { value, displayName } = Object.values(option)
+          const { value, label: displayName } = option
           return {
             value,
             displayName,

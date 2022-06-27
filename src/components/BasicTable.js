@@ -15,14 +15,15 @@ import {
 // config
 import { defaultPagination } from '@/config'
 // hooks
-import useTable, { emptyRows } from '@/hooks/useTable'
+import { emptyRows } from '@/hooks/useTable'
 
 import Scrollbar from './Scrollbar'
 
 BasicTable.propTypes = {
   columns: PropTypes.array.isRequired,
   dataSource: PropTypes.array.isRequired,
-  defaultRowsPerPage: PropTypes.number,
+  page: PropTypes.number,
+  rowsPerPage: PropTypes.number,
   isLoading: PropTypes.bool,
   heightEmptyRow: PropTypes.number,
   heightSkeletonRow: PropTypes.number,
@@ -33,17 +34,14 @@ BasicTable.propTypes = {
 export default function BasicTable({
   columns = [],
   dataSource = [],
-  defaultRowsPerPage = defaultPagination,
+  page = 0,
+  rowsPerPage = defaultPagination,
   isLoading = false,
   heightEmptyRow,
   heightSkeletonRow,
   tableStyle = {},
   TableRowComp,
 }) {
-  const { page, rowsPerPage } = useTable({
-    defaultRowsPerPage,
-  })
-
   const isNotFound = !isLoading && !dataSource.length
   const tableData = React.useMemo(
     () =>

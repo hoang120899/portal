@@ -1,7 +1,9 @@
 import { format, formatDistanceToNow, getTime } from 'date-fns'
 
+import { DATE_FORMAT } from '@/config'
+
 export function fDate(date) {
-  return format(new Date(date), 'dd MMMM yyyy')
+  return format(new Date(date), DATE_FORMAT)
 }
 
 export function fDateTime(date) {

@@ -13,6 +13,8 @@ import useSettings from '@/hooks/useSettings'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
+// section
+import NotificationList from '@/sections/notification'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -44,6 +46,7 @@ export default function Notification() {
             { name: 'List notification' },
           ]}
         />
+        <NotificationList />
       </Container>
     </Page>
   )

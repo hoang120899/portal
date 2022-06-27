@@ -4,15 +4,17 @@ import {
   useSelector as useAppSelector,
 } from 'react-redux'
 
-import { rootReducer } from './rootReducer'
+import { apiSlice } from '@/redux/api/apiSlice'
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    [apiSlice.reducerPath]: apiSlice.reducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
       immutableCheck: false,
-    }),
+    }).concat(apiSlice.middleware),
 })
 
 const { dispatch } = store

@@ -5,21 +5,22 @@ import PropTypes from 'prop-types'
 
 // config
 import { PAGINATION, defaultPagination } from '@/config'
-// hooks
-import useTable from '@/hooks/useTable'
 
 Pagination.propTypes = {
   dataSource: PropTypes.array.isRequired,
-  defaultRowsPerPage: PropTypes.number,
+  page: PropTypes.number,
+  rowsPerPage: PropTypes.number,
+  onChangePage: PropTypes.func,
+  onChangeRowsPerPage: PropTypes.func,
 }
 
 export default function Pagination({
   dataSource = [],
-  defaultRowsPerPage = defaultPagination,
+  page = 0,
+  rowsPerPage = defaultPagination,
+  onChangePage,
+  onChangeRowsPerPage,
 }) {
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = useTable({
-    defaultRowsPerPage,
-  })
   return (
     <Box sx={{ position: 'relative' }}>
       <TablePagination
