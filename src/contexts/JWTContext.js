@@ -53,6 +53,7 @@ const AuthContext = createContext({
   method: 'jwt',
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
+  register: () => Promise.resolve(),
 })
 
 AuthProvider.propTypes = {
@@ -139,6 +140,10 @@ function AuthProvider({ children }) {
     dispatch({ type: 'LOGOUT' })
   }
 
+  const register = async () => {
+    // TODO
+  }
+
   const getUserInfo = async (accessToken) => {
     const decoded = jwtDecode(accessToken)
     const {
@@ -164,6 +169,7 @@ function AuthProvider({ children }) {
         method: 'jwt',
         login,
         logout,
+        register,
       }}
     >
       {children}
