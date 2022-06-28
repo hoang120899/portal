@@ -9,18 +9,24 @@ git pull origin --rebase develop
 git push origin [PT-01]/[feat/fix]/xxxx
 ```
 
-Chú ý:
+### Chú ý:
 - [PT-01] là mã ticket được assign khi làm.
+```
  -- Trong đó PT là viết tắt của tên project "Portal",
  -- 01 là số thứ tự ticket được assign.
+```
 
 - Quy tắc đặt tên branch.
+```
  -- Branch name convention: [ProjectName]-[TicketNumber]-[Initial]-[BranchName].
  --> example: PT-01-feat/Home
+```
 
 - Quy tắc đặt tên commit
+```
  -- feat: đây là 1 cái commit
  -- fix: fix homeScreen sai UI
+```
 
  ```
  Initial: 'feat', 'fix', 'refactor', 'revert'
@@ -38,9 +44,9 @@ Chú ý:
 
 - [NextJs](https://nextjs.org/)
 
-- [Document theme](https://docs-minimals.vercel.app/package)
+- [Document theme](https://docs-minimals.vercel.app/package) ---> detail function theme using
 
-- [Clickup](https://clickup.com/)
+- [Clickup](https://clickup.com/) ---> manage task
 
 ## Setup
 
@@ -54,7 +60,7 @@ Chú ý:
 
 - [ESlint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 
-3. Make sure using Node.js version is 14
+2. Make sure using Node.js version is 14
 
 ```
 
@@ -63,6 +69,8 @@ $ nvm install 14 && nvm use 14
 ```
 
 4. Clone this repo
+
+```
 
 - git clone git@gitlab.com:thucnguyen.fetch/portal.fetch.git
 - cd portal.fetch && yarn && yarn start
