@@ -1,7 +1,7 @@
 {
   "name": "portal.fetch",
   "author": "fetch",
-  "version": "3.4.0",
+  "version": "1.0.0",
   "description": "Portal project",
   "private": true,
   "lint-staged": {
