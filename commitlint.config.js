@@ -13,6 +13,7 @@
   revert: Reverts a previous commit
   style: Changes that do not affect the meaning of the code (Eg: adding white-space, formatting, missing semi-colons, etc)
   test: Adding missing tests or correcting existing tests
+  tag: Adding tag version
  */
 module.exports = {
   extends: ['@commitlint/config-conventional'],
@@ -20,7 +21,20 @@ module.exports = {
     'type-enum': [
       2,
       'always',
-      ['build', 'ci', 'chore', 'docs', 'feat', 'fix', 'perf', 'refactor', 'revert', 'style', 'test'],
+      [
+        'build',
+        'ci',
+        'chore',
+        'docs',
+        'feat',
+        'fix',
+        'perf',
+        'refactor',
+        'revert',
+        'style',
+        'test',
+        'tag',
+      ],
     ],
     'subject-max-length': [2, 'always', 72],
   },
