@@ -28,6 +28,7 @@ export const PATH_DASHBOARD = {
   },
   jobs: {
     root: path(ROOTS_DASHBOARD, 'jobs'),
+    new: path(ROOTS_DASHBOARD, 'jobs/new'),
   },
   clients: {
     root: path(ROOTS_DASHBOARD, 'clients'),

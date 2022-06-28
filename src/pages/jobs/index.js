@@ -1,9 +1,14 @@
 import React from 'react'
 
-import { Container } from '@mui/material'
+// next
+import NextLink from 'next/link'
+
+// @mui
+import { Button, Container } from '@mui/material'
 
 // components
 import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
+import Iconify from '@/components/Iconify'
 import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
@@ -43,6 +48,16 @@ export default function Jobs() {
             },
             { name: 'List jobs' },
           ]}
+          action={
+            <NextLink href={PATH_DASHBOARD.jobs.new} passHref>
+              <Button
+                variant='contained'
+                startIcon={<Iconify icon={'eva:plus-fill'} />}
+              >
+                New Job
+              </Button>
+            </NextLink>
+          }
         />
       </Container>
     </Page>
