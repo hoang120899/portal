@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 // @mui
-import { Stack } from '@mui/material'
+import { Box } from '@mui/material'
 
 // components
 import { RHFBasicSelect, RHFDatePicker } from '@/components/hook-form'
@@ -11,8 +11,6 @@ import { ROLE } from '@/config'
 import { useGetAdminUserListQuery } from '@/redux/api/apiSlice'
 
 import { NOTIFICATION_TYPE } from './config'
-
-const INPUT_WIDTH = 250
 
 export default function NotificationTableToolbar() {
   const { data: { data: { user: adminUserList = [] } = {} } = {} } =
@@ -30,10 +28,17 @@ export default function NotificationTableToolbar() {
   )
 
   return (
-    <Stack
-      spacing={2}
-      direction={{ xs: 'column', sm: 'row' }}
-      sx={{ py: 2.5, px: 3 }}
+    <Box
+      sx={{
+        py: 2.5,
+        px: 3,
+        display: 'grid',
+        gridTemplateColumns: {
+          xl: 'repeat(4, 250px)',
+          md: 'repeat(3, 250px)',
+        },
+        gap: 2,
+      }}
     >
       <RHFBasicSelect
         label='User'
@@ -47,20 +52,8 @@ export default function NotificationTableToolbar() {
         options={NOTIFICATION_TYPE}
         hasBlankOption
       />
-      <RHFDatePicker
-        name='timeStart'
-        label='Time start Card'
-        sx={{
-          maxWidth: { md: INPUT_WIDTH },
-        }}
-      />
-      <RHFDatePicker
-        name='timeEnd'
-        label='Time end Card'
-        sx={{
-          maxWidth: { md: INPUT_WIDTH },
-        }}
-      />
-    </Stack>
+      <RHFDatePicker name='timeStart' label='Time start Card' />
+      <RHFDatePicker name='timeEnd' label='Time end Card' />
+    </Box>
   )
 }
