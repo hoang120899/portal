@@ -1,8 +1,11 @@
 // @mui
 import { Card, Divider, Tab, Tabs } from '@mui/material'
 
+import { useForm } from 'react-hook-form'
+
 // components
 import BasicTable from '@/components/BasicTable'
+import { FormProvider } from '@/components/hook-form'
 // hooks
 import useTabs from '@/hooks/useTabs'
 
@@ -14,6 +17,24 @@ import { DATASOURCE, STATUS_OPTIONS, TABLE_HEAD } from './config'
 const DashboardActiveJob = () => {
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
     useTabs('active')
+  const methods = useForm({
+    defaultValues: {
+      startDate: null,
+      endDate: null,
+    },
+  })
+  const {
+    handleSubmit,
+    // formState: { errors, isSubmitting },
+  } = methods
+  const onSubmit = async (data) => {
+    try {
+      // eslint-disable-next-line no-console
+      console.log('data', data)
+    } catch (error) {
+      // TODO
+    }
+  }
 
   return (
     <Card>
@@ -32,7 +53,9 @@ const DashboardActiveJob = () => {
 
       <Divider />
 
-      <ActiveJobTableToolbar />
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <ActiveJobTableToolbar />
+      </FormProvider>
 
       <BasicTable
         columns={TABLE_HEAD}
