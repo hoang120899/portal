@@ -16,21 +16,39 @@ git push origin [PT-01]/[feat/fix]/xxxx
  -- 01 là số thứ tự ticket được assign.
 ```
 
+- Quy tắc đặt tên.
+
+[Document](https://github.com/airbnb/javascript)
+
+```
+-- Đối với tên các Function sử dụng camelCase
+--> example: onRefresh, onBackPress, onSubmit, renderItem
+
+-- Đối với tên các Conponent sử dụng PascalCase
+--> example: HomePage, SearchPage, DashBoardPage
+
+-- Đối với tên các Constant sử dụng UPPERCASE
+--> example: SECONDS, WIDTH, YEAR
+
+-- Đối với các biến boolean sử dụng tiền tố 'is', 'are', 'has'
+--> example: isAction, areEqual, hasEncryption
+```
+
 - Quy tắc đặt tên branch.
 ```
- -- Branch name convention: [ProjectName]-[TicketNumber]-[Initial]-[BranchName].
- --> example: PT-01-feat/Home
+-- Branch name convention: [ProjectName]-[TicketNumber]-[Initial]-[BranchName].
+--> example: PT-01-feat/Home
 ```
 
 - Quy tắc đặt tên commit
 ```
- -- feat: đây là 1 cái commit
- -- fix: fix homeScreen sai UI
+-- feat: đây là 1 cái commit
+-- fix: fix homeScreen sai UI
 ```
 
- ```
- Initial: 'feat', 'fix', 'refactor', 'revert'
- ```
+```
+Initial types: 'feat', 'fix', 'refactor', 'revert'
+```
 ## Quy trình chuyển task trong dự án
 
 - [Document](https://docs.google.com/document/d/18is2D6OM3i0x7ADr1RZtCIeerSBXLmtzo2XGmx5nDQ8/edit)
@@ -67,11 +85,9 @@ git push origin [PT-01]/[feat/fix]/xxxx
 $ nvm install 14 && nvm use 14
 
 ```
-
 4. Clone this repo
 
 ```
-
 - git clone git@gitlab.com:thucnguyen.fetch/portal.fetch.git
 - cd portal.fetch && yarn && yarn start
 
