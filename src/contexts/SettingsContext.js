@@ -73,10 +73,10 @@ function SettingsProvider({ children, defaultSettings }) {
     })
   }
 
-  const onChangeMode = (event) => {
+  const onChangeMode = () => {
     setSettings({
       ...settings,
-      themeMode: event.target.value,
+      themeMode: settings.themeMode === 'light' ? 'dark' : 'light',
     })
   }
 

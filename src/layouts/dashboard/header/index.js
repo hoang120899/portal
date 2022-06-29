@@ -20,6 +20,7 @@ import cssStyles from '@/utils/cssStyles'
 import AccountPopover from './AccountPopover'
 import LanguagePopover from './LanguagePopover'
 import NotificationsPopover from './NotificationsPopover'
+import SettingMode from './SettingMode'
 
 const RootStyle = styled(AppBar, {
   shouldForwardProp: (prop) =>
@@ -95,6 +96,7 @@ export default function DashboardHeader({
           alignItems='center'
           spacing={{ xs: 0.5, sm: 1.5 }}
         >
+          <SettingMode />
           <LanguagePopover />
           <NotificationsPopover />
           <AccountPopover />
