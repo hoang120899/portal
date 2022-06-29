@@ -8,6 +8,7 @@ import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -30,18 +31,19 @@ export async function getStaticProps() {
 
 export default function Interview() {
   const { themeStretch } = useSettings()
+  const { translate } = useLocales()
 
   return (
-    <Page title={PAGES.Interview}>
+    <Page title={translate('nav.interview')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
-          heading='List interview'
+          heading={translate('pages.interview.heading')}
           links={[
             {
-              name: PAGES.Dashboard,
+              name: translate('nav.dashboard'),
               href: PATH_DASHBOARD.dashboard,
             },
-            { name: 'List interview' },
+            { name: translate('pages.interview.heading') },
           ]}
         />
       </Container>

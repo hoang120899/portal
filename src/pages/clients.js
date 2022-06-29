@@ -8,6 +8,7 @@ import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -30,18 +31,19 @@ export async function getStaticProps() {
 
 export default function Clients() {
   const { themeStretch } = useSettings()
+  const { translate } = useLocales()
 
   return (
-    <Page title={PAGES.Clients}>
+    <Page title={translate('nav.clients')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
-          heading='List client'
+          heading={translate('pages.clients.heading')}
           links={[
             {
-              name: PAGES.Dashboard,
+              name: translate('nav.dashboard'),
               href: PATH_DASHBOARD.dashboard,
             },
-            { name: 'List client' },
+            { name: translate('pages.clients.heading') },
           ]}
         />
       </Container>

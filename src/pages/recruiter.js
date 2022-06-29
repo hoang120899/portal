@@ -8,6 +8,7 @@ import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -30,18 +31,19 @@ export async function getStaticProps() {
 
 export default function Recruiter() {
   const { themeStretch } = useSettings()
+  const { translate } = useLocales()
 
   return (
-    <Page title={PAGES.Recruiter}>
+    <Page title={translate('nav.recruiter')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
-          heading='List recruiter'
+          heading={translate('pages.recruiter.heading')}
           links={[
             {
-              name: PAGES.Dashboard,
+              name: translate('nav.dashboard'),
               href: PATH_DASHBOARD.dashboard,
             },
-            { name: 'List recruiter' },
+            { name: translate('pages.recruiter.heading') },
           ]}
         />
       </Container>

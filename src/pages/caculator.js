@@ -8,6 +8,7 @@ import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -30,18 +31,19 @@ export async function getStaticProps() {
 
 export default function Caculator() {
   const { themeStretch } = useSettings()
+  const { translate } = useLocales()
 
   return (
-    <Page title={PAGES.Caculator}>
+    <Page title={translate('nav.caculator')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
-          heading='Caculator Salary'
+          heading={translate('pages.caculator.heading')}
           links={[
             {
-              name: PAGES.Dashboard,
+              name: translate('nav.dashboard'),
               href: PATH_DASHBOARD.dashboard,
             },
-            { name: 'Caculator Salary' },
+            { name: translate('pages.caculator.heading') },
           ]}
         />
       </Container>

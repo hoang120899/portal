@@ -8,6 +8,7 @@ import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -30,11 +31,12 @@ export async function getStaticProps() {
 
 export default function Dashboard() {
   const { themeStretch } = useSettings()
+  const { translate } = useLocales()
 
   return (
-    <Page title={PAGES.Dashboard}>
+    <Page title={translate('nav.dashboard')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
-        <HeaderBreadcrumbs heading={PAGES.Dashboard} />
+        <HeaderBreadcrumbs heading={translate('nav.dashboard')} />
         <DashboardActiveJob />
       </Container>
     </Page>

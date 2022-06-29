@@ -14,6 +14,7 @@ import { SkeletonKanbanColumn } from '@/components/skeleton'
 // config
 import { PAGES } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -38,6 +39,7 @@ export async function getStaticProps() {
 
 export default function Board() {
   const { themeStretch } = useSettings()
+  const { translate } = useLocales()
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -111,16 +113,16 @@ export default function Board() {
   }
 
   return (
-    <Page title={PAGES.Board}>
+    <Page title={translate('nav.board')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
-          heading='Board'
+          heading={translate('nav.board')}
           links={[
             {
-              name: PAGES.Dashboard,
+              name: translate('nav.dashboard'),
               href: PATH_DASHBOARD.dashboard,
             },
-            { name: 'Board' },
+            { name: translate('nav.board') },
           ]}
         />
         {isMounted && (

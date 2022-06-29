@@ -13,6 +13,7 @@ import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -35,18 +36,19 @@ export async function getStaticProps() {
 
 export default function Jobs() {
   const { themeStretch } = useSettings()
+  const { translate } = useLocales()
 
   return (
-    <Page title={PAGES.Jobs}>
+    <Page title={translate('nav.jobs')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
-          heading='List jobs'
+          heading={translate('pages.jobs.heading')}
           links={[
             {
-              name: PAGES.Dashboard,
+              name: translate('nav.dashboard'),
               href: PATH_DASHBOARD.dashboard,
             },
-            { name: 'List jobs' },
+            { name: translate('pages.jobs.heading') },
           ]}
           action={
             <NextLink href={PATH_DASHBOARD.jobs.new} passHref>
