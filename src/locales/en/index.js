@@ -10,6 +10,9 @@ import task from './task'
 import users from './users'
 
 const en = {
+  home: 'Home',
+  setting: 'Settings',
+  logout: 'Logout',
   nav: {
     dashboard: 'Dashboard',
     notification: 'Notification',

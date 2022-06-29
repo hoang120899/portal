@@ -23,21 +23,23 @@ import { IconButtonAnimate } from '@/components/animate'
 // hooks
 import useAuth from '@/hooks/useAuth'
 import useIsMountedRef from '@/hooks/useIsMountedRef'
+import useLocales from '@/hooks/useLocales'
 import { PATH_AUTH, PATH_DASHBOARD } from '@/routes/paths'
 
 const MENU_OPTIONS = [
   {
-    label: 'Home',
+    label: 'home',
     linkTo: '/',
   },
   {
-    label: 'Settings',
+    label: 'setting',
     linkTo: PATH_DASHBOARD.users.account,
   },
 ]
 
 export default function AccountPopover() {
   const router = useRouter()
+  const { translate } = useLocales()
   const { logout, user } = useAuth()
   const isMountedRef = useIsMountedRef()
   const { enqueueSnackbar } = useSnackbar()
@@ -119,7 +121,7 @@ export default function AccountPopover() {
           {MENU_OPTIONS.map((option) => (
             <NextLink key={option.label} href={option.linkTo} passHref>
               <MenuItem key={option.label} onClick={handleClose}>
-                {option.label}
+                {translate(option.label) || option.label}
               </MenuItem>
             </NextLink>
           ))}
@@ -128,7 +130,7 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
-          Logout
+          {translate('logout') || 'Logout'}
         </MenuItem>
       </MenuPopover>
     </>
