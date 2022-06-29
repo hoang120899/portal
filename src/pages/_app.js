@@ -30,6 +30,8 @@ import { AuthProvider } from '@/contexts/JWTContext'
 import { RoleProvider } from '@/contexts/RoleContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 import { SocketProvider } from '@/contexts/SocketContext'
+// i18n
+import '@/locales/i18n'
 // redux
 import { store } from '@/redux/store'
 // theme

@@ -8,6 +8,8 @@ import PropTypes from 'prop-types'
 
 //
 import Iconify from '@/components/Iconify'
+// hooks
+import useLocales from '@/hooks/useLocales'
 
 import { isExternalLink } from '..'
 import {
@@ -40,6 +42,7 @@ export function NavItemRoot({
   active,
   onOpen,
 }) {
+  const { translate } = useLocales()
   const { title, path, icon, info, children, disabled, caption, roles } = item
 
   const renderContent = (
@@ -47,16 +50,16 @@ export function NavItemRoot({
       {icon && <ListItemIconStyle>{icon}</ListItemIconStyle>}
       <ListItemTextStyle
         disableTypography
-        primary={title}
+        primary={translate(title)}
         secondary={
-          <Tooltip title={caption || ''} arrow>
+          <Tooltip title={translate(caption) || ''} arrow>
             <Typography
               noWrap
               variant='caption'
               component='div'
               sx={{ textTransform: 'initial', color: 'text.secondary' }}
             >
-              {caption}
+              {translate(caption)}
             </Typography>
           </Tooltip>
         }
@@ -120,6 +123,7 @@ NavItemSub.propTypes = {
 }
 
 export function NavItemSub({ item, open = false, active = false, onOpen }) {
+  const { translate } = useLocales()
   const { title, path, info, children, disabled, caption, roles } = item
 
   const renderContent = (
@@ -127,16 +131,16 @@ export function NavItemSub({ item, open = false, active = false, onOpen }) {
       <DotIcon active={active} />
       <ListItemText
         disableTypography
-        primary={title}
+        primary={translate(title)}
         secondary={
-          <Tooltip title={caption || ''} arrow>
+          <Tooltip title={translate(caption) || ''} arrow>
             <Typography
               noWrap
               variant='caption'
               component='div'
               sx={{ textTransform: 'initial', color: 'text.secondary' }}
             >
-              {caption}
+              {translate(caption)}
             </Typography>
           </Tooltip>
         }

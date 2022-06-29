@@ -1,3 +1,6 @@
+// @mui
+import { enUS, viVN } from '@mui/material/locale'
+
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
 
@@ -112,3 +115,23 @@ export const ROLE_BY_PAGES = [
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.BLOGER],
   },
 ]
+
+// MULTI LANGUAGES
+// Please remove `localStorage` when you change settings.
+
+export const allLangs = [
+  {
+    label: 'English',
+    value: 'en',
+    systemValue: enUS,
+    icon: '/assets/icons/flags/ic_flag_en.svg',
+  },
+  {
+    label: 'Vietnamese',
+    value: 'vn',
+    systemValue: viVN,
+    icon: '/assets/icons/flags/ic_flag_vn.svg',
+  },
+]
+
+export const defaultLang = allLangs[0] // English

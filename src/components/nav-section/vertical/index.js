@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles'
 import PropTypes from 'prop-types'
 
 // hook
+import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 
 //
@@ -34,6 +35,7 @@ export default function NavSectionVertical({
   ...other
 }) {
   const { checkAccessPermission } = useRole()
+  const { translate } = useLocales()
   return (
     <Box {...other}>
       {navConfig.map((group, groupIndex) => (
@@ -49,7 +51,7 @@ export default function NavSectionVertical({
               }),
             }}
           >
-            {group.subheader}
+            {translate(group.subheader) || ''}
           </ListSubheaderStyle>
 
           {group.items.map((list) => {
