@@ -10,6 +10,9 @@ import {
 
 import PropTypes from 'prop-types'
 
+// hooks
+import useLocales from '@/hooks/useLocales'
+
 const visuallyHidden = {
   border: 0,
   margin: -1,
@@ -43,6 +46,7 @@ export default function TableHeadCustom({
   onSelectAllRows,
   sx,
 }) {
+  const { translate } = useLocales()
   return (
     <TableHead sx={sx}>
       <TableRow>
@@ -82,7 +86,7 @@ export default function TableHeadCustom({
                 ) : null}
               </TableSortLabel>
             ) : (
-              headCell.label
+              translate(headCell.label) || headCell.label
             )}
           </TableCell>
         ))}
