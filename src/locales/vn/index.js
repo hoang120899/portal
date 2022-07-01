@@ -1,15 +1,17 @@
 import blogs from './ blogs'
-import caculator from './caculator'
+import calculator from './calculator'
 import candidates from './candidates'
 import clients from './clients'
 import interview from './interview'
 import jobs from './jobs'
+import login from './login'
 import notification from './notification'
 import recruiter from './recruiter'
 import task from './task'
 import users from './users'
 
 const vn = {
+  login: 'Login',
   home: 'Home',
   setting: 'Settings',
   logout: 'Logout',
@@ -25,13 +27,13 @@ const vn = {
     users: 'Users',
     interview: 'Interview',
     board: 'Board',
-    caculator: 'Caculator',
+    calculator: 'Calculator',
     recruiter: 'External recruiter',
     blogs: 'Blogs',
   },
   pages: {
     blogs,
-    caculator,
+    calculator,
     candidates,
     clients,
     interview,
@@ -39,6 +41,7 @@ const vn = {
     recruiter,
     task,
     users,
+    login,
     jobs,
   },
 }

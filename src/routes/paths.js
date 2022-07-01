@@ -44,7 +44,7 @@ export const PATH_DASHBOARD = {
   board: {
     root: path(ROOTS_DASHBOARD, 'board'),
   },
-  caculator: path(ROOTS_DASHBOARD, 'caculator'),
+  calculator: path(ROOTS_DASHBOARD, 'calculator'),
   recruiter: {
     root: path(ROOTS_DASHBOARD, 'recruiter'),
   },

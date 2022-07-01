@@ -1,11 +1,10 @@
 import { useState } from 'react'
 
 // next
-import NextLink from 'next/link'
-
+// import NextLink from 'next/link'
 // @mui
 import { LoadingButton } from '@mui/lab'
-import { Alert, IconButton, InputAdornment, Link, Stack } from '@mui/material'
+import { Alert, IconButton, InputAdornment, Stack } from '@mui/material'
 
 // form
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -19,8 +18,9 @@ import { FormProvider, RHFCheckbox, RHFTextField } from '@/components/hook-form'
 // hooks
 import useAuth from '@/hooks/useAuth'
 import useIsMountedRef from '@/hooks/useIsMountedRef'
+
 // routes
-import { PATH_AUTH } from '@/routes/paths'
+// import { PATH_AUTH } from '@/routes/paths'
 
 export default function LoginForm() {
   const { login } = useAuth()
@@ -106,9 +106,9 @@ export default function LoginForm() {
         sx={{ my: 2 }}
       >
         <RHFCheckbox name='remember' label='Remember me' />
-        <NextLink href={PATH_AUTH.resetPassword} passHref>
+        {/* <NextLink href={PATH_AUTH.resetPassword} passHref>
           <Link variant='subtitle2'>Forgot password?</Link>
-        </NextLink>
+        </NextLink> */}
       </Stack>
 
       <LoadingButton

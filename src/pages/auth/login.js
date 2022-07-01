@@ -1,20 +1,16 @@
-// next
-import NextLink from 'next/link'
-
 // @mui
-import { Box, Card, Container, Link, Stack, Typography } from '@mui/material'
+import { Box, Card, Container, Stack, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 // components
 import Image from '@/components/Image'
-import Logo from '@/components/Logo'
+// import Logo from '@/components/Logo'
 import Page from '@/components/Page'
 // guards
 import GuestGuard from '@/guards/GuestGuard'
+import useLocales from '@/hooks/useLocales'
 // hooks
 import useResponsive from '@/hooks/useResponsive'
-// routes
-import { PATH_AUTH } from '@/routes/paths'
 // sections
 import { LoginForm } from '@/sections/auth/login'
 
@@ -61,28 +57,29 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function Login() {
   const mdUp = useResponsive('up', 'md')
-  const smUp = useResponsive('up', 'sm')
+  // const smUp = useResponsive('up', 'sm')
+  const { translate } = useLocales()
 
   return (
     <GuestGuard>
       <Page title='Login'>
         <RootStyle>
           <HeaderStyle>
-            <Logo />
-            {smUp && (
+            {/* <Logo /> */}
+            {/* {smUp && (
               <Typography variant='body2' sx={{ mt: { md: -2 } }}>
                 Don’t have an account? {''}
                 <NextLink href={PATH_AUTH.register} passHref>
                   <Link variant='subtitle2'>Get started</Link>
                 </NextLink>
               </Typography>
-            )}
+            )} */}
           </HeaderStyle>
 
           {mdUp && (
             <SectionStyle>
               <Typography variant='h3' sx={{ px: 5, mt: 10, mb: 5 }}>
-                Hi, Welcome Back
+                {translate('pages.login.hi_FETCH')}
               </Typography>
               <Image
                 visibleByDefault
@@ -95,10 +92,16 @@ export default function Login() {
 
           <Container maxWidth='sm'>
             <ContentStyle>
+              {/* <Image
+                visibleByDefault
+                disabledEffect
+                src='/assets/illustrations/fetch_logo2.png'
+                alt='login'
+              /> */}
               <Stack direction='row' alignItems='center' sx={{ mb: 5 }}>
                 <Box sx={{ flexGrow: 1 }}>
                   <Typography variant='h4' gutterBottom>
-                    Sign in to Minimal
+                    Welcome to Talent Acquisition Portal
                   </Typography>
                   <Typography sx={{ color: 'text.secondary' }}>
                     Enter your details below.
@@ -107,14 +110,14 @@ export default function Login() {
               </Stack>
               <LoginForm />
 
-              {!smUp && (
+              {/* {!smUp && (
                 <Typography variant='body2' align='center' sx={{ mt: 3 }}>
                   Don’t have an account?{' '}
                   <NextLink href={PATH_AUTH.register} passHref>
                     <Link variant='subtitle2'>Get started</Link>
                   </NextLink>
                 </Typography>
-              )}
+              )} */}
             </ContentStyle>
           </Container>
         </RootStyle>

@@ -27,7 +27,7 @@ const ICONS = {
   job: getIconByIconify('eva:list-outline'),
   client: getIconByIconify('eva:people-fill'),
   invoice: getIcon('ic_invoice'),
-  caculator: getIconByIconify('eva:swap-fill'),
+  calculator: getIconByIconify('eva:swap-fill'),
   recruiter: getIconByIconify('eva:external-link-outline'),
   interview: getIconByIconify('eva:video-fill'),
 }
@@ -94,10 +94,10 @@ const sidebarConfig = [
         roles: ROLES[PAGES.Board],
       },
       {
-        title: 'nav.caculator',
-        path: '/caculator',
-        icon: ICONS.caculator,
-        roles: ROLES[PAGES.Caculator],
+        title: 'nav.calculator',
+        path: '/calculator',
+        icon: ICONS.calculator,
+        roles: ROLES[PAGES.Calculator],
       },
       {
         title: 'nav.recruiter',

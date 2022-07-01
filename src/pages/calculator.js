@@ -17,33 +17,33 @@ import { PATH_DASHBOARD } from '@/routes/paths'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
-Caculator.getLayout = function getLayout({ roles = [] }, page) {
+Calculator.getLayout = function getLayout({ roles = [] }, page) {
   return <Layout roles={roles}>{page}</Layout>
 }
 
 export async function getStaticProps() {
   return {
     props: {
-      roles: getRolesByPage(PAGES.Caculator),
+      roles: getRolesByPage(PAGES.Calculator),
     },
   }
 }
 
-export default function Caculator() {
+export default function Calculator() {
   const { themeStretch } = useSettings()
   const { translate } = useLocales()
 
   return (
-    <Page title={translate('nav.caculator')}>
+    <Page title={translate('nav.calculator')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
-          heading={translate('pages.caculator.heading')}
+          heading={translate('pages.calculator.heading')}
           links={[
             {
               name: translate('nav.dashboard'),
               href: PATH_DASHBOARD.dashboard,
             },
-            { name: translate('pages.caculator.heading') },
+            { name: translate('pages.calculator.heading') },
           ]}
         />
       </Container>
