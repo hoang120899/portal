@@ -32,7 +32,7 @@ export default function UserTableRow({ row }) {
 
   return (
     <TableRow hover>
-      <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+      <TableCell>
         <Typography variant='subtitle2' noWrap>
           {name}
         </Typography>

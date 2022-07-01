@@ -20,6 +20,7 @@ export default function Pagination({
   rowsPerPage = defaultPagination,
   onChangePage,
   onChangeRowsPerPage,
+  ...other
 }) {
   return (
     <Box sx={{ position: 'relative' }}>
@@ -31,6 +32,7 @@ export default function Pagination({
         page={page}
         onPageChange={onChangePage}
         onRowsPerPageChange={onChangeRowsPerPage}
+        {...other}
       />
     </Box>
   )

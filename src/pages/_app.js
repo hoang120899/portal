@@ -6,6 +6,9 @@ import Head from 'next/head'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 
+// fullcalendar
+import '@fullcalendar/common/main.min.css'
+import '@fullcalendar/daygrid/main.min.css'
 import cookie from 'cookie'
 import PropTypes from 'prop-types'
 // lazy image

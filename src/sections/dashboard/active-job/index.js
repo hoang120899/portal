@@ -1,12 +1,16 @@
 // @mui
-import { Card, Divider, Tab, Tabs } from '@mui/material'
+import { Card, CardHeader, Divider, Tab, Tabs } from '@mui/material'
 
+import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
 // components
 import BasicTable from '@/components/BasicTable'
+import Pagination from '@/components/Pagination'
 import { FormProvider } from '@/components/hook-form'
+import { PAGINATION } from '@/config'
 // hooks
+import useTable from '@/hooks/useTable'
 import useTabs from '@/hooks/useTabs'
 
 //
@@ -14,9 +18,12 @@ import ActiveJobTableRow from './ActiveJobTableRow'
 import ActiveJobTableToolbar from './ActiveJobTableToolbar'
 import { DATASOURCE, STATUS_OPTIONS, TABLE_HEAD } from './config'
 
-const DashboardActiveJob = () => {
+const DashboardActiveJob = ({ title, subheader, ...other }) => {
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
     useTabs('active')
+  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = useTable({
+    defaultRowsPerPage: PAGINATION[0],
+  })
   const methods = useForm({
     defaultValues: {
       startDate: null,
@@ -37,7 +44,8 @@ const DashboardActiveJob = () => {
   }
 
   return (
-    <Card>
+    <Card {...other}>
+      <CardHeader title={title} subheader={subheader} />
       <Tabs
         allowScrollButtonsMobile
         variant='scrollable'
@@ -60,12 +68,27 @@ const DashboardActiveJob = () => {
       <BasicTable
         columns={TABLE_HEAD}
         dataSource={DATASOURCE}
+        page={page}
+        rowsPerPage={rowsPerPage}
         TableRowComp={(row, index) => (
           <ActiveJobTableRow key={row?.id || index} row={row} />
         )}
       />
+      <Pagination
+        dataSource={DATASOURCE}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onChangePage={onChangePage}
+        onChangeRowsPerPage={onChangeRowsPerPage}
+        rowsPerPageOptions={[]}
+      />
     </Card>
   )
+}
+
+DashboardActiveJob.propTypes = {
+  title: PropTypes.string,
+  subheader: PropTypes.string,
 }
 
 export default DashboardActiveJob
