@@ -22,6 +22,7 @@ import Layout from '@/layouts'
 import { PATH_DASHBOARD } from '@/routes/paths'
 // sections
 import { KanbanColumn } from '@/sections/kanban'
+import Filter from '@/sections/kanban/filter'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -125,6 +126,7 @@ export default function Board() {
             { name: translate('nav.board') },
           ]}
         />
+        <Filter />
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable
