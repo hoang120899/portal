@@ -57,6 +57,16 @@ export const colorPresets = [
     darker: '#7A0930',
     contrastText: '#fff',
   },
+  // FETCH_YELLOW
+  {
+    name: 'yellow',
+    lighter: '#fcefcc',
+    light: '#f2d788',
+    main: '#fccc4b',
+    dark: '#e7b729',
+    darker: '#E5B012',
+    contrastText: '#fff',
+  },
 ]
 
 export const defaultPreset = colorPresets[0]
@@ -65,6 +75,7 @@ export const cyanPreset = colorPresets[2]
 export const bluePreset = colorPresets[3]
 export const orangePreset = colorPresets[4]
 export const redPreset = colorPresets[5]
+export const yellowPreset = colorPresets[6]
 
 export default function getColorPresets(presetsKey) {
   return {
@@ -73,6 +84,7 @@ export default function getColorPresets(presetsKey) {
     blue: bluePreset,
     orange: orangePreset,
     red: redPreset,
+    yellow: yellowPreset,
     default: defaultPreset,
   }[presetsKey]
 }
