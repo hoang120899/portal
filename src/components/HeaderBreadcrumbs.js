@@ -23,7 +23,7 @@ export default function HeaderBreadcrumbs({
   ...other
 }) {
   return (
-    <Box sx={{ mb: 5, ...sx }}>
+    <Box sx={{ mb: 2, ...sx }}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ flexGrow: 1 }}>
           <Typography variant='h4' gutterBottom>

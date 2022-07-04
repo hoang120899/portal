@@ -86,7 +86,14 @@ export default function Users() {
           ))}
         </Tabs>
 
-        <Box sx={{ mb: 5 }} />
+        <Box
+          sx={{
+            mb: {
+              xs: 2,
+              lg: 3,
+            },
+          }}
+        />
 
         {ACCOUNT_TABS.map((tab) => {
           const isMatched = tab.value === currentTab

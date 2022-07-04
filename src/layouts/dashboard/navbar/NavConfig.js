@@ -51,12 +51,12 @@ const sidebarConfig = [
         icon: ICONS.notification,
         roles: ROLES[PAGES.Notification],
       },
-      {
-        title: 'nav.task',
-        path: '/task',
-        icon: ICONS.calendar,
-        roles: ROLES[PAGES.Task],
-      },
+      // {
+      //   title: 'nav.task',
+      //   path: '/task',
+      //   icon: ICONS.calendar,
+      //   roles: ROLES[PAGES.Task],
+      // },
       {
         title: 'nav.jobs',
         path: '/jobs',
@@ -105,12 +105,12 @@ const sidebarConfig = [
         icon: ICONS.recruiter,
         roles: ROLES[PAGES.Recruiter],
       },
-      {
-        title: 'nav.blogs',
-        path: '/blogs',
-        icon: ICONS.blog,
-        roles: ROLES[PAGES.Blogs],
-      },
+      // {
+      //   title: 'nav.blogs',
+      //   path: '/blogs',
+      //   icon: ICONS.blog,
+      //   roles: ROLES[PAGES.Blogs],
+      // },
     ],
   },
 ]
