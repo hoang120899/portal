@@ -1,19 +1,16 @@
 import { useState } from 'react'
 
 // @mui
-import { Button, Paper, Stack } from '@mui/material'
+import { Box, Button, Paper, Stack, Typography } from '@mui/material'
 
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { Draggable, Droppable } from 'react-beautiful-dnd'
 
-// _mock_
-import { board } from '@/_mock'
 // components
 import Iconify from '@/components/Iconify'
 
 //
-import KanbanColumnToolBar from './KanbanColumnToolBar'
 import KanbanAddTask from './KanbanTaskAdd'
 import KanbanTaskCard from './KanbanTaskCard'
 
@@ -27,7 +24,7 @@ export default function KanbanColumn({ column, index }) {
 
   const [open, setOpen] = useState(false)
 
-  const { name, cardIds, id } = column
+  const { nameColumn, CandidateJobs, id } = column
 
   const handleOpenAddTask = () => {
     setOpen((prev) => !prev)
@@ -41,45 +38,67 @@ export default function KanbanColumn({ column, index }) {
     enqueueSnackbar('Delete success!')
   }
 
-  const handleUpdateColumn = async (newName) => {
-    try {
-      if (newName !== name) {
-        enqueueSnackbar('Update success!')
-      }
-    } catch (error) {
-      // TODO
-    }
-  }
-
-  const handleDeleteColumn = async () => {
-    try {
-      enqueueSnackbar('Delete success!')
-    } catch (error) {
-      // TODO
-    }
-  }
-
   const handleAddTask = () => {
     handleCloseAddTask()
   }
+  const color = [
+    '#2688ea',
+    '#0033ae',
+    '#6c06b8',
+    '#d804b5',
+    '#04d8c7',
+    '#04d857',
+    '#b5d804',
+    '#d8b504',
+    '#ee3906',
+    '#03875f',
+    '#871e03',
+    '#0a0387',
+  ]
 
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={id} index={index} isDragDisabled={true}>
       {(provided) => (
         <Paper
           {...provided.draggableProps}
           ref={provided.innerRef}
           variant='outlined'
-          sx={{ px: 2, bgcolor: 'grey.5008' }}
+          sx={{
+            px: 2,
+            bgcolor: 'grey.5008',
+            borderTop: `8px solid ${color[index % 12]}`,
+          }}
         >
           <Stack spacing={3} {...provided.dragHandleProps}>
-            <KanbanColumnToolBar
+            {/* <KanbanColumnToolBar
               columnName={name}
               onDelete={handleDeleteColumn}
               onUpdate={handleUpdateColumn}
-            />
-
-            <Stack spacing={2} sx={{ pb: 2 }}>
+            /> */}
+            <Box
+              display='flex'
+              flexDirection='row'
+              alignItems='center'
+              justifyContent='space-between'
+            >
+              <Typography variant='h5'>{nameColumn}</Typography>
+              <Button
+                size='large'
+                color='inherit'
+                startIcon={
+                  <Iconify icon={'eva:plus-fill'} width={20} height={20} />
+                }
+                onClick={handleOpenAddTask}
+                sx={{ fontSize: 14, minWidth: 'fit-content' }}
+              />
+            </Box>
+            {open && (
+              <KanbanAddTask
+                onAddTask={handleAddTask}
+                onCloseAddTask={handleCloseAddTask}
+              />
+            )}
+            {/* <Stack spacing={2} sx={{ pb: 2 }}>
               {open && (
                 <KanbanAddTask
                   onAddTask={handleAddTask}
@@ -96,10 +115,8 @@ export default function KanbanColumn({ column, index }) {
                 }
                 onClick={handleOpenAddTask}
                 sx={{ fontSize: 14 }}
-              >
-                Add Task
-              </Button>
-            </Stack>
+              />
+            </Stack> */}
 
             <Droppable droppableId={id} type='task'>
               {(provided) => (
@@ -110,11 +127,11 @@ export default function KanbanColumn({ column, index }) {
                   width={280}
                   sx={{ pb: 2 }}
                 >
-                  {cardIds.map((cardId, index) => (
+                  {CandidateJobs.map((candi, index) => (
                     <KanbanTaskCard
-                      key={cardId}
+                      key={candi.id}
                       onDeleteTask={handleDeleteTask}
-                      card={board?.cards[cardId]}
+                      card={candi}
                       index={index}
                     />
                   ))}

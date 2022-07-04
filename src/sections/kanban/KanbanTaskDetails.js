@@ -18,6 +18,7 @@ import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
+import { board } from '@/_mock'
 // components
 import Iconify from '@/components/Iconify'
 import Label from '@/components/Label'
@@ -56,19 +57,14 @@ KanbanTaskDetails.propTypes = {
   onDeleteTask: PropTypes.func,
 }
 
-export default function KanbanTaskDetails({
-  card,
-  isOpen,
-  onClose,
-  onDeleteTask,
-}) {
+export default function KanbanTaskDetails({ isOpen, onClose, onDeleteTask }) {
+  const card = board.cards['9d98ce30-3c51-4de3-8537-7a4b663ee3af']
   const {
     toggle: openContacts,
     onOpen: onOpenContacts,
     onClose: onCloseContacts,
   } = useToggle()
-
-  const [taskCompleted, setTaskCompleted] = useState(card.completed)
+  const [taskCompleted, setTaskCompleted] = useState(true)
   const [prioritize, setPrioritize] = useState('low')
   const { name, description, due, assignee, comments } = card
 
