@@ -2,6 +2,11 @@ export default function Input(theme) {
   return {
     MuiInputLabel: {
       styleOverrides: {
+        root: {
+          '&.MuiInputLabel-root[data-shrink="false"]': {
+            transform: 'translate(14px, 8px) scale(1)',
+          },
+        },
         asterisk: {
           '&.MuiInputLabel-asterisk': {
             color: theme.palette.error.main,
@@ -20,6 +25,9 @@ export default function Input(theme) {
           '&::placeholder': {
             opacity: 1,
             color: theme.palette.text.disabled,
+          },
+          '&.MuiInputBase-input': {
+            padding: '8px 14px',
           },
         },
       },
