@@ -1,7 +1,21 @@
 // @mui
 import { Box, Paper, Skeleton, Stack } from '@mui/material'
 
-export default function SkeletonKanbanColumn() {
+import PropTypes from 'prop-types'
+
+// hooks
+import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
+
+SkeletonKanbanColumn.propTypes = {
+  formRefProp: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]),
+}
+
+export default function SkeletonKanbanColumn(formRefProp) {
+  const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
+
   return (
     <Box
       sx={{
@@ -11,7 +25,18 @@ export default function SkeletonKanbanColumn() {
       }}
     >
       {[...Array(5)].map((_, index) => (
-        <Paper variant='outlined' key={index} sx={{ p: 2.5, width: 310 }}>
+        <Paper
+          variant='outlined'
+          key={index}
+          sx={{
+            p: 2.5,
+            width: 310,
+            height: {
+              lg: `calc(100vh - ${lgHeight}px)`,
+              xs: `calc(100vh - ${xsHeight}px)`,
+            },
+          }}
+        >
           <Stack spacing={2}>
             {[...Array(8)].map((_, skeletonIndex) => (
               <Skeleton

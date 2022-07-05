@@ -9,6 +9,8 @@ import { Draggable, Droppable } from 'react-beautiful-dnd'
 
 // components
 import Iconify from '@/components/Iconify'
+// hooks
+import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
 
 //
 import KanbanAddTask from './KanbanTaskAdd'
@@ -17,10 +19,15 @@ import KanbanTaskCard from './KanbanTaskCard'
 KanbanColumn.propTypes = {
   column: PropTypes.object,
   index: PropTypes.number,
+  formRefProp: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]),
 }
 
-export default function KanbanColumn({ column, index }) {
+export default function KanbanColumn({ column, index, formRefProp }) {
   const { enqueueSnackbar } = useSnackbar()
+  const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
 
   const [open, setOpen] = useState(false)
 
@@ -67,25 +74,40 @@ export default function KanbanColumn({ column, index }) {
             px: 2,
             bgcolor: 'grey.5008',
             borderTop: `8px solid ${color[index % 12]}`,
-            height: '100%',
+            height: {
+              lg: `calc(100vh - ${lgHeight}px)`,
+              xs: `calc(100vh - ${xsHeight}px)`,
+            },
           }}
         >
           <Stack spacing={3} {...provided.dragHandleProps}>
             <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='center'
-              justifyContent='space-between'
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                pt: 2,
+              }}
             >
-              <Typography variant='h5'>{nameColumn}</Typography>
+              <Typography variant='h6'>{nameColumn}</Typography>
               <Button
-                size='large'
                 color='inherit'
                 startIcon={
-                  <Iconify icon={'eva:plus-fill'} width={20} height={20} />
+                  <Iconify
+                    icon={'eva:plus-circle-outline'}
+                    width={24}
+                    height={24}
+                  />
                 }
                 onClick={handleOpenAddTask}
-                sx={{ fontSize: 14, minWidth: 'fit-content' }}
+                sx={{
+                  padding: 0,
+                  justifyContent: 'end',
+                  minWidth: 0,
+                  '& .MuiButton-startIcon': {
+                    marginRight: 0,
+                  },
+                }}
               />
             </Box>
             {open && (
@@ -102,7 +124,14 @@ export default function KanbanColumn({ column, index }) {
                   {...provided.droppableProps}
                   spacing={2}
                   width={280}
-                  sx={{ pb: 2 }}
+                  sx={{
+                    pb: 2,
+                    height: {
+                      lg: `calc(100vh - ${lgHeight + 16 + 44 + 24}px)`,
+                      xs: `calc(100vh - ${xsHeight + 16 + 44 + 24}px)`,
+                    },
+                    overflowY: 'auto',
+                  }}
                 >
                   {CandidateJobs.map((candi, index) => (
                     <KanbanTaskCard

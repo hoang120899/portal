@@ -12,7 +12,6 @@ import { SkeletonKanbanColumn } from '@/components/skeleton'
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
-import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
 // layouts
 import Layout from '@/layouts'
 import { API_LIST_CARD } from '@/routes/api'
@@ -37,7 +36,6 @@ export async function getStaticProps() {
 export default function Board() {
   const { translate } = useLocales()
   const formRef = useRef(null)
-  const { lgHeight, xsHeight } = useOffsetHeightKanban(formRef)
   const [isMounted, setIsMounted] = useState(false)
   const [columns, setColumns] = useState([])
 
@@ -142,21 +140,18 @@ export default function Board() {
                   alignItems='flex-start'
                   spacing={2}
                   sx={{
-                    height: {
-                      lg: `calc(100vh - ${lgHeight}px)`,
-                      xs: `calc(100vh - ${xsHeight}px)`,
-                    },
                     overflowY: 'hidden',
                   }}
                 >
                   {!columns.length ? (
-                    <SkeletonKanbanColumn />
+                    <SkeletonKanbanColumn formRefProp={formRef} />
                   ) : (
                     columns.map((column, index) => (
                       <KanbanColumn
                         index={index}
                         key={column.id}
                         column={column}
+                        formRefProp={formRef}
                       />
                     ))
                   )}
