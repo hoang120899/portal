@@ -39,10 +39,13 @@ export function RHFMultiCheckbox({ name, options, ...other }) {
       name={name}
       control={control}
       render={({ field }) => {
+        const values = []
+          .concat(field?.value)
+          .filter((val) => val || val === 0 || typeof value === 'boolean')
         const onSelected = (option) =>
-          field.value.includes(option)
-            ? field.value.filter((value) => value !== option)
-            : [...field.value, option]
+          values.includes(option)
+            ? values.filter((value) => value !== option)
+            : [...values, option]
 
         return (
           <FormGroup>
@@ -51,7 +54,7 @@ export function RHFMultiCheckbox({ name, options, ...other }) {
                 key={option.value}
                 control={
                   <Checkbox
-                    checked={field.value.includes(option.value)}
+                    checked={values.includes(option.value)}
                     onChange={() => field.onChange(onSelected(option.value))}
                   />
                 }
