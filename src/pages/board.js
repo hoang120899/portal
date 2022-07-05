@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 // @mui
-import { Container, Stack } from '@mui/material'
+import { Box, Button, Container, Stack } from '@mui/material'
 
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 
+import Iconify from '@/components/Iconify'
 // components
 import Page from '@/components/Page'
 import { SkeletonKanbanColumn } from '@/components/skeleton'
@@ -163,6 +164,16 @@ export default function Board() {
           </DragDropContext>
         )}
       </Container>
+      <Box sx={{ position: 'fixed', right: '50px', bottom: '50px' }}>
+        <Button
+          size='large'
+          variant='contained'
+          // onClick={handleOpenAddTask}
+          sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
+        >
+          <Iconify icon={'eva:plus-fill'} width={24} height={24} />
+        </Button>
+      </Box>
     </Page>
   )
 }
