@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 // @mui
 import { Container, Stack } from '@mui/material'
@@ -6,22 +6,18 @@ import { Container, Stack } from '@mui/material'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 
 // components
-import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
 import Page from '@/components/Page'
 import { SkeletonKanbanColumn } from '@/components/skeleton'
 // config
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
-import useSettings from '@/hooks/useSettings'
+import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
 // layouts
 import Layout from '@/layouts'
 import { API_LIST_CARD } from '@/routes/api'
-// routes
-import { PATH_DASHBOARD } from '@/routes/paths'
 // sections
-import { KanbanColumn } from '@/sections/kanban'
-import Filter from '@/sections/kanban/filter'
+import { KanbanColumn, KanbanTableToolbar } from '@/sections/kanban'
 import { _getApi } from '@/utils/axios'
 // utils
 import { getRolesByPage } from '@/utils/role'
@@ -39,8 +35,9 @@ export async function getStaticProps() {
 }
 
 export default function Board() {
-  const { themeStretch } = useSettings()
   const { translate } = useLocales()
+  const formRef = useRef(null)
+  const { lgHeight, xsHeight } = useOffsetHeightKanban(formRef)
   const [isMounted, setIsMounted] = useState(false)
   const [columns, setColumns] = useState([])
 
@@ -127,19 +124,9 @@ export default function Board() {
   }
 
   return (
-    <Page title={translate('nav.board')}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
-        <HeaderBreadcrumbs
-          heading={translate('nav.board')}
-          links={[
-            {
-              name: translate('nav.dashboard'),
-              href: PATH_DASHBOARD.dashboard,
-            },
-            { name: translate('nav.board') },
-          ]}
-        />
-        <Filter />
+    <Page title={translate('nav.board')} sx={{ height: 1 }}>
+      <Container maxWidth={false} sx={{ height: 1 }}>
+        <KanbanTableToolbar ref={formRef} />
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable
@@ -153,8 +140,14 @@ export default function Board() {
                   ref={provided.innerRef}
                   direction='row'
                   alignItems='flex-start'
-                  spacing={3}
-                  sx={{ height: 'calc(100% - 32px)', overflowY: 'hidden' }}
+                  spacing={2}
+                  sx={{
+                    height: {
+                      lg: `calc(100vh - ${lgHeight}px)`,
+                      xs: `calc(100vh - ${xsHeight}px)`,
+                    },
+                    overflowY: 'hidden',
+                  }}
                 >
                   {!columns.length ? (
                     <SkeletonKanbanColumn />

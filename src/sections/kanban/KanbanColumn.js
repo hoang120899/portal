@@ -67,14 +67,10 @@ export default function KanbanColumn({ column, index }) {
             px: 2,
             bgcolor: 'grey.5008',
             borderTop: `8px solid ${color[index % 12]}`,
+            height: '100%',
           }}
         >
           <Stack spacing={3} {...provided.dragHandleProps}>
-            {/* <KanbanColumnToolBar
-              columnName={name}
-              onDelete={handleDeleteColumn}
-              onUpdate={handleUpdateColumn}
-            /> */}
             <Box
               display='flex'
               flexDirection='row'
@@ -98,25 +94,6 @@ export default function KanbanColumn({ column, index }) {
                 onCloseAddTask={handleCloseAddTask}
               />
             )}
-            {/* <Stack spacing={2} sx={{ pb: 2 }}>
-              {open && (
-                <KanbanAddTask
-                  onAddTask={handleAddTask}
-                  onCloseAddTask={handleCloseAddTask}
-                />
-              )}
-
-              <Button
-                fullWidth
-                size='large'
-                color='inherit'
-                startIcon={
-                  <Iconify icon={'eva:plus-fill'} width={20} height={20} />
-                }
-                onClick={handleOpenAddTask}
-                sx={{ fontSize: 14 }}
-              />
-            </Stack> */}
 
             <Droppable droppableId={id} type='task'>
               {(provided) => (
