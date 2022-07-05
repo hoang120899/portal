@@ -13,7 +13,7 @@ SkeletonKanbanColumn.propTypes = {
   ]),
 }
 
-export default function SkeletonKanbanColumn(formRefProp) {
+export default function SkeletonKanbanColumn({ formRefProp }) {
   const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
 
   return (

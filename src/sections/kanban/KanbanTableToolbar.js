@@ -141,14 +141,7 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
     getMember()
     getJob()
   }, [])
-  if (
-    clients.length === 0 ||
-    labels.length === 0 ||
-    members.length === 0 ||
-    jobs.length === 0
-  ) {
-    return null
-  }
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Box
