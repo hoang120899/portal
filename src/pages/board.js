@@ -125,7 +125,7 @@ export default function Board() {
   return (
     <Page title={translate('nav.board')} sx={{ height: 1 }}>
       <Container maxWidth={false} sx={{ height: 1 }}>
-        <KanbanTableToolbar ref={formRef} />
+        <KanbanTableToolbar ref={formRef} setColumns={setColumns} />
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable

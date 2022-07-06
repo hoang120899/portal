@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useState } from 'react'
 
 // @mui
 import { LoadingButton } from '@mui/lab'
@@ -6,6 +6,8 @@ import { Box } from '@mui/material'
 
 // @date-fns
 import { format } from 'date-fns'
+// @lodash
+import debounce from 'lodash.debounce'
 // @prop-types
 import propTypes from 'prop-types'
 import qs from 'query-string'
@@ -14,9 +16,9 @@ import { useForm } from 'react-hook-form'
 
 import {
   FormProvider,
+  RHFAutocomplete,
   RHFBasicSelect,
   RHFDatePicker,
-  RHFTextField,
 } from '@/components/hook-form'
 import {
   API_ADMIN_LIST_JOB,
@@ -24,12 +26,14 @@ import {
   API_LIST_CLIENT,
   API_LIST_LABEL,
   API_LIST_MEMBER,
+  API_SEARCH_CARD,
 } from '@/routes/api'
 // @api
 import { _getApi } from '@/utils/axios'
 
 const KanbanTableToolbar = forwardRef((props, ref) => {
   const { setColumns } = props
+  // const
   const defaultValues = {
     search: '',
     labelId: '',
@@ -43,6 +47,7 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
   const [labels, setLabels] = useState([])
   const [members, setMembers] = useState([])
   const [jobs, setJobs] = useState([])
+  const [cards, setCards] = useState([])
 
   const methods = useForm({
     defaultValues,
@@ -58,22 +63,52 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
     Object.fromEntries(Object.entries(obj).filter(([k, v]) => v))
   const onSubmit = async (data) => {
     try {
-      if (data.startDate) {
-        data.startDate = format(data.startDate, 'yyyy-MM-dd')
+      // eslint-disable-next-line no-unused-vars
+      let { search, ...rest } = data
+      if (rest.startDate) {
+        rest.startDate = format(rest.startDate, 'yyyy-MM-dd')
       }
-      if (data.endDate) {
-        data.endDate = format(data.endDate, 'yyyy-MM-dd')
+      if (rest.endDate) {
+        rest.endDate = format(rest.endDate, 'yyyy-MM-dd')
       }
       let url = API_LIST_CARD
-      let params = qs.stringify(filterNonNull(data))
+      let params = qs.stringify(filterNonNull(rest))
       if (params) {
         url += `?${params}`
       }
-      const res = await _getApi(url, data)
+      const res = await _getApi(url, rest)
       setColumns(res.data.list)
     } catch (error) {
       // console.log(error)
     }
+  }
+  const searchCards = async (search) => {
+    try {
+      let url = API_SEARCH_CARD
+      if (search) {
+        url += `?search=${search}`
+      }
+      const res = await _getApi(url)
+      const list = res.data.list.map((item) => ({
+        value: item.Candidate.id,
+        label: item.Candidate.name,
+      }))
+      setCards(list)
+      // console.log('search card:', res)
+    } catch (error) {
+      // console.log('search card error:', error)
+    }
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debounceSearch = useCallback(
+    debounce((value) => {
+      // console.log('search', value)
+      searchCards(value)
+    }, 1000),
+    []
+  )
+  const handleChange = (e) => {
+    debounceSearch(e.target.value)
   }
 
   // filter
@@ -156,7 +191,13 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
         }}
         ref={ref}
       >
-        <RHFTextField name='search' label='Search' />
+        <RHFAutocomplete
+          AutocompleteProps={{ freeSolo: true, size: 'small' }}
+          name='search'
+          label='search'
+          options={cards}
+          onChange={handleChange}
+        />
         <RHFBasicSelect
           hasBlankOption
           label='Choose label'
