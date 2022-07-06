@@ -4,7 +4,7 @@ import { handleRefreshToken } from './jwt'
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_HOST_API_KEY || '',
-  timeout: 5000,
+  timeout: 10000,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',
