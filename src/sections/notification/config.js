@@ -11,3 +11,5 @@ export const TABLE_HEAD = [
   { id: 'role', label: 'Time', align: 'left' },
   { id: 'status', label: 'View Detail', align: 'left' },
 ]
+
+export const PARAMS_ALL_NOTI_HEADER = { pageSize: 5, pageNumber: 1 }

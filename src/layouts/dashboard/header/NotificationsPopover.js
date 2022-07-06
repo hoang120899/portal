@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 
+import { useRouter } from 'next/router'
+
 // @mui
 import {
   Avatar,
   Badge,
   Box,
   Button,
+  CircularProgress,
   Divider,
   IconButton,
   List,
@@ -21,7 +24,7 @@ import { noCase } from 'change-case'
 import PropTypes from 'prop-types'
 
 // _mock_
-import { _notifications } from '@/_mock'
+// import { _notifications } from '@/_mock'
 // components
 import Iconify from '@/components/Iconify'
 import MenuPopover from '@/components/MenuPopover'
@@ -29,15 +32,24 @@ import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
 // hooks
 import useSocket from '@/hooks/useSocket'
+import { PATH_DASHBOARD } from '@/routes/paths'
+import { PARAMS_ALL_NOTI_HEADER } from '@/sections/notification/config'
+import { useGetAdminAllNotifyQuery } from '@/sections/notification/notificationSlice'
 // utils
 import { fToNow } from '@/utils/formatTime'
 
 export default function NotificationsPopover() {
-  const [notifications, setNotifications] = useState(_notifications)
+  const [notifications, setNotifications] = useState([])
+  const { data, isLoading, isFetching } = useGetAdminAllNotifyQuery(
+    PARAMS_ALL_NOTI_HEADER
+  )
   const { socket } = useSocket()
+  const router = useRouter()
 
-  const totalUnRead = notifications.filter(
-    (item) => item.isUnRead === true
+  const listNotifications = data?.data?.list
+
+  const totalUnRead = notifications?.filter(
+    (item) => item.status === false
   ).length
 
   const [open, setOpen] = useState(null)
@@ -48,7 +60,16 @@ export default function NotificationsPopover() {
       // eslint-disable-next-line no-console
       console.log('Successfully connected!', socket.id)
     })
+    // const userId = "f06f0080-0d6c-48e4-8ee8-f151ee476be5"
+    // socket.emit("join", userId);
+    // socket.on("notification", (noti) => {
+    //   console.log(noti);
+    // })
   }, [socket])
+
+  useEffect(() => {
+    if (data) setNotifications(listNotifications)
+  }, [data, listNotifications])
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget)
@@ -59,12 +80,17 @@ export default function NotificationsPopover() {
   }
 
   const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    )
+    // setNotifications(
+    //   notifications.map((notification) => ({
+    //     ...notification,
+    //     isUnRead: false,
+    //   }))
+    // )
+  }
+
+  const handleNavigateNotificationPage = () => {
+    router.push(PATH_DASHBOARD.notification)
+    handleClose()
   }
 
   return (
@@ -103,51 +129,80 @@ export default function NotificationsPopover() {
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader
-                disableSticky
-                sx={{ py: 1, px: 2.5, typography: 'overline' }}
-              >
-                New
-              </ListSubheader>
-            }
+        {isLoading || isFetching ? (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              py: 2,
+              px: 2.5,
+            }}
           >
-            {notifications.slice(0, 2).map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-              />
-            ))}
-          </List>
-
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader
-                disableSticky
-                sx={{ py: 1, px: 2.5, typography: 'overline' }}
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
+            {totalUnRead > 0 && (
+              <List
+                disablePadding
+                subheader={
+                  <ListSubheader
+                    disableSticky
+                    sx={{ py: 1, px: 2.5, typography: 'overline' }}
+                  >
+                    New
+                  </ListSubheader>
+                }
               >
-                Before that
-              </ListSubheader>
-            }
-          >
-            {notifications.slice(2, 5).map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-              />
-            ))}
-          </List>
-        </Scrollbar>
-
+                {notifications
+                  .slice(0, totalUnRead)
+                  .map(
+                    (notification) =>
+                      !notification.status && (
+                        <NotificationItem
+                          key={notification.id}
+                          notification={notification}
+                        />
+                      )
+                  )}
+              </List>
+            )}
+            {totalUnRead < 5 && (
+              <List
+                disablePadding
+                subheader={
+                  <ListSubheader
+                    disableSticky
+                    sx={{ py: 1, px: 2.5, typography: 'overline' }}
+                  >
+                    Before that
+                  </ListSubheader>
+                }
+              >
+                {notifications
+                  .slice(totalUnRead, totalUnRead ? totalUnRead + 3 : 3)
+                  .map(
+                    (notification) =>
+                      notification.status && (
+                        <NotificationItem
+                          key={notification.id}
+                          notification={notification}
+                        />
+                      )
+                  )}
+              </List>
+            )}
+          </Scrollbar>
+        )}
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple>
+          <Button
+            fullWidth
+            disableRipple
+            onClick={handleNavigateNotificationPage}
+          >
             View All
           </Button>
         </Box>
@@ -158,9 +213,9 @@ export default function NotificationsPopover() {
 
 NotificationItem.propTypes = {
   notification: PropTypes.shape({
-    createdAt: PropTypes.instanceOf(Date),
+    // createdAt: PropTypes.instanceOf(Date),
     id: PropTypes.string,
-    isUnRead: PropTypes.bool,
+    status: PropTypes.bool,
     title: PropTypes.string,
     description: PropTypes.string,
     type: PropTypes.string,
@@ -177,7 +232,7 @@ function NotificationItem({ notification }) {
         py: 1.5,
         px: 2.5,
         mt: '1px',
-        ...(notification.isUnRead && {
+        ...(!notification.status && {
           bgcolor: 'action.selected',
         }),
       }}
@@ -212,13 +267,13 @@ function NotificationItem({ notification }) {
 function renderContent(notification) {
   const title = (
     <Typography variant='subtitle2'>
-      {notification.title}
+      {notification.content.title}
       <Typography
         component='span'
         variant='body2'
         sx={{ color: 'text.secondary' }}
       >
-        &nbsp; {noCase(notification.description)}
+        &nbsp; {noCase(notification.content.message)}
       </Typography>
     </Typography>
   )
@@ -227,7 +282,7 @@ function renderContent(notification) {
     return {
       avatar: (
         <img
-          alt={notification.title}
+          alt={notification.content.title}
           src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_package.svg'
         />
       ),
@@ -238,7 +293,7 @@ function renderContent(notification) {
     return {
       avatar: (
         <img
-          alt={notification.title}
+          alt={notification.content.title}
           src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_shipping.svg'
         />
       ),
@@ -249,7 +304,7 @@ function renderContent(notification) {
     return {
       avatar: (
         <img
-          alt={notification.title}
+          alt={notification.content.title}
           src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_mail.svg'
         />
       ),
@@ -260,7 +315,7 @@ function renderContent(notification) {
     return {
       avatar: (
         <img
-          alt={notification.title}
+          alt={notification.content.title}
           src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_chat.svg'
         />
       ),
@@ -268,8 +323,11 @@ function renderContent(notification) {
     }
   }
   return {
-    avatar: notification.avatar ? (
-      <img alt={notification.title} src={notification.avatar} />
+    avatar: notification.User.linkAvatar ? (
+      <img
+        alt={notification.content.title}
+        src={notification.User.linkAvatar}
+      />
     ) : null,
     title,
   }
