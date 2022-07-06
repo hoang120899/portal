@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // @mui
 import { Box, Button, Paper, Stack, Typography } from '@mui/material'
@@ -9,6 +9,8 @@ import { Draggable, Droppable } from 'react-beautiful-dnd'
 
 // components
 import Iconify from '@/components/Iconify'
+import Scrollbar from '@/components/Scrollbar'
+import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
 // hooks
 import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
 
@@ -26,12 +28,19 @@ KanbanColumn.propTypes = {
 }
 
 export default function KanbanColumn({ column, index, formRefProp }) {
+  const scrollRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
   const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
+  const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
 
   const [open, setOpen] = useState(false)
 
   const { nameColumn, CandidateJobs, id } = column
+
+  useEffect(() => {
+    if (!isScrollToBottom) return
+    // TODO
+  }, [isScrollToBottom])
 
   const handleOpenAddTask = () => {
     setOpen((prev) => !prev)
@@ -139,30 +148,33 @@ export default function KanbanColumn({ column, index, formRefProp }) {
 
             <Droppable droppableId={id} type='task'>
               {(provided) => (
-                <Stack
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  spacing={2}
-                  width={280}
+                <Scrollbar
+                  scrollableNodeProps={{ ref: scrollRef }}
                   sx={{
-                    pb: 2,
                     height: {
                       lg: `calc(100vh - ${lgHeight + 16 + 44 + 24}px)`,
                       xs: `calc(100vh - ${xsHeight + 16 + 44 + 24}px)`,
                     },
-                    overflowY: 'auto',
+                    width: '280px',
+                    paddingBottom: 2,
                   }}
                 >
-                  {CandidateJobs.map((candi, index) => (
-                    <KanbanTaskCard
-                      key={candi.id}
-                      onDeleteTask={handleDeleteTask}
-                      card={candi}
-                      index={index}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </Stack>
+                  <Stack
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    spacing={2}
+                  >
+                    {CandidateJobs.map((candi, index) => (
+                      <KanbanTaskCard
+                        key={candi.id}
+                        onDeleteTask={handleDeleteTask}
+                        card={candi}
+                        index={index}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </Stack>
+                </Scrollbar>
               )}
             </Droppable>
           </Stack>
