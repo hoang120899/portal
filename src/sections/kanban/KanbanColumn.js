@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 // @mui
 import { Box, Button, Paper, Stack, Typography } from '@mui/material'
@@ -15,7 +15,6 @@ import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
 import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
 
 //
-import KanbanAddTask from './KanbanTaskAdd'
 import KanbanTaskCard from './KanbanTaskCard'
 
 KanbanColumn.propTypes = {
@@ -25,16 +24,19 @@ KanbanColumn.propTypes = {
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.any }),
   ]),
+  onOpenAddTask: PropTypes.func,
 }
 
-export default function KanbanColumn({ column, index, formRefProp }) {
+export default function KanbanColumn({
+  column,
+  index,
+  formRefProp,
+  onOpenAddTask,
+}) {
   const scrollRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
   const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
   const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
-
-  const [open, setOpen] = useState(false)
-
   const { nameColumn, CandidateJobs, id } = column
 
   useEffect(() => {
@@ -42,21 +44,10 @@ export default function KanbanColumn({ column, index, formRefProp }) {
     // TODO
   }, [isScrollToBottom])
 
-  const handleOpenAddTask = () => {
-    setOpen((prev) => !prev)
-  }
-
-  const handleCloseAddTask = () => {
-    setOpen(false)
-  }
-
   const handleDeleteTask = () => {
     enqueueSnackbar('Delete success!')
   }
 
-  const handleAddTask = () => {
-    handleCloseAddTask()
-  }
   const color = [
     '#2688ea',
     '#0033ae',
@@ -108,7 +99,7 @@ export default function KanbanColumn({ column, index, formRefProp }) {
                     height={24}
                   />
                 }
-                onClick={handleOpenAddTask}
+                onClick={onOpenAddTask}
                 sx={{
                   padding: 0,
                   justifyContent: 'end',
@@ -119,12 +110,6 @@ export default function KanbanColumn({ column, index, formRefProp }) {
                 }}
               />
             </Box>
-
-            <KanbanAddTask
-              open={open}
-              onAddTask={handleAddTask}
-              onCloseAddTask={handleCloseAddTask}
-            />
 
             {/* <Stack spacing={2} sx={{ pb: 2 }}>
               {open && (

@@ -18,6 +18,7 @@ import Layout from '@/layouts'
 import { API_LIST_CARD } from '@/routes/api'
 // sections
 import { KanbanColumn, KanbanTableToolbar } from '@/sections/kanban'
+import KanbanAddTask from '@/sections/kanban/KanbanTaskAdd'
 import { _getApi } from '@/utils/axios'
 // utils
 import { getRolesByPage } from '@/utils/role'
@@ -39,6 +40,22 @@ export default function Board() {
   const formRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)
   const [columns, setColumns] = useState([])
+  const [open, setOpen] = useState(false)
+  const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
+
+  const handleOpenAddTask = () => {
+    setOpen((prev) => !prev)
+  }
+
+  const handleOpenAddTaskNoColumn = () => {
+    setOpen((prev) => !prev)
+    setIsAddTaskNoColumn(true)
+  }
+
+  const handleCloseAddTask = () => {
+    setOpen(false)
+    setIsAddTaskNoColumn(false)
+  }
 
   useEffect(() => {
     setIsMounted(true)
@@ -126,6 +143,11 @@ export default function Board() {
     <Page title={translate('nav.board')} sx={{ height: 1 }}>
       <Container maxWidth={false} sx={{ height: 1 }}>
         <KanbanTableToolbar ref={formRef} setColumns={setColumns} />
+        <KanbanAddTask
+          open={open}
+          isAddTaskNoColumn={isAddTaskNoColumn}
+          onCloseAddTask={handleCloseAddTask}
+        />
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable
@@ -153,6 +175,7 @@ export default function Board() {
                         key={column.id}
                         column={column}
                         formRefProp={formRef}
+                        onOpenAddTask={handleOpenAddTask}
                       />
                     ))
                   )}
@@ -168,7 +191,7 @@ export default function Board() {
         <Button
           size='large'
           variant='contained'
-          // onClick={handleOpenAddTask}
+          onClick={handleOpenAddTaskNoColumn}
           sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
         >
           <Iconify icon={'eva:plus-fill'} width={24} height={24} />
