@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useState } from 'react'
+import React, { forwardRef, useMemo, useState } from 'react'
 
 // @mui
 import { LoadingButton } from '@mui/lab'
@@ -6,8 +6,6 @@ import { Box } from '@mui/material'
 
 // @date-fns
 import { format } from 'date-fns'
-// @lodash
-import debounce from 'lodash.debounce'
 // @prop-types
 import propTypes from 'prop-types'
 import qs from 'query-string'
@@ -20,20 +18,22 @@ import {
   RHFBasicSelect,
   RHFDatePicker,
 } from '@/components/hook-form'
-import {
-  API_ADMIN_LIST_JOB,
-  API_LIST_CARD,
-  API_LIST_CLIENT,
-  API_LIST_LABEL,
-  API_LIST_MEMBER,
-  API_SEARCH_CARD,
-} from '@/routes/api'
+import { useDebounce } from '@/hooks/useDebounce'
+import { API_LIST_CARD } from '@/routes/api'
 // @api
 import { _getApi } from '@/utils/axios'
 
+import KanbanTaskDetails from './KanbanTaskDetails'
+import {
+  useGetClientQuery,
+  useGetJobQuery,
+  useGetLabelQuery,
+  useGetMemberQuery,
+  useSearchCardsQuery,
+} from './kanbanSlice'
+
 const KanbanTableToolbar = forwardRef((props, ref) => {
   const { setColumns } = props
-  // const
   const defaultValues = {
     search: '',
     labelId: '',
@@ -43,11 +43,6 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
     startDate: null,
     endDate: null,
   }
-  const [clients, setClients] = useState([])
-  const [labels, setLabels] = useState([])
-  const [members, setMembers] = useState([])
-  const [jobs, setJobs] = useState([])
-  const [cards, setCards] = useState([])
 
   const methods = useForm({
     defaultValues,
@@ -57,6 +52,15 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
     handleSubmit,
     formState: { isSubmitting },
   } = methods
+
+  const [openDetails, setOpenDetails] = useState(false)
+  const handleOpenDetails = () => {
+    setOpenDetails(true)
+  }
+
+  const handleCloseDetails = () => {
+    setOpenDetails(false)
+  }
 
   const filterNonNull = (obj) =>
     // eslint-disable-next-line no-unused-vars
@@ -82,158 +86,138 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
       // console.log(error)
     }
   }
-  const searchCards = async (search) => {
-    try {
-      let url = API_SEARCH_CARD
-      if (search) {
-        url += `?search=${search}`
-      }
-      const res = await _getApi(url)
-      const list = res.data.list.map((item) => ({
-        value: item.Candidate.id,
-        label: item.Candidate.name,
+  const { data: labelData } = useGetLabelQuery()
+  const { data: clientData } = useGetClientQuery()
+  const { data: jobData } = useGetJobQuery()
+  const { data: memberData } = useGetMemberQuery()
+  const labelOptions = useMemo(() => {
+    if (labelData) {
+      return labelData.data.list.map((label) => ({
+        value: label.title,
+        label: label.title,
       }))
-      setCards(list)
-      // console.log('search card:', res)
-    } catch (error) {
-      // console.log('search card error:', error)
     }
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debounceSearch = useCallback(
-    debounce((value) => {
-      // console.log('search', value)
-      searchCards(value)
-    }, 1000),
-    []
-  )
-  const handleChange = (e) => {
-    debounceSearch(e.target.value)
-  }
+    return []
+  }, [labelData])
+  const clientOptions = useMemo(() => {
+    if (clientData) {
+      return clientData.data.clients.map((client) => ({
+        value: client.id,
+        label: client.name,
+      }))
+    }
+    return []
+  }, [clientData])
+  const jobOptions = useMemo(() => {
+    if (jobData) {
+      return jobData.data.listJob.map((job) => ({
+        value: job.id,
+        label: job.title,
+      }))
+    }
+    return []
+  }, [jobData])
+  const memberOptions = useMemo(() => {
+    if (memberData) {
+      return memberData.data.list.map((member) => ({
+        value: member.id,
+        label: member.name,
+      }))
+    }
+    return []
+  }, [memberData])
+  const [keySearch, setKeySearch] = useState('')
+  const search = useDebounce(keySearch, 1000)
 
-  // filter
-  // clientId=[id]&jobId=[id]&label=[label]&userId=[id]
-  // &timeStart=[yyyy-MM-dd]&timeEnd=[yyyy-MM-dd]
-  useEffect(() => {
-    const getLabel = async () => {
-      try {
-        let getLabel = await _getApi(API_LIST_LABEL)
-        getLabel = getLabel.data.list.map((item) => {
-          let clone = { ...item }
-          clone.value = item.title
-          clone.label = item.title
-          return clone
-        })
-        setLabels(getLabel)
-      } catch (error) {
-        // console.log('error', error)
-      }
+  const { data: cardData, isFetching: isCardFetching } = useSearchCardsQuery({
+    search,
+  })
+  const cardOptions = useMemo(() => {
+    if (cardData || cardData?.data?.list.length > 0) {
+      return cardData.data.list.map((card, i) => ({
+        value: card.Candidate.name,
+        label: `${card.Candidate.name}-${i}`,
+      }))
     }
-    const getClient = async () => {
-      try {
-        let client = await _getApi(API_LIST_CLIENT)
-        client = client.data.clients.map((item) => {
-          let clone = { ...item }
-          clone.value = item.id
-          clone.label = item.name
-          return clone
-        })
-        setClients(client)
-      } catch (error) {
-        // console.log('error', error)
-      }
-    }
-    const getMember = async () => {
-      try {
-        let member = await _getApi(API_LIST_MEMBER)
-        member = member.data.list.map((item) => {
-          let clone = { ...item }
-          clone.value = item.id
-          clone.label = item.name
-          return clone
-        })
-        setMembers(member)
-      } catch (error) {
-        // console.log('error', error)
-      }
-    }
-    const getJob = async () => {
-      try {
-        let job = await _getApi(API_ADMIN_LIST_JOB)
-        job = job.data.listJob.map((item) => {
-          let clone = { ...item }
-          clone.value = item.id
-          clone.label = item.title
-          return clone
-        })
-        setJobs(job)
-      } catch (error) {
-        // console.log('error', error)
-      }
-    }
-    getLabel()
-    getClient()
-    getMember()
-    getJob()
-  }, [])
-
+    return []
+  }, [cardData])
+  const handle = () => {
+    handleOpenDetails()
+  }
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Box
-        sx={{
-          display: 'grid',
-          pb: 2,
-          gap: 2,
-          gridTemplateColumns: {
-            md: 'repeat(4, 1fr)',
-            sm: 'repeat(3, 1fr)',
-          },
-        }}
-        ref={ref}
-      >
-        <RHFAutocomplete
-          AutocompleteProps={{ freeSolo: true, size: 'small' }}
-          name='search'
-          label='search'
-          options={cards}
-          onChange={handleChange}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose label'
-          name='label'
-          options={labels}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose client'
-          name='clientId'
-          options={clients}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose member'
-          name='userId'
-          options={members}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose job'
-          name='jobId'
-          options={jobs}
-        />
-        <RHFDatePicker name='startDate' />
-        <RHFDatePicker name='endDate' />
-        <LoadingButton
-          fullWidth
-          type='submit'
-          variant='contained'
-          loading={isSubmitting}
+    <>
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <Box
+          sx={{
+            display: 'grid',
+            pb: 2,
+            gap: 2,
+            gridTemplateColumns: {
+              md: 'repeat(4, 1fr)',
+              sm: 'repeat(3, 1fr)',
+            },
+          }}
+          ref={ref}
         >
-          Search
-        </LoadingButton>
-      </Box>
-    </FormProvider>
+          <RHFAutocomplete
+            AutocompleteProps={{
+              freeSolo: true,
+              size: 'small',
+              loading: isCardFetching,
+              renderOption: (props, option) => (
+                <Box
+                  key={option.key}
+                  component='li'
+                  {...props}
+                  onClick={() => handle(option.value)}
+                >
+                  {option.value}
+                </Box>
+              ),
+            }}
+            name='search'
+            label='search'
+            options={cardOptions}
+            onChange={(e) => setKeySearch(e.target.value)}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose label'
+            name='label'
+            options={labelOptions}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose client'
+            name='clientId'
+            options={clientOptions}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose member'
+            name='userId'
+            options={memberOptions}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose job'
+            name='jobId'
+            options={jobOptions}
+          />
+          <RHFDatePicker name='startDate' />
+          <RHFDatePicker name='endDate' />
+          <LoadingButton
+            fullWidth
+            type='submit'
+            variant='contained'
+            loading={isSubmitting}
+          >
+            Search
+          </LoadingButton>
+        </Box>
+      </FormProvider>
+      <KanbanTaskDetails isOpen={openDetails} onClose={handleCloseDetails} />
+    </>
   )
 })
 
