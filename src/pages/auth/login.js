@@ -8,11 +8,14 @@ import Image from '@/components/Image'
 import Page from '@/components/Page'
 // guards
 import GuestGuard from '@/guards/GuestGuard'
-import useLocales from '@/hooks/useLocales'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 // sections
 import { LoginForm } from '@/sections/auth/login'
+
+// import { BlockContent } from '@/components/upload'
+// import { isBlock } from 'typescript'
 
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -79,7 +82,7 @@ export default function Login() {
           {mdUp && (
             <SectionStyle>
               <Typography variant='h3' sx={{ px: 5, mt: 10, mb: 5 }}>
-                {translate('pages.login.hi_FETCH')}
+                {translate('pages.login.welcome')}
               </Typography>
               <Image
                 visibleByDefault
@@ -92,12 +95,24 @@ export default function Login() {
 
           <Container maxWidth='sm'>
             <ContentStyle>
-              {/* <Image
-                visibleByDefault
-                disabledEffect
-                src='/assets/illustrations/fetch_logo2.png'
-                alt='login'
-              /> */}
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Image
+                  visibleByDefault
+                  disabledEffect
+                  src='/assets/illustrations/fetch_logo2.png'
+                  alt='login'
+                  sx={{
+                    maxWidth: 200,
+                  }}
+                />
+              </div>
               <Stack direction='row' alignItems='center' sx={{ mb: 5 }}>
                 <Box sx={{ flexGrow: 1 }}>
                   <Typography variant='h4' gutterBottom>
