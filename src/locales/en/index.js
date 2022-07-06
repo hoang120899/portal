@@ -13,6 +13,8 @@ const en = {
   home: 'Home',
   setting: 'Settings',
   logout: 'Logout',
+  add_assignee: 'Add assignee',
+  contacts: 'Contacts',
   nav: {
     dashboard: 'Dashboard',
     notification: 'Notification',
