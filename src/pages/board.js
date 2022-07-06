@@ -42,6 +42,7 @@ export default function Board() {
   const [isMounted, setIsMounted] = useState(false)
   const [columns, setColumns] = useState([])
   const [jobs, setJobs] = useState([])
+  const [laneId, setLaneId] = useState('')
   const [open, setOpen] = useState(false)
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
   const { isLeaderRole, isMemberRole } = useRole()
@@ -60,8 +61,9 @@ export default function Board() {
     clientName: job.Client ? job.Client.name : '',
   }))
 
-  const handleOpenAddTask = () => {
+  const handleOpenAddTask = (laneId) => {
     setOpen((prev) => !prev)
+    setLaneId(laneId)
   }
 
   const handleOpenAddTaskNoColumn = () => {
@@ -71,6 +73,7 @@ export default function Board() {
 
   const handleCloseAddTask = () => {
     setOpen(false)
+    setLaneId('')
     setIsAddTaskNoColumn(false)
   }
 
@@ -177,6 +180,7 @@ export default function Board() {
           isAddTaskNoColumn={isAddTaskNoColumn}
           jobs={formatJobs}
           columnsOrder={columnsOrder}
+          laneId={laneId}
           onCloseAddTask={handleCloseAddTask}
         />
         {isMounted && (

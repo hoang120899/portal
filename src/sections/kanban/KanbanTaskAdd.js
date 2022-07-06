@@ -5,8 +5,14 @@ import { useEffect } from 'react'
 import { Box, Button, Drawer, Grid, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
+import { yupResolver } from '@hookform/resolvers/yup'
+// @date-fns
+import { format } from 'date-fns'
+// @prop-types
 import PropTypes from 'prop-types'
+// @react-hooks-form
 import { useForm } from 'react-hook-form'
+import * as Yup from 'yup'
 
 // components
 import Iconify from '@/components/Iconify'
@@ -18,15 +24,13 @@ import {
   RHFTextField,
   RHFUploadSingleFile,
 } from '@/components/hook-form'
-
-// hooks
-// import useToggle from '@/hooks/useToggle'
-// utils
-// import uuidv4 from '@/utils/uuidv4'
+import { API_ADD_CARD } from '@/routes/api'
+import { _postApi } from '@/utils/axios'
 
 KanbanTaskAdd.propTypes = {
   open: PropTypes.bool,
   isAddTaskNoColumn: PropTypes.bool,
+  laneId: PropTypes.string,
   jobs: PropTypes.array,
   columnsOrder: PropTypes.array,
   onCloseAddTask: PropTypes.func,
@@ -42,13 +46,27 @@ export default function KanbanTaskAdd({
   open,
   isAddTaskNoColumn,
   jobs,
+  laneId,
   columnsOrder,
   onCloseAddTask,
 }) {
+  const AddTaskSchema = Yup.object().shape({
+    name: Yup.string().required('Name is required'),
+    laneId:
+      isAddTaskNoColumn && Yup.string().required('Column name is required'),
+    idJob: Yup.string().required('Name job is required'),
+    email: Yup.string()
+      .email('Email must be a valid email address')
+      .required('Email is required'),
+    phone: Yup.string().required('Phone number is required'),
+    noteApproach: Yup.string().required('Approach point is required'),
+  })
+
   const defaultValues = {
     name: '',
     laneId: '',
     idJob: '',
+    nameJob: '',
     location: '',
     clientName: '',
     email: '',
@@ -57,14 +75,16 @@ export default function KanbanTaskAdd({
     linkedin: '',
     skype: '',
     phone: '',
+    approachDate: format(new Date(), 'yyyy-MM-dd'),
     position: '',
     linkCv: '',
     noteApproach: '',
   }
   const methods = useForm({
+    resolver: yupResolver(AddTaskSchema),
     defaultValues,
   })
-  const { handleSubmit, watch, setValue } = methods
+  const { handleSubmit, reset, watch, setValue } = methods
 
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
@@ -74,15 +94,36 @@ export default function KanbanTaskAdd({
       const job = jobs.find((job) => job.value === watchIdJob)
       setValue('location', job?.location)
       setValue('clientName', job?.clientName)
+      setValue('nameJob', job?.label)
     }
   }, [watchIdJob, jobs, setValue])
 
-  const hanldeAddTask = () => {}
+  const handleCloseAddTaskReset = () => {
+    onCloseAddTask()
+    reset()
+  }
+
+  const hanldeAddTask = async (data) => {
+    const reqData = { ...data }
+    reqData.approachDate = format(new Date(reqData.approachDate), 'yyyy-MM-dd')
+    if (!reqData.laneId) {
+      reqData.laneId = laneId
+    }
+    delete reqData.social
+
+    try {
+      // send api create card
+      await _postApi(API_ADD_CARD, reqData)
+    } catch (error) {
+      // Todo: handle error
+    }
+    reset()
+  }
 
   return (
     <Drawer
       open={open}
-      onClose={onCloseAddTask}
+      onClose={handleCloseAddTaskReset}
       anchor='right'
       PaperProps={{ sx: { width: { xs: 1, sm: 640 } } }}
     >
@@ -96,7 +137,7 @@ export default function KanbanTaskAdd({
             methods={methods}
           >
             <Box sx={{ marginTop: '16px' }}>
-              <RHFTextField label='Name' name='name' type='text' required />
+              <RHFTextField label='Name' name='name' type='text' />
             </Box>
 
             {isAddTaskNoColumn && (
@@ -110,12 +151,7 @@ export default function KanbanTaskAdd({
             )}
 
             <Box sx={{ marginTop: '16px' }}>
-              <RHFBasicSelect
-                label='Name job'
-                name='idJob'
-                options={jobs}
-                required
-              />
+              <RHFBasicSelect label='Name job' name='idJob' options={jobs} />
             </Box>
 
             <Box sx={{ marginTop: '16px' }}>
@@ -140,7 +176,7 @@ export default function KanbanTaskAdd({
             </Box>
 
             <Box sx={{ marginTop: '16px' }}>
-              <RHFTextField label='Email' name='email' type='text' required />
+              <RHFTextField label='Email' name='email' type='text' />
             </Box>
 
             <Box sx={{ marginTop: '16px' }}>
@@ -209,19 +245,10 @@ export default function KanbanTaskAdd({
             <Box sx={{ marginTop: '16px' }}>
               <Grid container spacing={1}>
                 <Grid item xs={6}>
-                  <RHFTextField
-                    label='Phone'
-                    name='phone'
-                    type='text'
-                    required
-                  />
+                  <RHFTextField label='Phone' name='phone' type='text' />
                 </Grid>
                 <Grid item xs={6}>
-                  <RHFDatePicker
-                    label='Approach Date'
-                    name='approachDate'
-                    required
-                  />
+                  <RHFDatePicker label='Approach Date' name='approachDate' />
                 </Grid>
               </Grid>
             </Box>
@@ -238,7 +265,8 @@ export default function KanbanTaskAdd({
               <RHFTextField
                 label='Approach Point'
                 name='noteApproach'
-                required
+                multiline
+                rows={3}
               />
             </Box>
             <Box sx={{ marginTop: '16px', textAlign: 'right' }}>
@@ -248,7 +276,7 @@ export default function KanbanTaskAdd({
               <Button
                 type='button'
                 sx={{ marginLeft: '8px' }}
-                onClick={onCloseAddTask}
+                onClick={handleCloseAddTaskReset}
               >
                 Cancel
               </Button>

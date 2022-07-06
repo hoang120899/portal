@@ -102,7 +102,7 @@ export default function KanbanColumn({
                       height={24}
                     />
                   }
-                  onClick={onOpenAddTask}
+                  onClick={onOpenAddTask.bind(null, id)}
                   sx={{
                     padding: 0,
                     justifyContent: 'end',
