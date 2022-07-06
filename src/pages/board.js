@@ -13,6 +13,7 @@ import { SkeletonKanbanColumn } from '@/components/skeleton'
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import useRole from '@/hooks/useRole'
 // layouts
 import Layout from '@/layouts'
 import { API_LIST_CARD } from '@/routes/api'
@@ -40,8 +41,24 @@ export default function Board() {
   const formRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)
   const [columns, setColumns] = useState([])
+  const [jobs, setJobs] = useState([])
   const [open, setOpen] = useState(false)
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
+  const { isLeaderRole, isMemberRole } = useRole()
+
+  const hasAddPermission = isLeaderRole || isMemberRole
+
+  const columnsOrder = columns.map((column) => ({
+    label: column.nameColumn,
+    value: column.id,
+  }))
+
+  const formatJobs = jobs.map((job) => ({
+    label: job.title,
+    value: job.id,
+    location: job.Location ? job.Location.name : '',
+    clientName: job.Client ? job.Client.name : '',
+  }))
 
   const handleOpenAddTask = () => {
     setOpen((prev) => !prev)
@@ -66,6 +83,18 @@ export default function Board() {
       try {
         const res = await _getApi(API_LIST_CARD)
         setColumns(res.data.list)
+      } catch (error) {
+        // TODO: handle error
+      }
+    }
+    getJobs()
+  }, [])
+
+  useEffect(() => {
+    const getJobs = async () => {
+      try {
+        const res = await _getApi(`/api/trello/job/active`)
+        setJobs(res.data.arrJob)
       } catch (error) {
         // TODO: handle error
       }
@@ -146,6 +175,8 @@ export default function Board() {
         <KanbanAddTask
           open={open}
           isAddTaskNoColumn={isAddTaskNoColumn}
+          jobs={formatJobs}
+          columnsOrder={columnsOrder}
           onCloseAddTask={handleCloseAddTask}
         />
         {isMounted && (
@@ -173,6 +204,7 @@ export default function Board() {
                       <KanbanColumn
                         index={index}
                         key={column.id}
+                        hasAddPermission={hasAddPermission}
                         column={column}
                         formRefProp={formRef}
                         onOpenAddTask={handleOpenAddTask}
@@ -187,16 +219,18 @@ export default function Board() {
           </DragDropContext>
         )}
       </Container>
-      <Box sx={{ position: 'fixed', right: '50px', bottom: '50px' }}>
-        <Button
-          size='large'
-          variant='contained'
-          onClick={handleOpenAddTaskNoColumn}
-          sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
-        >
-          <Iconify icon={'eva:plus-fill'} width={24} height={24} />
-        </Button>
-      </Box>
+      {hasAddPermission && (
+        <Box sx={{ position: 'fixed', right: '50px', bottom: '50px' }}>
+          <Button
+            size='large'
+            variant='contained'
+            onClick={handleOpenAddTaskNoColumn}
+            sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
+          >
+            <Iconify icon={'eva:plus-fill'} width={24} height={24} />
+          </Button>
+        </Box>
+      )}
     </Page>
   )
 }

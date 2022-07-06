@@ -20,6 +20,7 @@ import KanbanTaskCard from './KanbanTaskCard'
 KanbanColumn.propTypes = {
   column: PropTypes.object,
   index: PropTypes.number,
+  hasAddPermission: PropTypes.bool,
   formRefProp: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.any }),
@@ -30,6 +31,7 @@ KanbanColumn.propTypes = {
 export default function KanbanColumn({
   column,
   index,
+  hasAddPermission,
   formRefProp,
   onOpenAddTask,
 }) {
@@ -90,25 +92,27 @@ export default function KanbanColumn({
               }}
             >
               <Typography variant='h6'>{nameColumn}</Typography>
-              <Button
-                color='inherit'
-                startIcon={
-                  <Iconify
-                    icon={'eva:plus-circle-outline'}
-                    width={24}
-                    height={24}
-                  />
-                }
-                onClick={onOpenAddTask}
-                sx={{
-                  padding: 0,
-                  justifyContent: 'end',
-                  minWidth: 0,
-                  '& .MuiButton-startIcon': {
-                    marginRight: 0,
-                  },
-                }}
-              />
+              {hasAddPermission && (
+                <Button
+                  color='inherit'
+                  startIcon={
+                    <Iconify
+                      icon={'eva:plus-circle-outline'}
+                      width={24}
+                      height={24}
+                    />
+                  }
+                  onClick={onOpenAddTask}
+                  sx={{
+                    padding: 0,
+                    justifyContent: 'end',
+                    minWidth: 0,
+                    '& .MuiButton-startIcon': {
+                      marginRight: 0,
+                    },
+                  }}
+                />
+              )}
             </Box>
 
             {/* <Stack spacing={2} sx={{ pb: 2 }}>

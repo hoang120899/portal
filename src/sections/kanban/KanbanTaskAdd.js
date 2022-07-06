@@ -1,5 +1,7 @@
 // import { useState } from 'react'
 // @mui
+import { useEffect } from 'react'
+
 import { Box, Button, Drawer, Grid, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
@@ -25,32 +27,10 @@ import {
 KanbanTaskAdd.propTypes = {
   open: PropTypes.bool,
   isAddTaskNoColumn: PropTypes.bool,
+  jobs: PropTypes.array,
+  columnsOrder: PropTypes.array,
   onCloseAddTask: PropTypes.func,
 }
-
-const jobs = [
-  {
-    clientName: 'Client 1',
-    id: 'j1',
-    label: 'Testcronjob',
-    locationName: 'Fetch Cầu Giấy',
-    value: 'Testcronjob',
-  },
-  {
-    clientName: 'Client 2',
-    id: 'j2',
-    label: 'Test 2',
-    locationName: 'Fetch HCM',
-    value: 'test 2',
-  },
-  {
-    clientName: 'Client 3',
-    id: 'j3',
-    label: 'Test 3',
-    locationName: 'Fetch Cầu Giấy',
-    value: 'test 3',
-  },
-]
 
 const CheckboxRootStyle = styled('div')(() => ({
   '& .MuiFormGroup-root': {
@@ -61,11 +41,41 @@ const CheckboxRootStyle = styled('div')(() => ({
 export default function KanbanTaskAdd({
   open,
   isAddTaskNoColumn,
+  jobs,
+  columnsOrder,
   onCloseAddTask,
 }) {
-  const methods = useForm()
+  const defaultValues = {
+    name: '',
+    laneId: '',
+    idJob: '',
+    location: '',
+    clientName: '',
+    email: '',
+    social: [],
+    facebook: '',
+    linkedin: '',
+    skype: '',
+    phone: '',
+    position: '',
+    linkCv: '',
+    noteApproach: '',
+  }
+  const methods = useForm({
+    defaultValues,
+  })
+  const { handleSubmit, watch, setValue } = methods
 
-  const { handleSubmit } = methods
+  const watchSocial = watch('social')
+  const watchIdJob = watch('idJob')
+
+  useEffect(() => {
+    if (watchIdJob) {
+      const job = jobs.find((job) => job.value === watchIdJob)
+      setValue('location', job?.location)
+      setValue('clientName', job?.clientName)
+    }
+  }, [watchIdJob, jobs, setValue])
 
   const hanldeAddTask = () => {}
 
@@ -94,7 +104,7 @@ export default function KanbanTaskAdd({
                 <RHFBasicSelect
                   label='Column name'
                   name='laneId'
-                  options={[]}
+                  options={columnsOrder}
                 />
               </Box>
             )}
@@ -102,7 +112,7 @@ export default function KanbanTaskAdd({
             <Box sx={{ marginTop: '16px' }}>
               <RHFBasicSelect
                 label='Name job'
-                name='nameJob'
+                name='idJob'
                 options={jobs}
                 required
               />
@@ -121,7 +131,7 @@ export default function KanbanTaskAdd({
                 <Grid item xs={6}>
                   <RHFTextField
                     label='Client Name'
-                    name='location'
+                    name='clientName'
                     type='text'
                     disabled
                   />
@@ -144,7 +154,7 @@ export default function KanbanTaskAdd({
                   ]}
                 />
               </CheckboxRootStyle>
-              {false && (
+              {watchSocial.includes('facebook') && (
                 <Box sx={{ marginTop: '16px' }}>
                   <RHFTextField
                     label='Facebook'
@@ -161,7 +171,7 @@ export default function KanbanTaskAdd({
                 </Box>
               )}
 
-              {false && (
+              {watchSocial.includes('linkedin') && (
                 <Box sx={{ marginTop: '16px' }}>
                   <RHFTextField
                     label='Linkedin'
@@ -178,7 +188,7 @@ export default function KanbanTaskAdd({
                 </Box>
               )}
 
-              {false && (
+              {watchSocial.includes('skype') && (
                 <Box sx={{ marginTop: '16px' }}>
                   <RHFTextField
                     label='Skype'
@@ -207,7 +217,11 @@ export default function KanbanTaskAdd({
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <RHFDatePicker label='Approach Date' name='approachDate' />
+                  <RHFDatePicker
+                    label='Approach Date'
+                    name='approachDate'
+                    required
+                  />
                 </Grid>
               </Grid>
             </Box>
@@ -223,7 +237,7 @@ export default function KanbanTaskAdd({
             <Box sx={{ marginTop: '16px' }}>
               <RHFTextField
                 label='Approach Point'
-                name='approachPoint'
+                name='noteApproach'
                 required
               />
             </Box>
