@@ -9,6 +9,8 @@ import {
   API_LIST_LABEL,
   API_LIST_MEMBER,
   API_SEARCH_CARD,
+  API_SEARCH_EMAIL,
+  API_SEARCH_PHONE,
 } from '@/routes/api'
 
 export const kanbanApiSlice = apiSlice.injectEndpoints({
@@ -55,6 +57,18 @@ export const kanbanApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    searchPhone: builder.query({
+      query: (queries = {}) => ({
+        url: `${API_SEARCH_PHONE}?${qs.stringify(queries)}`,
+        method: 'GET',
+      }),
+    }),
+    searchEmail: builder.query({
+      query: (queries = {}) => ({
+        url: `${API_SEARCH_EMAIL}?${qs.stringify(queries)}`,
+        method: 'GET',
+      }),
+    }),
   }),
 })
 
@@ -66,4 +80,6 @@ export const {
   useGetJobQuery,
   useGetMemberQuery,
   useSearchCardsQuery,
+  useSearchPhoneQuery,
+  useSearchEmailQuery,
 } = kanbanApiSlice

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 // @mui
 import { useEffect } from 'react'
 
@@ -18,14 +18,20 @@ import * as Yup from 'yup'
 import Iconify from '@/components/Iconify'
 import {
   FormProvider,
+  RHFAutocomplete,
   RHFBasicSelect,
   RHFDatePicker,
   RHFMultiCheckbox,
   RHFTextField,
   RHFUploadSingleFile,
 } from '@/components/hook-form'
+import { useDebounce } from '@/hooks/useDebounce'
 // import { API_ADD_CARD } from '@/routes/api'
-import { useGetActiveJobsQuery } from '@/sections/kanban/kanbanSlice'
+import {
+  useGetActiveJobsQuery,
+  useSearchEmailQuery,
+  useSearchPhoneQuery,
+} from '@/sections/kanban/kanbanSlice'
 
 // import { _postApi } from '@/utils/axios'
 
@@ -85,7 +91,46 @@ export default function KanbanTaskAdd({
     defaultValues,
   })
   const { handleSubmit, reset, watch, setValue } = methods
+
+  const watchSocial = watch('social')
+  const watchIdJob = watch('idJob')
+
+  const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
+  const [keyEmailSearch, setKeyEmailSearch] = useState('')
+  const phoneSearch = useDebounce(keyPhoneSearch, 500)
+  const emailSearch = useDebounce(keyEmailSearch, 500)
+
   const { data: jobData } = useGetActiveJobsQuery()
+  const { data: phoneData } = useSearchPhoneQuery({
+    phone: phoneSearch,
+  })
+  const { data: emailData } = useSearchEmailQuery({
+    email: emailSearch,
+  })
+
+  const phoneOptions = useMemo(() => {
+    if (phoneData && phoneData.data.candidate.length > 0) {
+      const candidates = phoneData.data.candidate
+      return candidates.map((candidate) => ({
+        label: candidate.phone,
+        value: candidate.id,
+        name: candidate.name,
+        email: candidate.email,
+      }))
+    }
+  }, [phoneData])
+
+  const emailOptions = useMemo(() => {
+    if (emailData && emailData.data.candidate.length > 0) {
+      const candidates = emailData.data.candidate
+      return candidates.map((candidate) => ({
+        label: candidate.email,
+        value: candidate.id,
+        name: candidate.name,
+        phone: candidate.phone,
+      }))
+    }
+  }, [emailData])
 
   const columnOptions = useMemo(() => {
     if (columns) {
@@ -108,9 +153,6 @@ export default function KanbanTaskAdd({
       return formatActiveJobs
     }
   }, [jobData])
-
-  const watchSocial = watch('social')
-  const watchIdJob = watch('idJob')
 
   useEffect(() => {
     if (watchIdJob) {
@@ -203,7 +245,19 @@ export default function KanbanTaskAdd({
             </Box>
 
             <Box sx={{ marginTop: '16px' }}>
-              <RHFTextField label='Email' name='email' type='text' />
+              <RHFAutocomplete
+                AutocompleteProps={{
+                  renderOption: (props, option) => (
+                    <Box key={option.key} component='li' {...props}>
+                      {option.label}
+                    </Box>
+                  ),
+                }}
+                label='Email'
+                name='email'
+                options={emailOptions}
+                onChange={(e) => setKeyEmailSearch(e.target.value)}
+              />
             </Box>
 
             <Box sx={{ marginTop: '16px' }}>
@@ -272,7 +326,19 @@ export default function KanbanTaskAdd({
             <Box sx={{ marginTop: '16px' }}>
               <Grid container spacing={1}>
                 <Grid item xs={6}>
-                  <RHFTextField label='Phone' name='phone' type='text' />
+                  <RHFAutocomplete
+                    AutocompleteProps={{
+                      renderOption: (props, option) => (
+                        <Box key={option.key} component='li' {...props}>
+                          {option.label}
+                        </Box>
+                      ),
+                    }}
+                    label='Phone'
+                    name='phone'
+                    options={phoneOptions}
+                    onChange={(e) => setKeyPhoneSearch(e.target.value)}
+                  />
                 </Grid>
                 <Grid item xs={6}>
                   <RHFDatePicker label='Approach Date' name='approachDate' />
