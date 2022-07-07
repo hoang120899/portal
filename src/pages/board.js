@@ -16,11 +16,10 @@ import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 // layouts
 import Layout from '@/layouts'
-import { API_LIST_CARD } from '@/routes/api'
 // sections
 import { KanbanColumn, KanbanTableToolbar } from '@/sections/kanban'
 import KanbanAddTask from '@/sections/kanban/KanbanTaskAdd'
-import { _getApi } from '@/utils/axios'
+import { useGetColumnsQuery } from '@/sections/kanban/kanbanSlice'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -41,25 +40,13 @@ export default function Board() {
   const formRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)
   const [columns, setColumns] = useState([])
-  const [jobs, setJobs] = useState([])
   const [laneId, setLaneId] = useState('')
   const [open, setOpen] = useState(false)
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
   const { isLeaderRole, isMemberRole } = useRole()
+  const { data: columnData } = useGetColumnsQuery()
 
   const hasAddPermission = isLeaderRole || isMemberRole
-
-  const columnsOrder = columns.map((column) => ({
-    label: column.nameColumn,
-    value: column.id,
-  }))
-
-  const formatJobs = jobs.map((job) => ({
-    label: job.title,
-    value: job.id,
-    location: job.Location ? job.Location.name : '',
-    clientName: job.Client ? job.Client.name : '',
-  }))
 
   const handleOpenAddTask = (laneId) => {
     setOpen((prev) => !prev)
@@ -81,29 +68,17 @@ export default function Board() {
     setIsMounted(true)
   }, [])
 
-  useEffect(() => {
-    const getJobs = async () => {
-      try {
-        const res = await _getApi(API_LIST_CARD)
-        setColumns(res.data.list)
-      } catch (error) {
-        // TODO: handle error
-      }
-    }
-    getJobs()
-  }, [])
-
-  useEffect(() => {
-    const getJobs = async () => {
-      try {
-        const res = await _getApi(`/api/trello/job/active`)
-        setJobs(res.data.arrJob)
-      } catch (error) {
-        // TODO: handle error
-      }
-    }
-    getJobs()
-  }, [])
+  // useEffect(() => {
+  //   const getJobs = async () => {
+  //     try {
+  //       const res = await _getApi(API_LIST_CARD)
+  //       setColumns(res.data.list)
+  //     } catch (error) {
+  //       // TODO: handle error
+  //     }
+  //   }
+  //   getJobs()
+  // }, [])
 
   const onDragEnd = (result) => {
     // Reorder card
@@ -178,8 +153,7 @@ export default function Board() {
         <KanbanAddTask
           open={open}
           isAddTaskNoColumn={isAddTaskNoColumn}
-          jobs={formatJobs}
-          columnsOrder={columnsOrder}
+          columns={columnData}
           laneId={laneId}
           onCloseAddTask={handleCloseAddTask}
         />
@@ -201,10 +175,10 @@ export default function Board() {
                     overflowY: 'hidden',
                   }}
                 >
-                  {!columns.length ? (
+                  {!columnData?.data.list.length ? (
                     <SkeletonKanbanColumn formRefProp={formRef} />
                   ) : (
-                    columns.map((column, index) => (
+                    columnData.data.list.map((column, index) => (
                       <KanbanColumn
                         index={index}
                         key={column.id}

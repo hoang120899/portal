@@ -1,4 +1,4 @@
-// import { useState } from 'react'
+import { useMemo } from 'react'
 // @mui
 import { useEffect } from 'react'
 
@@ -24,15 +24,16 @@ import {
   RHFTextField,
   RHFUploadSingleFile,
 } from '@/components/hook-form'
-import { API_ADD_CARD } from '@/routes/api'
-import { _postApi } from '@/utils/axios'
+// import { API_ADD_CARD } from '@/routes/api'
+import { useGetActiveJobsQuery } from '@/sections/kanban/kanbanSlice'
+
+// import { _postApi } from '@/utils/axios'
 
 KanbanTaskAdd.propTypes = {
   open: PropTypes.bool,
   isAddTaskNoColumn: PropTypes.bool,
   laneId: PropTypes.string,
-  jobs: PropTypes.array,
-  columnsOrder: PropTypes.array,
+  columns: PropTypes.object,
   onCloseAddTask: PropTypes.func,
 }
 
@@ -45,9 +46,8 @@ const CheckboxRootStyle = styled('div')(() => ({
 export default function KanbanTaskAdd({
   open,
   isAddTaskNoColumn,
-  jobs,
   laneId,
-  columnsOrder,
+  columns,
   onCloseAddTask,
 }) {
   const AddTaskSchema = Yup.object().shape({
@@ -85,18 +85,41 @@ export default function KanbanTaskAdd({
     defaultValues,
   })
   const { handleSubmit, reset, watch, setValue } = methods
+  const { data: jobData } = useGetActiveJobsQuery()
+
+  const columnOptions = useMemo(() => {
+    if (columns) {
+      return columns.data.list.map((column) => ({
+        label: column.nameColumn,
+        value: column.id,
+      }))
+    }
+  }, [columns])
+
+  const jobOptions = useMemo(() => {
+    if (jobData) {
+      const activeJobs = jobData.data.arrJob
+      const formatActiveJobs = activeJobs.map((job) => ({
+        label: job.title,
+        value: job.id,
+        location: job.Location ? job.Location.name : '',
+        clientName: job.Client ? job.Client.name : '',
+      }))
+      return formatActiveJobs
+    }
+  }, [jobData])
 
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
 
   useEffect(() => {
     if (watchIdJob) {
-      const job = jobs.find((job) => job.value === watchIdJob)
+      const job = jobOptions.find((job) => job.value === watchIdJob)
       setValue('location', job?.location)
       setValue('clientName', job?.clientName)
       setValue('nameJob', job?.label)
     }
-  }, [watchIdJob, jobs, setValue])
+  }, [watchIdJob, jobOptions, setValue])
 
   const handleCloseAddTaskReset = () => {
     onCloseAddTask()
@@ -113,7 +136,7 @@ export default function KanbanTaskAdd({
 
     try {
       // send api create card
-      await _postApi(API_ADD_CARD, reqData)
+      // await _postApi(API_ADD_CARD, reqData)
     } catch (error) {
       // Todo: handle error
     }
@@ -145,13 +168,17 @@ export default function KanbanTaskAdd({
                 <RHFBasicSelect
                   label='Column name'
                   name='laneId'
-                  options={columnsOrder}
+                  options={columnOptions}
                 />
               </Box>
             )}
 
             <Box sx={{ marginTop: '16px' }}>
-              <RHFBasicSelect label='Name job' name='idJob' options={jobs} />
+              <RHFBasicSelect
+                label='Name job'
+                name='idJob'
+                options={jobOptions}
+              />
             </Box>
 
             <Box sx={{ marginTop: '16px' }}>
