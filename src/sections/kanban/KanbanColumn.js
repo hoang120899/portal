@@ -59,13 +59,21 @@ export default function KanbanColumn({
           sx={{
             px: 2,
             bgcolor: 'grey.5008',
-            borderTop: `8px solid ${background}`,
             height: {
               lg: `calc(100vh - ${lgHeight}px)`,
               xs: `calc(100vh - ${xsHeight}px)`,
             },
           }}
         >
+          <Box
+            sx={{
+              background: background,
+              borderTopLeftRadius: '1rem',
+              borderTopRightRadius: '1rem',
+            }}
+            height='8px'
+            marginX='-16px'
+          />
           <Stack spacing={3} {...provided.dragHandleProps}>
             <Box
               sx={{

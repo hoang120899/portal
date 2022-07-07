@@ -1,13 +1,13 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 // @mui
-import { Box, Paper, Stack, Typography, useTheme } from '@mui/material'
+import { Box, Paper, Stack, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
 import { Draggable } from 'react-beautiful-dnd'
 
 import Assignee from '@/components/Assignee'
-import Label from '@/components/Label'
+import CustomLabel from '@/components/CustomLabel'
 // components
 import useLocales from '@/hooks/useLocales'
 
@@ -21,10 +21,10 @@ KanbanTaskCard.propTypes = {
 }
 
 export default function KanbanTaskCard({ card, onDeleteTask, index }) {
-  const { labels = ['label test'], Users, Job, Candidate } = card
+  const { Users, Job, Candidate } = card
+  const labels = card.Labels || []
   const [openDetails, setOpenDetails] = useState(false)
   const { translate } = useLocales()
-  const theme = useTheme()
 
   const handleOpenDetails = () => {
     setOpenDetails(true)
@@ -33,6 +33,21 @@ export default function KanbanTaskCard({ card, onDeleteTask, index }) {
   const handleCloseDetails = () => {
     setOpenDetails(false)
   }
+
+  const configUserInfo = [
+    {
+      label: translate('Email'),
+      value: Candidate?.email,
+    },
+    {
+      label: translate('Phone'),
+      value: Candidate?.phone,
+    },
+    {
+      label: translate('Position'),
+      value: card?.position,
+    },
+  ]
 
   return (
     <Draggable draggableId={card.id} index={index}>
@@ -76,19 +91,29 @@ export default function KanbanTaskCard({ card, onDeleteTask, index }) {
                     handleOpenDetails()
                   }}
                 >
-                  {labels.map((label, index) => (
-                    <Label
+                  <Box display='flex'>
+                    <CustomLabel
                       key={index}
-                      variant={
-                        theme.palette.mode === 'light' ? 'ghost' : 'filled'
-                      }
                       // color={(status === 'banned' && 'error') || 'success'}
-                      color='success'
-                      sx={{ textTransform: 'capitalize', width: 'fit-content' }}
+                      color={card.Job.Client.background}
+                      sx={{
+                        marginX: '2px',
+                      }}
                     >
-                      {label}
-                    </Label>
-                  ))}
+                      {card.Job.Client.name}
+                    </CustomLabel>
+                    {labels.map((label, index) => (
+                      <CustomLabel
+                        key={index}
+                        color={label.background}
+                        sx={{
+                          marginX: '2px',
+                        }}
+                      >
+                        {label.title}
+                      </CustomLabel>
+                    ))}
+                  </Box>
                   <Typography variant='h5'>{Candidate?.name}</Typography>
                   <Typography variant='subtitle2' color='#777'>
                     {Job.title}
@@ -98,33 +123,25 @@ export default function KanbanTaskCard({ card, onDeleteTask, index }) {
                     alignItems={'center'}
                     gridTemplateColumns='60px 1fr'
                   >
-                    <Typography variant='subtitle2' fontWeight={'bold'}>
-                      {translate('Email')}:
-                    </Typography>
-                    <Typography
-                      variant='subtitle2'
-                      align='right'
-                      color='#777'
-                      sx={{
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {Candidate?.email}
-                    </Typography>
-                    <Typography variant='subtitle2' fontWeight={'bold'}>
-                      {translate('Phone')}:
-                    </Typography>
-                    <Typography variant='subtitle2' align='right' color='#777'>
-                      {Candidate?.phone}
-                    </Typography>
-                    <Typography variant='subtitle2' fontWeight={'bold'}>
-                      {translate('Position')}:
-                    </Typography>
-                    <Typography align='right' variant='subtitle2' color='#777'>
-                      {card?.position}
-                    </Typography>
+                    {configUserInfo.map((item, index) => (
+                      <React.Fragment key={`label${index}`}>
+                        <Typography variant='subtitle2' fontWeight={'bold'}>
+                          {item?.label}:
+                        </Typography>
+                        <Typography
+                          variant='subtitle2'
+                          align='right'
+                          color='#777'
+                          sx={{
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {item?.value}
+                        </Typography>
+                      </React.Fragment>
+                    ))}
                   </Box>
                   <Box onClick={(e) => e.stopPropagation()}>
                     <Assignee assignee={Users} hasAddAssignee />
