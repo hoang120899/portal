@@ -42,6 +42,7 @@ export default function Board() {
   const [columns, setColumns] = useState([])
   const [laneId, setLaneId] = useState('')
   const [open, setOpen] = useState(false)
+  const [cardId, setCardId] = useState('')
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
   const { isLeaderRole, isMemberRole } = useRole()
   const { data: columnData } = useGetColumnsQuery()
@@ -64,21 +65,21 @@ export default function Board() {
     setIsAddTaskNoColumn(false)
   }
 
+  const handleOpenUpdateTask = (cardId) => {
+    setOpen((prev) => !prev)
+    setIsAddTaskNoColumn(true)
+    setCardId(cardId)
+  }
+
+  const handleCloseUpdateTask = () => {
+    setOpen(false)
+    setIsAddTaskNoColumn(false)
+    setCardId('')
+  }
+
   useEffect(() => {
     setIsMounted(true)
   }, [])
-
-  // useEffect(() => {
-  //   const getJobs = async () => {
-  //     try {
-  //       const res = await _getApi(API_LIST_CARD)
-  //       setColumns(res.data.list)
-  //     } catch (error) {
-  //       // TODO: handle error
-  //     }
-  //   }
-  //   getJobs()
-  // }, [])
 
   const onDragEnd = (result) => {
     // Reorder card
@@ -154,8 +155,11 @@ export default function Board() {
           open={open}
           isAddTaskNoColumn={isAddTaskNoColumn}
           columns={columnData}
+          cardId={cardId}
           laneId={laneId}
-          onCloseAddTask={handleCloseAddTask}
+          hasAddPermission={hasAddPermission}
+          onClose={handleCloseAddTask}
+          onCloseUpdate={handleCloseUpdateTask}
         />
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
@@ -186,6 +190,7 @@ export default function Board() {
                         column={column}
                         formRefProp={formRef}
                         onOpenAddTask={handleOpenAddTask}
+                        onOpenUpdateTask={handleOpenUpdateTask}
                       />
                     ))
                   )}

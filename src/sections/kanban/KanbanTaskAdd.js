@@ -2,7 +2,17 @@ import { useMemo, useState } from 'react'
 // @mui
 import { useEffect } from 'react'
 
-import { Box, Button, Drawer, Grid, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Button,
+  Drawer,
+  Grid,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -14,6 +24,7 @@ import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 
+import { board } from '@/_mock'
 // components
 import Iconify from '@/components/Iconify'
 import {
@@ -21,9 +32,9 @@ import {
   RHFAutocomplete,
   RHFBasicSelect,
   RHFDatePicker,
+  RHFDateTimePicker,
   RHFMultiCheckbox,
   RHFTextField,
-  RHFUploadSingleFile,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
 // import { API_ADD_CARD } from '@/routes/api'
@@ -33,14 +44,19 @@ import {
   useSearchPhoneQuery,
 } from '@/sections/kanban/kanbanSlice'
 
+import KanbanContactsDialog from './KanbanContactsDialog'
+
 // import { _postApi } from '@/utils/axios'
 
 KanbanTaskAdd.propTypes = {
   open: PropTypes.bool,
   isAddTaskNoColumn: PropTypes.bool,
+  hasAddPermission: PropTypes.bool,
+  cardId: PropTypes.string,
   laneId: PropTypes.string,
   columns: PropTypes.object,
-  onCloseAddTask: PropTypes.func,
+  onClose: PropTypes.func,
+  onCloseUpdate: PropTypes.func,
 }
 
 const CheckboxRootStyle = styled('div')(() => ({
@@ -49,13 +65,26 @@ const CheckboxRootStyle = styled('div')(() => ({
   },
 }))
 
+const ButtonRootStyle = styled('div')(() => ({
+  '& .MuiButton-root': {
+    padding: '11px 0',
+    borderRadius: '50%',
+    minWidth: '44px',
+  },
+}))
+
 export default function KanbanTaskAdd({
   open,
   isAddTaskNoColumn,
+  hasAddPermission,
+  cardId,
   laneId,
   columns,
-  onCloseAddTask,
+  onClose,
+  onCloseUpdate,
 }) {
+  const { assignee } = board.cards['9d98ce30-3c51-4de3-8537-7a4b663ee3af'] // mock user
+
   const AddTaskSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     laneId:
@@ -84,6 +113,7 @@ export default function KanbanTaskAdd({
     approachDate: format(new Date(), 'yyyy-MM-dd'),
     position: '',
     linkCv: '',
+    refineCv: '',
     noteApproach: '',
   }
   const methods = useForm({
@@ -94,7 +124,9 @@ export default function KanbanTaskAdd({
 
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
+  const watchLinkCv = watch('linkCv')
 
+  const [openContactDialog, setOpenContactDialog] = useState(false)
   const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
   const [keyEmailSearch, setKeyEmailSearch] = useState('')
   const phoneSearch = useDebounce(keyPhoneSearch, 500)
@@ -155,6 +187,12 @@ export default function KanbanTaskAdd({
   }, [jobData])
 
   useEffect(() => {
+    if (cardId) {
+      setValue('social', ['facebook', 'linkedin', 'skype'])
+    }
+  }, [cardId, setValue])
+
+  useEffect(() => {
     if (watchIdJob) {
       const job = jobOptions.find((job) => job.value === watchIdJob)
       setValue('location', job?.location)
@@ -163,8 +201,21 @@ export default function KanbanTaskAdd({
     }
   }, [watchIdJob, jobOptions, setValue])
 
+  const handleOpenContactDialog = () => {
+    setOpenContactDialog(true)
+  }
+
+  const handleCloseContactDialog = () => {
+    setOpenContactDialog(false)
+  }
+
   const handleCloseAddTaskReset = () => {
-    onCloseAddTask()
+    onClose()
+    reset()
+  }
+
+  const handleCloseUpdateTaskReset = () => {
+    onCloseUpdate()
     reset()
   }
 
@@ -188,13 +239,17 @@ export default function KanbanTaskAdd({
   return (
     <Drawer
       open={open}
-      onClose={handleCloseAddTaskReset}
+      onClose={() => {
+        cardId ? handleCloseUpdateTaskReset() : handleCloseAddTaskReset()
+      }}
       anchor='right'
       PaperProps={{ sx: { width: { xs: 1, sm: 640 } } }}
     >
       <Box sx={{ padding: '20px' }}>
         <Box component='header'>
-          <Typography variant='h5'>Add Card</Typography>
+          <Typography variant='h5'>
+            {cardId ? 'Update Card' : 'Add Card'}
+          </Typography>
         </Box>
         <Box>
           <FormProvider
@@ -202,24 +257,31 @@ export default function KanbanTaskAdd({
             methods={methods}
           >
             <Box sx={{ marginTop: '16px' }}>
-              <RHFTextField label='Name' name='name' type='text' />
+              <RHFTextField
+                label='Name'
+                name='name'
+                type='text'
+                disabled={!hasAddPermission}
+              />
             </Box>
 
             {isAddTaskNoColumn && (
               <Box sx={{ marginTop: '16px' }}>
                 <RHFBasicSelect
-                  label='Column name'
+                  label='Column Name'
                   name='laneId'
                   options={columnOptions}
+                  disabled={!hasAddPermission}
                 />
               </Box>
             )}
 
             <Box sx={{ marginTop: '16px' }}>
               <RHFBasicSelect
-                label='Name job'
+                label='Name Job'
                 name='idJob'
                 options={jobOptions}
+                disabled={!hasAddPermission}
               />
             </Box>
 
@@ -247,6 +309,7 @@ export default function KanbanTaskAdd({
             <Box sx={{ marginTop: '16px' }}>
               <RHFAutocomplete
                 AutocompleteProps={{
+                  size: 'small',
                   renderOption: (props, option) => (
                     <Box key={option.key} component='li' {...props}>
                       {option.label}
@@ -257,20 +320,23 @@ export default function KanbanTaskAdd({
                 name='email'
                 options={emailOptions}
                 onChange={(e) => setKeyEmailSearch(e.target.value)}
+                disabled={!hasAddPermission}
               />
             </Box>
 
             <Box sx={{ marginTop: '16px' }}>
-              <CheckboxRootStyle>
-                <RHFMultiCheckbox
-                  name='social'
-                  options={[
-                    { label: 'Facebook', value: 'facebook' },
-                    { label: 'Linkedin', value: 'linkedin' },
-                    { label: 'Skype', value: 'skype' },
-                  ]}
-                />
-              </CheckboxRootStyle>
+              {!cardId && (
+                <CheckboxRootStyle>
+                  <RHFMultiCheckbox
+                    name='social'
+                    options={[
+                      { label: 'Facebook', value: 'facebook' },
+                      { label: 'Linkedin', value: 'linkedin' },
+                      { label: 'Skype', value: 'skype' },
+                    ]}
+                  />
+                </CheckboxRootStyle>
+              )}
               {watchSocial.includes('facebook') && (
                 <Box sx={{ marginTop: '16px' }}>
                   <RHFTextField
@@ -284,6 +350,7 @@ export default function KanbanTaskAdd({
                         />
                       ),
                     }}
+                    disabled={!hasAddPermission}
                   />
                 </Box>
               )}
@@ -301,6 +368,7 @@ export default function KanbanTaskAdd({
                         />
                       ),
                     }}
+                    disabled={!hasAddPermission}
                   />
                 </Box>
               )}
@@ -318,6 +386,7 @@ export default function KanbanTaskAdd({
                         />
                       ),
                     }}
+                    disabled={!hasAddPermission}
                   />
                 </Box>
               )}
@@ -328,6 +397,7 @@ export default function KanbanTaskAdd({
                 <Grid item xs={6}>
                   <RHFAutocomplete
                     AutocompleteProps={{
+                      size: 'small',
                       renderOption: (props, option) => (
                         <Box key={option.key} component='li' {...props}>
                           {option.label}
@@ -338,21 +408,98 @@ export default function KanbanTaskAdd({
                     name='phone'
                     options={phoneOptions}
                     onChange={(e) => setKeyPhoneSearch(e.target.value)}
+                    disabled={!hasAddPermission}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <RHFDatePicker label='Approach Date' name='approachDate' />
+                  <RHFDatePicker
+                    label='Approach Date'
+                    name='approachDate'
+                    disabled={!hasAddPermission}
+                  />
                 </Grid>
               </Grid>
             </Box>
 
-            <Box sx={{ marginTop: '16px' }}>
-              <RHFTextField label='Position' name='position' />
-            </Box>
+            {cardId && (
+              <Box sx={{ marginTop: '16px' }}>
+                <RHFDateTimePicker
+                  label='Expected Date'
+                  name='expectedDate'
+                  disabled={!hasAddPermission}
+                />
+              </Box>
+            )}
 
             <Box sx={{ marginTop: '16px' }}>
-              <RHFUploadSingleFile name='uploadCV' />
+              <RHFTextField
+                label='Position'
+                name='position'
+                disabled={!hasAddPermission}
+              />
             </Box>
+
+            <Box
+              sx={{ marginTop: '16px', display: 'flex', alignItems: 'center' }}
+            >
+              <RHFTextField
+                type='text'
+                label='Link CV'
+                name='linkCv'
+                value={watchLinkCv}
+                disabled
+              />
+              <input id='file-upload' type='file' hidden />
+              <label>
+                <Button component='div'>
+                  <TextField
+                    type='file'
+                    sx={{ display: 'none' }}
+                    onChange={(e) => {
+                      setValue('linkCv', e.target.value)
+                    }}
+                    disabled={!hasAddPermission}
+                  />
+                  <Iconify
+                    icon={'ant-design:upload-outlined'}
+                    width={32}
+                    height={32}
+                  />
+                </Button>
+              </label>
+            </Box>
+            {cardId && (
+              <Box
+                sx={{
+                  marginTop: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <RHFTextField
+                  type='text'
+                  label='Link Refine CV'
+                  name='refineCv'
+                  disabled
+                />
+                <input id='file-upload' type='file' hidden />
+                <label>
+                  <Button component='div'>
+                    <TextField
+                      type='file'
+                      sx={{ display: 'none' }}
+                      onChange={() => {}}
+                      disabled={!hasAddPermission}
+                    />
+                    <Iconify
+                      icon={'ant-design:upload-outlined'}
+                      width={32}
+                      height={32}
+                    />
+                  </Button>
+                </label>
+              </Box>
+            )}
 
             <Box sx={{ marginTop: '16px' }}>
               <RHFTextField
@@ -362,19 +509,79 @@ export default function KanbanTaskAdd({
                 rows={3}
               />
             </Box>
-            <Box sx={{ marginTop: '16px', textAlign: 'right' }}>
-              <Button type='submit' variant='contained'>
-                Save
-              </Button>
-              <Button
-                type='button'
-                sx={{ marginLeft: '8px' }}
-                onClick={handleCloseAddTaskReset}
-              >
-                Cancel
-              </Button>
+
+            <Box
+              sx={{
+                marginTop: '16px',
+                display: 'flex',
+                justifyContent: cardId ? 'space-between' : 'right',
+              }}
+            >
+              {cardId && (
+                <Stack direction='row'>
+                  {assignee.map((user) => (
+                    <Avatar
+                      key={user.id}
+                      alt={user.name}
+                      src={user.avatar}
+                      sx={{ m: 0.5, width: 36, height: 36 }}
+                    />
+                  ))}
+                  <Tooltip title='Add assignee'>
+                    <ButtonRootStyle>
+                      <Button
+                        onClick={handleOpenContactDialog}
+                        variant='outlined'
+                        sx={{
+                          ml: 0.5,
+                        }}
+                        disabled={!hasAddPermission}
+                      >
+                        <Iconify
+                          icon={'eva:plus-fill'}
+                          width={20}
+                          height={20}
+                        />
+                      </Button>
+                    </ButtonRootStyle>
+                  </Tooltip>
+                  <KanbanContactsDialog
+                    open={openContactDialog}
+                    onClose={handleCloseContactDialog}
+                  />
+                </Stack>
+              )}
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                {cardId && (
+                  <Button type='button' variant='contained'>
+                    Create Interview
+                  </Button>
+                )}
+                {hasAddPermission && (
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    sx={{ marginLeft: '8px' }}
+                  >
+                    {cardId ? 'Update' : 'Save'}
+                  </Button>
+                )}
+                <Button
+                  type='button'
+                  sx={{ marginLeft: '8px' }}
+                  onClick={() => {
+                    cardId
+                      ? handleCloseUpdateTaskReset()
+                      : handleCloseAddTaskReset()
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Box>
             </Box>
           </FormProvider>
+          {/* TODO: UI History */}
+          {/* TODO: UI Comment */}
         </Box>
       </Box>
     </Drawer>

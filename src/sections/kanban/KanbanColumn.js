@@ -25,6 +25,7 @@ KanbanColumn.propTypes = {
     PropTypes.shape({ current: PropTypes.any }),
   ]),
   onOpenAddTask: PropTypes.func,
+  onOpenUpdateTask: PropTypes.func,
 }
 
 export default function KanbanColumn({
@@ -33,6 +34,7 @@ export default function KanbanColumn({
   hasAddPermission,
   formRefProp,
   onOpenAddTask,
+  onOpenUpdateTask,
 }) {
   const scrollRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
@@ -107,26 +109,6 @@ export default function KanbanColumn({
               )}
             </Box>
 
-            {/* <Stack spacing={2} sx={{ pb: 2 }}>
-              {open && (
-                <KanbanAddTask
-                  onAddTask={handleAddTask}
-                  onCloseAddTask={handleCloseAddTask}
-                />
-              )}
-
-              <Button
-                fullWidth
-                size='large'
-                color='inherit'
-                startIcon={
-                  <Iconify icon={'eva:plus-fill'} width={20} height={20} />
-                }
-                onClick={handleOpenAddTask}
-                sx={{ fontSize: 14 }}
-              />
-            </Stack> */}
-
             <Droppable droppableId={id} type='task'>
               {(provided) => (
                 <Box
@@ -150,6 +132,7 @@ export default function KanbanColumn({
                       <KanbanTaskCard
                         key={candi.id}
                         onDeleteTask={handleDeleteTask}
+                        onOpenUpdateTask={onOpenUpdateTask}
                         card={candi}
                         index={index}
                       />

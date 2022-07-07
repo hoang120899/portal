@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 // @mui
 import { Box, Paper, Stack, Typography } from '@mui/material'
@@ -11,28 +11,16 @@ import CustomLabel from '@/components/CustomLabel'
 // components
 import useLocales from '@/hooks/useLocales'
 
-//
-import KanbanTaskDetails from './KanbanTaskDetails'
-
 KanbanTaskCard.propTypes = {
   card: PropTypes.object,
   index: PropTypes.number,
-  onDeleteTask: PropTypes.func,
+  onOpenUpdateTask: PropTypes.func,
 }
 
-export default function KanbanTaskCard({ card, onDeleteTask, index }) {
-  const { Users, Job, Candidate } = card
+export default function KanbanTaskCard({ card, index, onOpenUpdateTask }) {
+  const { Users, Job, Candidate, id: cardId } = card
   const labels = card.Labels || []
-  const [openDetails, setOpenDetails] = useState(false)
   const { translate } = useLocales()
-
-  const handleOpenDetails = () => {
-    setOpenDetails(true)
-  }
-
-  const handleCloseDetails = () => {
-    setOpenDetails(false)
-  }
 
   const configUserInfo = [
     {
@@ -67,7 +55,10 @@ export default function KanbanTaskCard({ card, onDeleteTask, index }) {
               },
             }}
           >
-            <Box onClick={handleOpenDetails} sx={{ cursor: 'pointer' }}>
+            <Box
+              onClick={onOpenUpdateTask.bind(null, cardId)}
+              sx={{ cursor: 'pointer' }}
+            >
               <Box
                 sx={{
                   borderRadius: 1,
@@ -88,7 +79,7 @@ export default function KanbanTaskCard({ card, onDeleteTask, index }) {
                   }}
                   onClick={(e) => {
                     e.stopPropagation()
-                    handleOpenDetails()
+                    onOpenUpdateTask(cardId)
                   }}
                 >
                   <Box display='flex'>
@@ -150,12 +141,6 @@ export default function KanbanTaskCard({ card, onDeleteTask, index }) {
               </Box>
             </Box>
           </Paper>
-          <KanbanTaskDetails
-            card={card}
-            isOpen={openDetails}
-            onClose={handleCloseDetails}
-            onDeleteTask={() => onDeleteTask(card.id)}
-          />
         </div>
       )}
     </Draggable>
