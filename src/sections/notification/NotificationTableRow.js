@@ -19,7 +19,7 @@ export default function NotificationTableRow({ row }) {
     <TableRow hover>
       <TableCell align='left'>{User?.name}</TableCell>
 
-      <TableCell align='left' width={160}>
+      <TableCell align='left' width='40%'>
         <Typography variant='subtitle2'>
           {content?.message}
           <strong>{content?.title}</strong>

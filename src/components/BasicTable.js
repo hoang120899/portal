@@ -44,12 +44,8 @@ export default function BasicTable({
 }) {
   const isNotFound = !isLoading && !dataSource.length
   const tableData = React.useMemo(
-    () =>
-      (isLoading ? [...Array(rowsPerPage)] : dataSource).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [isLoading, rowsPerPage, page, dataSource]
+    () => (isLoading ? [...Array(rowsPerPage)] : dataSource),
+    [isLoading, rowsPerPage, dataSource]
   )
 
   return (

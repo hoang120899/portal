@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useReducer } from 'react'
 
 // @mui
 import { Card } from '@mui/material'
@@ -18,30 +18,56 @@ import NotificationTableToolbar from './NotificationTableToolbar'
 import { TABLE_HEAD } from './config'
 import { useGetAdminAllNotifyQuery } from './notificationSlice'
 
+const defaultValues = {
+  userId: '',
+  type: '',
+  timeStart: null,
+  timeEnd: null,
+}
+
+function reducer(state, action) {
+  const { type, payload = {} } = action
+  switch (type) {
+    case 'search':
+      return {
+        ...state,
+        payload,
+      }
+    default:
+      throw new Error()
+  }
+}
+
 export default function NotificationList() {
+  const [searchFormValues, dispatch] = useReducer(reducer, defaultValues)
   const methods = useForm({
-    defaultValues: {
-      userId: '',
-      type: '',
-      timeStart: null,
-      timeEnd: null,
-    },
+    defaultValues,
   })
   const { watch } = methods
-  const watchAllFields = watch()
   const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
     useTable()
 
   useEffect(() => {
+    const subscription = watch((value) =>
+      dispatch({
+        type: 'search',
+        payload: value,
+      })
+    )
+    return () => subscription.unsubscribe()
+  }, [watch])
+
+  useEffect(() => {
     setPage(0)
-  }, [watchAllFields, setPage])
+  }, [setPage, searchFormValues])
 
   const { data, isLoading, isFetching } = useGetAdminAllNotifyQuery({
-    ...watchAllFields,
+    ...searchFormValues,
     pageSize: rowsPerPage,
     pageNumber: page + 1,
   })
-  const listNotifications = data?.data?.list || []
+  const { list: listNotifications = [], total: totalRecord = 0 } =
+    data?.data || {}
 
   return (
     <Card>
@@ -59,7 +85,7 @@ export default function NotificationList() {
         )}
       />
       <Pagination
-        dataSource={listNotifications}
+        totalRecord={totalRecord}
         page={page}
         rowsPerPage={rowsPerPage}
         onChangePage={onChangePage}

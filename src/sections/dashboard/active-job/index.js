@@ -67,7 +67,7 @@ const DashboardActiveJob = ({ title, subheader, ...other }) => {
 
       <BasicTable
         columns={TABLE_HEAD}
-        dataSource={DATASOURCE}
+        dataSource={DATASOURCE.splice(0, 5)}
         page={page}
         rowsPerPage={rowsPerPage}
         TableRowComp={(row, index) => (
@@ -75,7 +75,7 @@ const DashboardActiveJob = ({ title, subheader, ...other }) => {
         )}
       />
       <Pagination
-        dataSource={DATASOURCE}
+        totalRecord={DATASOURCE.length}
         page={page}
         rowsPerPage={rowsPerPage}
         onChangePage={onChangePage}

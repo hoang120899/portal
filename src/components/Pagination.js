@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 import { PAGINATION, defaultPagination } from '@/config'
 
 Pagination.propTypes = {
-  dataSource: PropTypes.array.isRequired,
+  totalRecord: PropTypes.number,
   page: PropTypes.number,
   rowsPerPage: PropTypes.number,
   onChangePage: PropTypes.func,
@@ -15,7 +15,7 @@ Pagination.propTypes = {
 }
 
 export default function Pagination({
-  dataSource = [],
+  totalRecord = 0,
   page = 0,
   rowsPerPage = defaultPagination,
   onChangePage,
@@ -27,7 +27,7 @@ export default function Pagination({
       <TablePagination
         rowsPerPageOptions={PAGINATION}
         component='div'
-        count={dataSource.length}
+        count={totalRecord}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={onChangePage}
