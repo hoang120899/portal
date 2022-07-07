@@ -30,22 +30,29 @@ import Iconify from '@/components/Iconify'
 import MenuPopover from '@/components/MenuPopover'
 import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
+import useAuth from '@/hooks/useAuth'
 // hooks
 import useSocket from '@/hooks/useSocket'
 import { PATH_DASHBOARD } from '@/routes/paths'
-import { PARAMS_ALL_NOTI_HEADER } from '@/sections/notification/config'
 import { useGetAdminAllNotifyQuery } from '@/sections/notification/notificationSlice'
 // utils
 import { fToNow } from '@/utils/formatTime'
+import uuidv4 from '@/utils/uuidv4'
 
 export default function NotificationsPopover() {
+  const PAGE_SIZE = 12
+  const PAGE_NUMBER = 1
+  const NOTI_SIZE = 5
   const [notifications, setNotifications] = useState([])
-  const { data, isLoading, isFetching } = useGetAdminAllNotifyQuery(
-    PARAMS_ALL_NOTI_HEADER
-  )
+  const { data, isLoading, isFetching } = useGetAdminAllNotifyQuery({
+    pageSize: PAGE_SIZE,
+    pageNumber: PAGE_NUMBER,
+  })
   const { socket } = useSocket()
   const router = useRouter()
+  const { user } = useAuth()
 
+  const userId = user?.userId
   const listNotifications = data?.data?.list
 
   const totalUnRead = notifications?.filter(
@@ -55,21 +62,18 @@ export default function NotificationsPopover() {
   const [open, setOpen] = useState(null)
 
   useEffect(() => {
-    if (!socket) return
-    socket.on('connect', function () {
-      // eslint-disable-next-line no-console
-      console.log('Successfully connected!', socket.id)
-    })
-    // const userId = "f06f0080-0d6c-48e4-8ee8-f151ee476be5"
-    // socket.emit("join", userId);
-    // socket.on("notification", (noti) => {
-    //   console.log(noti);
-    // })
-  }, [socket])
+    setNotifications(listNotifications ? listNotifications : [])
+  }, [listNotifications])
 
   useEffect(() => {
-    if (data) setNotifications(listNotifications)
-  }, [data, listNotifications])
+    if (!socket) return
+    socket.emit('join', userId)
+    socket.on('notification', (noti) => {
+      noti.content.id = uuidv4() // unique id notification for the same card content in board
+      noti.content.createdAt = new Date()
+      setNotifications((prevState) => [noti.content, ...prevState])
+    })
+  }, [socket, userId])
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget)
@@ -80,12 +84,12 @@ export default function NotificationsPopover() {
   }
 
   const handleMarkAllAsRead = () => {
-    // setNotifications(
-    //   notifications.map((notification) => ({
-    //     ...notification,
-    //     isUnRead: false,
-    //   }))
-    // )
+    setNotifications(
+      notifications.map((notification) => ({
+        ...notification,
+        status: false,
+      }))
+    )
   }
 
   const handleNavigateNotificationPage = () => {
@@ -100,7 +104,10 @@ export default function NotificationsPopover() {
         onClick={handleOpen}
         sx={{ width: 40, height: 40 }}
       >
-        <Badge badgeContent={totalUnRead} color='error'>
+        <Badge
+          badgeContent={totalUnRead > NOTI_SIZE ? `${NOTI_SIZE}+` : totalUnRead}
+          color='error'
+        >
           <Iconify icon='eva:bell-fill' width={20} height={20} />
         </Badge>
       </IconButtonAnimate>
@@ -115,7 +122,8 @@ export default function NotificationsPopover() {
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant='subtitle1'>Notifications</Typography>
             <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-              You have {totalUnRead} unread messages
+              You have {totalUnRead > NOTI_SIZE ? `${NOTI_SIZE}+` : totalUnRead}{' '}
+              unread messages
             </Typography>
           </Box>
 
@@ -156,19 +164,19 @@ export default function NotificationsPopover() {
                 }
               >
                 {notifications
-                  .slice(0, totalUnRead)
+                  .slice(0, totalUnRead > NOTI_SIZE ? NOTI_SIZE : totalUnRead)
                   .map(
                     (notification) =>
                       !notification.status && (
                         <NotificationItem
-                          key={notification.id}
+                          key={notification.id || notification.content.id}
                           notification={notification}
                         />
                       )
                   )}
               </List>
             )}
-            {totalUnRead < 5 && (
+            {totalUnRead < NOTI_SIZE && (
               <List
                 disablePadding
                 subheader={
@@ -181,12 +189,12 @@ export default function NotificationsPopover() {
                 }
               >
                 {notifications
-                  .slice(totalUnRead, totalUnRead ? totalUnRead + 3 : 3)
+                  .slice(totalUnRead, NOTI_SIZE)
                   .map(
                     (notification) =>
                       notification.status && (
                         <NotificationItem
-                          key={notification.id}
+                          key={notification.id || notification.content.id}
                           notification={notification}
                         />
                       )
@@ -256,7 +264,7 @@ function NotificationItem({ notification }) {
               icon='eva:clock-outline'
               sx={{ mr: 0.5, width: 16, height: 16 }}
             />
-            {fToNow(notification.createdAt)}
+            {fToNow(notification.createdAt || '2022-07-07T10:14:16.000Z')}
           </Typography>
         }
       />
@@ -323,10 +331,10 @@ function renderContent(notification) {
     }
   }
   return {
-    avatar: notification.User.linkAvatar ? (
+    avatar: notification.User?.linkAvatar ? (
       <img
         alt={notification.content.title}
-        src={notification.User.linkAvatar}
+        src={notification.User?.linkAvatar}
       />
     ) : null,
     title,
