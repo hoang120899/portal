@@ -9,7 +9,6 @@ import { Draggable, Droppable } from 'react-beautiful-dnd'
 
 // components
 import Iconify from '@/components/Iconify'
-import Scrollbar from '@/components/Scrollbar'
 import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
 // hooks
 import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
@@ -122,8 +121,8 @@ export default function KanbanColumn({
 
             <Droppable droppableId={id} type='task'>
               {(provided) => (
-                <Scrollbar
-                  scrollableNodeProps={{ ref: scrollRef }}
+                <Box
+                  ref={scrollRef}
                   sx={{
                     height: {
                       lg: `calc(100vh - ${lgHeight + 16 + 44 + 24}px)`,
@@ -131,6 +130,7 @@ export default function KanbanColumn({
                     },
                     width: '280px',
                     paddingBottom: 2,
+                    overflowY: 'auto',
                   }}
                 >
                   <Stack
@@ -148,7 +148,7 @@ export default function KanbanColumn({
                     ))}
                     {provided.placeholder}
                   </Stack>
-                </Scrollbar>
+                </Box>
               )}
             </Droppable>
           </Stack>
