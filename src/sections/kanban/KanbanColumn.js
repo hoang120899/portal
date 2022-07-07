@@ -39,7 +39,7 @@ export default function KanbanColumn({
   const { enqueueSnackbar } = useSnackbar()
   const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
   const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
-  const { nameColumn, CandidateJobs, id } = column
+  const { nameColumn, CandidateJobs, id, background } = column
 
   useEffect(() => {
     if (!isScrollToBottom) return
@@ -49,21 +49,6 @@ export default function KanbanColumn({
   const handleDeleteTask = () => {
     enqueueSnackbar('Delete success!')
   }
-
-  const color = [
-    '#2688ea',
-    '#0033ae',
-    '#6c06b8',
-    '#d804b5',
-    '#04d8c7',
-    '#04d857',
-    '#b5d804',
-    '#d8b504',
-    '#ee3906',
-    '#03875f',
-    '#871e03',
-    '#0a0387',
-  ]
 
   return (
     <Draggable draggableId={id} index={index} isDragDisabled={true}>
@@ -75,7 +60,7 @@ export default function KanbanColumn({
           sx={{
             px: 2,
             bgcolor: 'grey.5008',
-            borderTop: `8px solid ${color[index % 12]}`,
+            borderTop: `8px solid ${background}`,
             height: {
               lg: `calc(100vh - ${lgHeight}px)`,
               xs: `calc(100vh - ${xsHeight}px)`,
