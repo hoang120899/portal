@@ -44,7 +44,9 @@ import {
   useSearchPhoneQuery,
 } from '@/sections/kanban/kanbanSlice'
 
+// _mock_
 import KanbanContactsDialog from './KanbanContactsDialog'
+import KanbanUpdateHistory from './KanbanUpdateHistory'
 
 // import { _postApi } from '@/utils/axios'
 
@@ -66,10 +68,14 @@ const CheckboxRootStyle = styled('div')(() => ({
 }))
 
 const ButtonRootStyle = styled('div')(() => ({
+  '&': {
+    display: 'flex',
+    alignItems: 'center',
+  },
   '& .MuiButton-root': {
-    padding: '11px 0',
+    padding: '8px 0',
     borderRadius: '50%',
-    minWidth: '44px',
+    minWidth: '38px',
   },
 }))
 
@@ -127,6 +133,7 @@ export default function KanbanTaskAdd({
   const watchLinkCv = watch('linkCv')
 
   const [openContactDialog, setOpenContactDialog] = useState(false)
+  const [openHistory, setOpenHistory] = useState(false)
   const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
   const [keyEmailSearch, setKeyEmailSearch] = useState('')
   const phoneSearch = useDebounce(keyPhoneSearch, 500)
@@ -211,12 +218,18 @@ export default function KanbanTaskAdd({
 
   const handleCloseAddTaskReset = () => {
     onClose()
+    setOpenHistory(false)
     reset()
   }
 
   const handleCloseUpdateTaskReset = () => {
     onCloseUpdate()
+    setOpenHistory(false)
     reset()
+  }
+
+  const handleOpenHistory = () => {
+    setOpenHistory((prev) => !prev)
   }
 
   const hanldeAddTask = async (data) => {
@@ -581,6 +594,54 @@ export default function KanbanTaskAdd({
             </Box>
           </FormProvider>
           {/* TODO: UI History */}
+          <Box sx={{ marginTop: '16px' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Stack direction='row'>
+                <Iconify icon='dashicons:calendar-alt' width={20} height={20} />
+                <Typography variant='span' sx={{ ml: 1 }}>
+                  History
+                </Typography>
+              </Stack>
+              <Button
+                type='button'
+                variant='outlined'
+                onClick={handleOpenHistory}
+              >
+                Show
+              </Button>
+            </Box>
+          </Box>
+          {openHistory && (
+            <Box sx={{ marginTop: '16px' }}>
+              <KanbanUpdateHistory
+                title='News Update'
+                list={[
+                  {
+                    User: {
+                      name: 'Test name',
+                      linkAvatar: null,
+                    },
+                    content: 'Test content abc asd asdasd qwe',
+                    createdAt: '2022-07-06T15:45:07.000Z',
+                  },
+                  {
+                    User: {
+                      name: 'Test name 2',
+                      linkAvatar: null,
+                    },
+                    content: 'Test content abc asdasd',
+                    createdAt: '2022-07-04T15:45:07.000Z',
+                  },
+                ]}
+              />
+            </Box>
+          )}
           {/* TODO: UI Comment */}
         </Box>
       </Box>
