@@ -3,14 +3,18 @@ import qs from 'query-string'
 import { apiSlice } from '@/redux/api/apiSlice'
 import {
   API_ADMIN_LIST_JOB,
+  API_ASSIGNMENT,
   API_LIST_ACTIVE_JOB,
   API_LIST_CARD,
   API_LIST_CLIENT,
   API_LIST_LABEL,
   API_LIST_MEMBER,
+  API_LIST_USER,
+  API_REMOVE_ASSIGNMENT,
   API_SEARCH_CARD,
   API_SEARCH_EMAIL,
   API_SEARCH_PHONE,
+  API_V1_CARD,
 } from '@/routes/api'
 
 export const kanbanApiSlice = apiSlice.injectEndpoints({
@@ -31,6 +35,26 @@ export const kanbanApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: API_LIST_LABEL,
         method: 'GET',
+      }),
+    }),
+    deleteLabel: builder.mutation({
+      query: (id) => ({
+        url: `${API_V1_CARD}/${id}/label`,
+        method: 'DELETE',
+      }),
+    }),
+    addAssignee: builder.mutation({
+      query: ({ id, userId }) => ({
+        url: `${API_ASSIGNMENT}/${id}`,
+        method: 'PATCH',
+        data: { userId },
+      }),
+    }),
+    removeAssignee: builder.mutation({
+      query: ({ id, userId }) => ({
+        url: `${API_REMOVE_ASSIGNMENT}/${id}`,
+        method: 'PATCH',
+        data: { userId },
       }),
     }),
     getClient: builder.query({
@@ -69,6 +93,12 @@ export const kanbanApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getUser: builder.query({
+      query: () => ({
+        url: API_LIST_USER,
+        method: 'GET',
+      }),
+    }),
   }),
 })
 
@@ -76,10 +106,14 @@ export const {
   useGetColumnsQuery,
   useGetActiveJobsQuery,
   useGetLabelQuery,
+  useDeleteLabelMutation,
   useGetClientQuery,
   useGetJobQuery,
   useGetMemberQuery,
   useSearchCardsQuery,
   useSearchPhoneQuery,
   useSearchEmailQuery,
+  useGetUserQuery,
+  useAddAssigneeMutation,
+  useRemoveAssigneeMutation,
 } = kanbanApiSlice
