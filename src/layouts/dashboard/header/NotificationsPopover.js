@@ -32,6 +32,7 @@ import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
 import useAuth from '@/hooks/useAuth'
 // hooks
+import useRole from '@/hooks/useRole'
 import useSocket from '@/hooks/useSocket'
 import { PATH_DASHBOARD } from '@/routes/paths'
 import {
@@ -42,15 +43,17 @@ import {
 import { fToNow } from '@/utils/formatTime'
 import uuidv4 from '@/utils/uuidv4'
 
-export default function NotificationsPopover() {
-  const PAGE_SIZE = 12
-  const PAGE_NUMBER = 1
-  const NOTI_SIZE = 5
+const PAGE_SIZE = 12
+const PAGE_NUMBER = 1
+const NOTI_SIZE = 5
 
+export default function NotificationsPopover() {
+  const { currentRole } = useRole()
   const [notifications, setNotifications] = useState([])
   const { data, isLoading, isFetching } = useGetAdminAllNotifyQuery({
     pageSize: PAGE_SIZE,
     pageNumber: PAGE_NUMBER,
+    currentRole,
   })
   const [updateAdminReadAllNotify] = useUpdateAdminReadAllNotifyMutation()
 
@@ -257,7 +260,7 @@ export default function NotificationsPopover() {
 
 NotificationItem.propTypes = {
   notification: PropTypes.shape({
-    // createdAt: PropTypes.instanceOf(Date),
+    createdAt: PropTypes.string,
     id: PropTypes.string,
     status: PropTypes.bool,
     title: PropTypes.string,
@@ -302,7 +305,7 @@ function NotificationItem({ notification, handleForwardNotification }) {
               icon='eva:clock-outline'
               sx={{ mr: 0.5, width: 16, height: 16 }}
             />
-            {fToNow(notification.createdAt || '2022-07-07T10:14:16.000Z')}
+            {fToNow(notification?.createdAt)}
           </Typography>
         }
       />
