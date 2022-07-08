@@ -63,19 +63,19 @@ export default function KanbanTaskCard({ card, onOpenUpdateTask, index }) {
   const onToggleAssignee = async (checked, userId) => {
     if (checked) {
       try {
-        const rs = await removeAssignee({ id: card.id, userId })
-        if (rs.status === 200) {
-          setUsers(users.filter((item) => item.id !== userId))
-        }
+        await removeAssignee({ id: card.id, userId })
+        setUsers(users.filter((item) => item.id !== userId))
       } catch (error) {
         // TO DO: handle error
       }
     } else {
       try {
-        const rs = await addAssignee({ id: card.id, userId })
-        if (rs.status === 200) {
-          setUsers(users.filter((item) => item.id !== userId))
-        }
+        await addAssignee({ id: card.id, userId })
+        const user = [
+          ...users,
+          contactData.data.list.find((item) => item.id === userId),
+        ]
+        setUsers(user)
       } catch (error) {
         // TO DO: handle error
       }
