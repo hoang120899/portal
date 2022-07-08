@@ -7,8 +7,10 @@ import {
   API_LIST_ACTIVE_JOB,
   API_LIST_CARD,
   API_LIST_CLIENT,
+  API_LIST_COMMENT,
   API_LIST_LABEL,
   API_LIST_MEMBER,
+  API_LIST_UPDATE_HISTORY,
   API_LIST_USER,
   API_REMOVE_ASSIGNMENT,
   API_SEARCH_CARD,
@@ -99,6 +101,19 @@ export const kanbanApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getUpdateHistory: builder.query({
+      query: (data) => ({
+        url: `${API_LIST_UPDATE_HISTORY}`,
+        method: 'POST',
+        data,
+      }),
+    }),
+    getListComment: builder.query({
+      query: (cardId) => ({
+        url: `${API_LIST_COMMENT}/${cardId}/card`,
+        method: 'GET',
+      }),
+    }),
   }),
 })
 
@@ -110,10 +125,12 @@ export const {
   useGetClientQuery,
   useGetJobQuery,
   useGetMemberQuery,
+  useGetListCommentQuery,
   useSearchCardsQuery,
   useSearchPhoneQuery,
   useSearchEmailQuery,
   useGetUserQuery,
   useAddAssigneeMutation,
   useRemoveAssigneeMutation,
+  useGetUpdateHistoryQuery,
 } = kanbanApiSlice

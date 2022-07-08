@@ -1,74 +1,120 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 // @mui
-import { Avatar, Stack, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 
 import PropTypes from 'prop-types'
 
 // components
-import Image from '@/components/Image'
-import LightboxModal from '@/components/LightboxModal'
 // utils
-import { fToNow } from '@/utils/formatTime'
+import Scrollbar from '@/components/Scrollbar'
+import { useGetListCommentQuery } from '@/sections/kanban/kanbanSlice'
+import { fDateTime } from '@/utils/formatTime'
 
-KanbanTaskCommentList.propTypes = {
-  comments: PropTypes.array,
+// ----------------------------------------------------------------------
+
+KanbanCommentList.propTypes = {
+  title: PropTypes.string,
+  cardId: PropTypes.string,
 }
 
-export default function KanbanTaskCommentList({ comments }) {
-  const [openLightbox, setOpenLightbox] = useState(false)
+export default function KanbanCommentList({ title, cardId, ...other }) {
+  const { data: commentData } = useGetListCommentQuery(cardId)
 
-  const [selectedImage, setSelectedImage] = useState(0)
+  const commentList = useMemo(() => {
+    if (commentData && commentData.data.list) {
+      return commentData.data.list.map((comment) => ({
+        id: comment.id,
+        User: comment.User,
+        content: comment.content,
+        userId: comment.userId,
+        updatedAt: comment.updatedAt,
+      }))
+    } else {
+      return []
+    }
+  }, [commentData])
 
-  const imagesLightbox = comments
-    .filter((comment) => comment.messageType === 'image')
-    .map((item) => item.message)
+  return (
+    <Card {...other}>
+      <CardHeader title={title} sx={{ p: 2, pb: 0 }} />
 
-  const handleOpenLightbox = (url) => {
-    const selectedImage = imagesLightbox.findIndex((index) => index === url)
-    setOpenLightbox(true)
-    setSelectedImage(selectedImage)
+      <Scrollbar>
+        <Stack spacing={2} sx={{ p: 2 }}>
+          {commentList.map((commentItem) => (
+            <KanbanCommentItem key={commentItem.id} commentItem={commentItem} />
+          ))}
+        </Stack>
+      </Scrollbar>
+    </Card>
+  )
+}
+
+// ----------------------------------------------------------------------
+
+KanbanCommentItem.propTypes = {
+  commentItem: PropTypes.object,
+}
+
+function KanbanCommentItem({ commentItem }) {
+  const { User, content, updatedAt } = commentItem
+  const [isEdit, setIsEdit] = useState(false)
+  const [editComment, setEditComment] = useState('')
+
+  const handleOpenEditCommentInput = () => {
+    setIsEdit((prev) => !prev)
+    setEditComment(commentItem.content)
+  }
+
+  const handleCommentChange = (e) => {
+    setEditComment(e.target.value)
+    setEditComment('')
   }
 
   return (
     <>
-      <Stack spacing={3} sx={{ py: 3, px: 2.5, bgcolor: 'background.neutral' }}>
-        {comments.map((comment) => (
-          <Stack key={comment.id} direction='row' spacing={2}>
-            <Avatar src={comment.avatar} sx={{ width: 32, height: 32 }} />
-            <div>
-              <Stack direction='row' alignItems='center' spacing={1}>
-                <Typography variant='subtitle2'> {comment.name}</Typography>
-                <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                  {fToNow(comment.createdAt)}
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Avatar alt={User.name} src={User.linkAvatar}>
+          A
+        </Avatar>
+
+        <Box ml={2} sx={{ flex: '1' }}>
+          {isEdit ? (
+            <TextField
+              label='Edit Comment'
+              value={editComment}
+              fullWidth
+              multiline
+              rows={1}
+              onChange={handleCommentChange}
+            />
+          ) : (
+            <>
+              <Stack direction='row'>
+                <Typography mr={1} sx={{ fontWeight: 'bold' }}>
+                  {User.name}
                 </Typography>
+                <Typography>{content}</Typography>
               </Stack>
+              <Typography variant='caption'>{fDateTime(updatedAt)}</Typography>
+            </>
+          )}
 
-              {comment.messageType === 'image' ? (
-                <Image
-                  alt={comment.message}
-                  src={comment.message}
-                  onClick={() => handleOpenLightbox(comment.message)}
-                  sx={{ mt: 2, borderRadius: 1 }}
-                />
-              ) : (
-                <Typography variant='body2' sx={{ mt: 0.5 }}>
-                  {comment.message}
-                </Typography>
-              )}
-            </div>
-          </Stack>
-        ))}
-      </Stack>
-
-      <LightboxModal
-        images={imagesLightbox}
-        mainSrc={imagesLightbox[selectedImage]}
-        photoIndex={selectedImage}
-        setPhotoIndex={setSelectedImage}
-        isOpen={openLightbox}
-        onCloseRequest={() => setOpenLightbox(false)}
-      />
+          <Button onClick={handleOpenEditCommentInput}>
+            {isEdit ? 'Cancel' : 'Edit'}
+          </Button>
+          {isEdit && <Button>Save</Button>}
+        </Box>
+      </Box>
     </>
   )
 }

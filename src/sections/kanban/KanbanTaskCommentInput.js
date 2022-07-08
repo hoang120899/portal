@@ -1,48 +1,19 @@
 // @mui
-import {
-  Button,
-  IconButton,
-  OutlinedInput,
-  Paper,
-  Stack,
-  Tooltip,
-} from '@mui/material'
-
-// components
-import Iconify from '@/components/Iconify'
+import { Button, OutlinedInput, Paper, Stack } from '@mui/material'
 
 export default function KanbanTaskCommentInput() {
   return (
-    <Stack direction='row' spacing={2} sx={{ py: 3, px: 2.5 }}>
+    <Stack direction='row' spacing={2}>
       <Paper variant='outlined' sx={{ p: 1, flexGrow: 1 }}>
         <OutlinedInput
           fullWidth
           multiline
-          rows={2}
+          rows={1}
           placeholder='Type a message'
           sx={{ '& fieldset': { display: 'none' } }}
         />
 
-        <Stack
-          direction='row'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Stack direction='row' spacing={0.5}>
-            <Tooltip title='Add photo'>
-              <IconButton size='small'>
-                <Iconify
-                  icon={'ic:round-add-photo-alternate'}
-                  width={20}
-                  height={20}
-                />
-              </IconButton>
-            </Tooltip>
-            <IconButton size='small'>
-              <Iconify icon={'eva:attach-2-fill'} width={20} height={20} />
-            </IconButton>
-          </Stack>
-
+        <Stack direction='row' justifyContent='flex-end' alignItems='center'>
           <Button variant='contained'>Comment</Button>
         </Stack>
       </Paper>
