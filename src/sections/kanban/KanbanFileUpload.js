@@ -7,24 +7,27 @@ import PropTypes from 'prop-types'
 
 import Iconify from '@/components/Iconify'
 import { RHFTextField } from '@/components/hook-form'
-
-// import { _postApi } from '@/utils/axios'
+import { _postApi } from '@/utils/axios'
 
 KanbanFileUpload.propTypes = {
-  name: PropTypes.string,
-  nameJob: PropTypes.string,
-  idJob: PropTypes.string,
+  label: PropTypes.string,
+  nameTextField: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  nameJob: PropTypes.string.isRequired,
+  idJob: PropTypes.string.isRequired,
   linkCv: PropTypes.string,
   hasAddPermission: PropTypes.bool,
   setValue: PropTypes.func,
 }
 
 export default function KanbanFileUpload({
+  label,
+  nameTextField,
   name,
   nameJob,
   idJob,
   hasAddPermission,
-  linkCv,
+  setValue,
 }) {
   const handleUploadFile = async (e) => {
     if (name === '' || nameJob === '') {
@@ -40,25 +43,18 @@ export default function KanbanFileUpload({
       formData.append('file', file)
       formData.append('nameFile', `${name} ${nameJob}`)
       formData.append('idJob', `${idJob}`)
-      //   console.log(formData)
-      //   try {
-      //     const res = await _postApi('/api/cards/upload/cv', formData)
-      //     console.log(res)
-      //   } catch (error) {
-      //     console.log(error)
-      //   }
+      try {
+        const res = await _postApi('/api/cards/upload/cv', formData)
+        setValue('linkCv', res.fileName)
+      } catch (error) {
+        // TODO: Handle error
+      }
     }
   }
 
   return (
     <Fragment>
-      <RHFTextField
-        type='text'
-        label='Link CV'
-        name='linkCv'
-        value={linkCv}
-        disabled
-      />
+      <RHFTextField type='text' label={label} name={nameTextField} disabled />
       <input id='file-upload' type='file' hidden />
       <label>
         <Button component='div' disabled={!hasAddPermission}>

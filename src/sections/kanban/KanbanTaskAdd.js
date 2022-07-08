@@ -447,6 +447,8 @@ export default function KanbanTaskAdd({
               sx={{ marginTop: '16px', display: 'flex', alignItems: 'center' }}
             >
               <KanbanFileUpload
+                label='Link CV'
+                nameTextField='linkCv'
                 name={watch('name')}
                 nameJob={watch('nameJob')}
                 idJob={watchIdJob}
