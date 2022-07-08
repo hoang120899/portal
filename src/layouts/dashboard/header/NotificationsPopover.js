@@ -34,7 +34,10 @@ import useAuth from '@/hooks/useAuth'
 // hooks
 import useSocket from '@/hooks/useSocket'
 import { PATH_DASHBOARD } from '@/routes/paths'
-import { useGetAdminAllNotifyQuery } from '@/sections/notification/notificationSlice'
+import {
+  useGetAdminAllNotifyQuery,
+  useUpdateAdminReadAllNotifyMutation,
+} from '@/sections/notification/notificationSlice'
 // utils
 import { fToNow } from '@/utils/formatTime'
 import uuidv4 from '@/utils/uuidv4'
@@ -43,11 +46,14 @@ export default function NotificationsPopover() {
   const PAGE_SIZE = 12
   const PAGE_NUMBER = 1
   const NOTI_SIZE = 5
+
   const [notifications, setNotifications] = useState([])
   const { data, isLoading, isFetching } = useGetAdminAllNotifyQuery({
     pageSize: PAGE_SIZE,
     pageNumber: PAGE_NUMBER,
   })
+  const [updateAdminReadAllNotify] = useUpdateAdminReadAllNotifyMutation()
+
   const { socket } = useSocket()
   const router = useRouter()
   const { user } = useAuth()
@@ -84,12 +90,40 @@ export default function NotificationsPopover() {
   }
 
   const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        status: false,
-      }))
-    )
+    updateAdminReadAllNotify()
+      .unwrap()
+      .then((isSuccess) => {
+        isSuccess
+          ? setNotifications(
+              notifications.map((notification) => ({
+                ...notification,
+                status: true,
+              }))
+            )
+          : {}
+      })
+  }
+
+  const handleForwardNotification = (type, id) => {
+    handleMarkAllAsRead()
+    switch (type) {
+      case 'assignJob':
+        router.push(`/job-detail/${id}`)
+        break
+      case 'assignCard':
+        router.push(`/board`)
+        break
+      case 'assignTask':
+        router.push(`/`)
+        break
+      case 'jobOverTime':
+        router.push(`/404`)
+        break
+
+      default:
+        router.push(`/notification`)
+        break
+    }
   }
 
   const handleNavigateNotificationPage = () => {
@@ -171,6 +205,7 @@ export default function NotificationsPopover() {
                         <NotificationItem
                           key={notification.id || notification.content.id}
                           notification={notification}
+                          handleForwardNotification={handleForwardNotification}
                         />
                       )
                   )}
@@ -196,6 +231,7 @@ export default function NotificationsPopover() {
                         <NotificationItem
                           key={notification.id || notification.content.id}
                           notification={notification}
+                          handleForwardNotification={handleForwardNotification}
                         />
                       )
                   )}
@@ -231,8 +267,9 @@ NotificationItem.propTypes = {
   }),
 }
 
-function NotificationItem({ notification }) {
+function NotificationItem({ notification, handleForwardNotification }) {
   const { avatar, title } = renderContent(notification)
+  const { type } = notification
 
   return (
     <ListItemButton
@@ -244,6 +281,7 @@ function NotificationItem({ notification }) {
           bgcolor: 'action.selected',
         }),
       }}
+      onClick={() => handleForwardNotification(type, notification.content.id)}
     >
       <ListItemAvatar>
         <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
