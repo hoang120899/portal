@@ -23,10 +23,16 @@ import {
 KanbanTaskCard.propTypes = {
   card: PropTypes.object,
   index: PropTypes.number,
+  hasAddPermission: PropTypes.bool,
   onOpenUpdateTask: PropTypes.func,
 }
 
-export default function KanbanTaskCard({ card, onOpenUpdateTask, index }) {
+export default function KanbanTaskCard({
+  card,
+  onOpenUpdateTask,
+  hasAddPermission,
+  index,
+}) {
   const { Job, Candidate, id: cardId } = card
   const { translate } = useLocales()
 
@@ -227,7 +233,7 @@ export default function KanbanTaskCard({ card, onOpenUpdateTask, index }) {
                     <Assignee
                       onToggleAssignee={onToggleAssignee}
                       assignee={users}
-                      hasAddAssignee
+                      hasAddAssignee={hasAddPermission}
                       listContacts={contactData?.data?.list}
                     />
                   </Box>

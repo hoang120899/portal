@@ -133,6 +133,7 @@ export default function KanbanColumn({
                         key={candi.id}
                         onDeleteTask={handleDeleteTask}
                         onOpenUpdateTask={onOpenUpdateTask}
+                        hasAddPermission={hasAddPermission}
                         card={candi}
                         index={index}
                       />

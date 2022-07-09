@@ -14,7 +14,6 @@ import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 
-import { board } from '@/_mock'
 import Assignee from '@/components/Assignee'
 // components
 import Iconify from '@/components/Iconify'
@@ -30,8 +29,11 @@ import {
 import { useDebounce } from '@/hooks/useDebounce'
 // import { API_ADD_CARD } from '@/routes/api'
 import {
+  useAddAssigneeMutation,
   useAddCardMutation, // useSearchPhoneQuery,
   useGetActiveJobsQuery,
+  useGetUserQuery,
+  useRemoveAssigneeMutation,
   useSearchEmailQuery,
   useUpdateCardMutation,
   useUpdateLaneMutation,
@@ -69,8 +71,6 @@ export default function KanbanTaskAdd({
   onClose,
   onCloseUpdate,
 }) {
-  const { assignee } = board.cards['9d98ce30-3c51-4de3-8537-7a4b663ee3af'] // mock user
-
   const AddTaskSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     laneId:
@@ -119,22 +119,25 @@ export default function KanbanTaskAdd({
 
   const [openHistory, setOpenHistory] = useState(false)
   const [clearKey, setClearKey] = useState(null)
+  const [users, setUsers] = useState([])
   // const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
   // const phoneSearch = useDebounce(keyPhoneSearch, 500)
   const [keyEmailSearch, setKeyEmailSearch] = useState('')
   const emailSearch = useDebounce(keyEmailSearch, 500)
 
-  const { data: jobData } = useGetActiveJobsQuery()
   // const { data: phoneData } = useSearchPhoneQuery({
   //   phone: phoneSearch,
   // })
   const { data: emailData } = useSearchEmailQuery({
     email: emailSearch,
   })
-
+  const { data: jobData } = useGetActiveJobsQuery()
+  const { data: contactData } = useGetUserQuery()
   const [addCard] = useAddCardMutation()
   const [updateCard] = useUpdateCardMutation()
   const [updateLane] = useUpdateLaneMutation()
+  const [addAssignee] = useAddAssigneeMutation()
+  const [removeAssignee] = useRemoveAssigneeMutation()
 
   // const phoneOptions = useMemo(() => {
   //   if (phoneData && phoneData.data.candidate.length > 0) {
@@ -205,7 +208,9 @@ export default function KanbanTaskAdd({
         cv,
         refineCv = '',
         noteApproach,
+        Users,
       } = cardData.find((card) => card.id === cardId)
+      setUsers(Users)
       setValue('name', Candidate.name || '')
       setValue('laneId', laneId)
       setValue('idJob', Job.id)
@@ -261,6 +266,28 @@ export default function KanbanTaskAdd({
 
   const handleOpenHistory = () => {
     setOpenHistory((prev) => !prev)
+  }
+
+  const onToggleAssignee = async (checked, userId) => {
+    if (checked) {
+      try {
+        await removeAssignee({ id: cardId, userId })
+        setUsers(users.filter((item) => item.id !== userId))
+      } catch (error) {
+        // TO DO: handle error
+      }
+    } else {
+      try {
+        await addAssignee({ id: cardId, userId })
+        const user = [
+          ...users,
+          contactData.data.list.find((item) => item.id === userId),
+        ]
+        setUsers(user)
+      } catch (error) {
+        // TO DO: handle error
+      }
+    }
   }
 
   const hanldeAddTask = async (data) => {
@@ -555,8 +582,10 @@ export default function KanbanTaskAdd({
             >
               {cardId && (
                 <Assignee
-                  assignee={assignee}
+                  onToggleAssignee={onToggleAssignee}
+                  assignee={users}
                   hasAddAssignee={hasAddPermission}
+                  listContacts={contactData?.data?.list}
                 />
               )}
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
