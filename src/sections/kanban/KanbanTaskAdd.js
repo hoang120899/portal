@@ -2,15 +2,7 @@ import { useMemo, useState } from 'react'
 // @mui
 import { useEffect } from 'react'
 
-import {
-  Box,
-  Button,
-  Drawer,
-  Grid,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material'
+import { Box, Button, Drawer, Grid, Stack, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -38,8 +30,11 @@ import {
 import { useDebounce } from '@/hooks/useDebounce'
 // import { API_ADD_CARD } from '@/routes/api'
 import {
+  useAddCardMutation, // useSearchPhoneQuery,
   useGetActiveJobsQuery,
-  useSearchEmailQuery, // useSearchPhoneQuery,
+  useSearchEmailQuery,
+  useUpdateCardMutation,
+  useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
 
 import KanbanFileUpload from './KanbanFileUpload'
@@ -81,12 +76,14 @@ export default function KanbanTaskAdd({
     laneId:
       isAddTaskNoColumn && Yup.string().required('Column name is required'),
     idJob: Yup.string().required('Name job is required'),
-    email: Yup.object()
-      .shape({
-        value: Yup.string(),
-      })
-      .nullable()
-      .required('Email is required'),
+    email: cardId
+      ? Yup.string().required('Email is required')
+      : Yup.object()
+          .shape({
+            value: Yup.string(),
+          })
+          .nullable()
+          .required('Email is required'),
     phone: Yup.string().required('Phone number is required'),
     noteApproach: Yup.string().required('Approach point is required'),
   })
@@ -121,9 +118,10 @@ export default function KanbanTaskAdd({
   const watchEmail = watch('email')
 
   const [openHistory, setOpenHistory] = useState(false)
+  const [clearKey, setClearKey] = useState(null)
   // const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
-  const [keyEmailSearch, setKeyEmailSearch] = useState('')
   // const phoneSearch = useDebounce(keyPhoneSearch, 500)
+  const [keyEmailSearch, setKeyEmailSearch] = useState('')
   const emailSearch = useDebounce(keyEmailSearch, 500)
 
   const { data: jobData } = useGetActiveJobsQuery()
@@ -133,6 +131,10 @@ export default function KanbanTaskAdd({
   const { data: emailData } = useSearchEmailQuery({
     email: emailSearch,
   })
+
+  const [addCard] = useAddCardMutation()
+  const [updateCard] = useUpdateCardMutation()
+  const [updateLane] = useUpdateLaneMutation()
 
   // const phoneOptions = useMemo(() => {
   //   if (phoneData && phoneData.data.candidate.length > 0) {
@@ -155,7 +157,7 @@ export default function KanbanTaskAdd({
         name: candidate.name,
         phone: candidate.phone,
       }))
-    }
+    } else return []
   }, [emailData])
 
   const columnOptions = useMemo(() => {
@@ -180,26 +182,70 @@ export default function KanbanTaskAdd({
     }
   }, [jobData])
 
-  useEffect(() => {
-    if (!watchEmail) return
-    setValue('name', watchEmail.name)
-    setValue('phone', watchEmail.phone)
-  }, [watchEmail, setValue])
+  const cardData = useMemo(() => {
+    let cardArr = []
+    if (columns) {
+      columns.data.list.forEach((column) => {
+        if (column.CandidateJobs.length > 0) {
+          cardArr = [...cardArr.concat(column.CandidateJobs)]
+        }
+      })
+    }
+    return cardArr
+  }, [columns])
 
   useEffect(() => {
     if (cardId) {
+      const {
+        Candidate,
+        laneId,
+        Job,
+        approachDate,
+        position,
+        cv,
+        refineCv = '',
+        noteApproach,
+      } = cardData.find((card) => card.id === cardId)
+      setValue('name', Candidate.name || '')
+      setValue('laneId', laneId)
+      setValue('idJob', Job.id)
+      setValue('nameJob', Job.title)
+      setValue('email', Candidate.email)
+      setValue('location', Job.Location.name)
+      setValue('clientName', Job.Client.name)
       setValue('social', ['facebook', 'linkedin', 'skype'])
+      setValue(
+        'facebook',
+        Candidate.facebook
+          ? `https://www.facebook.com/${Candidate.facebook}`
+          : ''
+      )
+      setValue('linkedin', Candidate.linkedin || '')
+      setValue('skype', Candidate.skype || '')
+      setValue('phone', Candidate.phone)
+      setValue('approachDate', format(new Date(approachDate), 'yyyy-MM-dd'))
+      setValue('expectedDate', approachDate || new Date())
+      setValue('position', position || '')
+      setValue('linkCv', cv || '')
+      setValue('refineCv', refineCv || '')
+      setValue('noteApproach', noteApproach)
     }
-  }, [cardId, setValue])
+  }, [cardId, cardData, setValue])
 
   useEffect(() => {
-    if (watchIdJob) {
+    if (!watchEmail || cardId) return
+    setValue('name', watchEmail.name)
+    setValue('phone', watchEmail.phone)
+  }, [cardId, watchEmail, setValue])
+
+  useEffect(() => {
+    if (!cardId && watchIdJob) {
       const job = jobOptions.find((job) => job.value === watchIdJob)
       setValue('location', job?.location)
       setValue('clientName', job?.clientName)
       setValue('nameJob', job?.label)
     }
-  }, [watchIdJob, jobOptions, setValue])
+  }, [cardId, watchIdJob, jobOptions, setValue])
 
   const handleCloseAddTaskReset = () => {
     onClose()
@@ -223,15 +269,29 @@ export default function KanbanTaskAdd({
     if (!reqData.laneId) {
       reqData.laneId = laneId
     }
+    if (!cardId) {
+      reqData.email = reqData.email.label
+      delete reqData.refineCv
+    }
     delete reqData.social
 
     try {
-      // send api create card
-      // await _postApi(API_ADD_CARD, reqData)
+      if (cardId) {
+        if (reqData.laneId) {
+          await updateLane({ cardId, laneId: reqData.laneId })
+          delete reqData.laneId
+        }
+        await updateCard({ reqData, cardId }).unwrap()
+        handleCloseUpdateTaskReset()
+      } else {
+        await addCard(reqData).unwrap()
+        handleCloseAddTaskReset()
+      }
+      reset()
+      setClearKey(Math.random())
     } catch (error) {
       // Todo: handle error
     }
-    reset()
   }
 
   return (
@@ -279,7 +339,7 @@ export default function KanbanTaskAdd({
                 label='Name Job'
                 name='idJob'
                 options={jobOptions}
-                disabled={!hasAddPermission}
+                disabled={!!cardId}
               />
             </Box>
 
@@ -305,21 +365,30 @@ export default function KanbanTaskAdd({
             </Box>
 
             <Box mt={2}>
-              <RHFAutocomplete
-                AutocompleteProps={{
-                  size: 'small',
-                  renderOption: (props, option) => (
-                    <Box key={option.key} component='li' {...props}>
-                      {option.label}
-                    </Box>
-                  ),
-                }}
-                label='Email'
-                name='email'
-                options={emailOptions}
-                onChange={(e) => setKeyEmailSearch(e.target.value)}
-                disabled={!hasAddPermission}
-              />
+              {cardId ? (
+                <RHFTextField
+                  label='Email'
+                  name='email'
+                  disabled={!hasAddPermission}
+                />
+              ) : (
+                <RHFAutocomplete
+                  AutocompleteProps={{
+                    size: 'small',
+                    renderOption: (props, option) => (
+                      <Box key={option.key} component='li' {...props}>
+                        {option.label}
+                      </Box>
+                    ),
+                  }}
+                  label='Email'
+                  name='email'
+                  key={clearKey}
+                  options={emailOptions}
+                  onChange={(e) => setKeyEmailSearch(e.target.value)}
+                  disabled={!hasAddPermission}
+                />
+              )}
             </Box>
 
             <Box mt={2}>
@@ -443,9 +512,7 @@ export default function KanbanTaskAdd({
               />
             </Box>
 
-            <Box
-              sx={{ marginTop: '16px', display: 'flex', alignItems: 'center' }}
-            >
+            <Box mt={2}>
               <KanbanFileUpload
                 label='Link CV'
                 nameTextField='linkCv'
@@ -457,35 +524,16 @@ export default function KanbanTaskAdd({
               />
             </Box>
             {cardId && (
-              <Box
-                sx={{
-                  marginTop: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <RHFTextField
-                  type='text'
+              <Box mt={2}>
+                <KanbanFileUpload
                   label='Link Refine CV'
-                  name='refineCv'
-                  disabled
+                  nameTextField='refineCv'
+                  name={watch('name')}
+                  nameJob={watch('nameJob')}
+                  idJob={watchIdJob}
+                  hasAddPermission={hasAddPermission}
+                  setValue={setValue}
                 />
-                <input id='file-upload' type='file' hidden />
-                <label>
-                  <Button component='div'>
-                    <TextField
-                      type='file'
-                      sx={{ display: 'none' }}
-                      onChange={() => {}}
-                      disabled={!hasAddPermission}
-                    />
-                    <Iconify
-                      icon={'ant-design:upload-outlined'}
-                      width={32}
-                      height={32}
-                    />
-                  </Button>
-                </label>
               </Box>
             )}
 

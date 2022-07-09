@@ -1,20 +1,19 @@
-import { Fragment } from 'react'
-
-import { Button, TextField } from '@mui/material'
+import { Button, Stack, TextField } from '@mui/material'
 
 // @prop-types
 import PropTypes from 'prop-types'
 
 import Iconify from '@/components/Iconify'
 import { RHFTextField } from '@/components/hook-form'
+import { API_UPLOAD_LINK } from '@/routes/api'
 import { _postApi } from '@/utils/axios'
 
 KanbanFileUpload.propTypes = {
   label: PropTypes.string,
   nameTextField: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  nameJob: PropTypes.string.isRequired,
-  idJob: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  nameJob: PropTypes.string,
+  idJob: PropTypes.string,
   linkCv: PropTypes.string,
   hasAddPermission: PropTypes.bool,
   setValue: PropTypes.func,
@@ -44,8 +43,8 @@ export default function KanbanFileUpload({
       formData.append('nameFile', `${name} ${nameJob}`)
       formData.append('idJob', `${idJob}`)
       try {
-        const res = await _postApi('/api/cards/upload/cv', formData)
-        setValue('linkCv', res.fileName)
+        const res = await _postApi(API_UPLOAD_LINK, formData)
+        setValue(nameTextField, res.fileName)
       } catch (error) {
         // TODO: Handle error
       }
@@ -53,7 +52,7 @@ export default function KanbanFileUpload({
   }
 
   return (
-    <Fragment>
+    <Stack direction='row' sx={{ alignItems: 'center' }}>
       <RHFTextField type='text' label={label} name={nameTextField} disabled />
       <input id='file-upload' type='file' hidden />
       <label>
@@ -67,6 +66,6 @@ export default function KanbanFileUpload({
           <Iconify icon={'ant-design:upload-outlined'} width={32} height={32} />
         </Button>
       </label>
-    </Fragment>
+    </Stack>
   )
 }

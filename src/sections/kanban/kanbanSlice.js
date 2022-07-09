@@ -2,6 +2,7 @@ import qs from 'query-string'
 
 import { apiSlice } from '@/redux/api/apiSlice'
 import {
+  API_ADD_CARD,
   API_ADMIN_LIST_JOB,
   API_ASSIGNMENT,
   API_LIST_ACTIVE_JOB,
@@ -19,13 +20,29 @@ import {
   API_V1_CARD,
 } from '@/routes/api'
 
-export const kanbanApiSlice = apiSlice.injectEndpoints({
+const apiWithTag = apiSlice.enhanceEndpoints({ addTagTypes: ['Kanban'] })
+
+export const kanbanApiSlice = apiWithTag.injectEndpoints({
   endpoints: (builder) => ({
     getColumns: builder.query({
       query: () => ({
         url: API_LIST_CARD,
         method: 'GET',
       }),
+      providesTags: (result) => {
+        let cardArr = []
+        if (result) {
+          result.data.list.forEach((column) => {
+            if (column.CandidateJobs.length > 0) {
+              cardArr = [...cardArr.concat(column.CandidateJobs)]
+            }
+          })
+        }
+        return [
+          'Kanban',
+          ...cardArr.map((card) => ({ type: 'Kanban', id: card.id })),
+        ]
+      },
     }),
     getActiveJobs: builder.query({
       query: () => ({
@@ -83,6 +100,31 @@ export const kanbanApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    addCard: builder.mutation({
+      query: (data) => ({
+        url: `${API_ADD_CARD}`,
+        method: 'POST',
+        data,
+      }),
+      invalidatesTags: ['Kanban'],
+    }),
+    updateCard: builder.mutation({
+      query: (data) => ({
+        url: `${API_ADD_CARD}/${data.cardId}`,
+        method: 'PATCH',
+        data: data.reqData,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Kanban', id: arg.cardId },
+      ],
+    }),
+    updateLane: builder.mutation({
+      query: (data) => ({
+        url: `${API_ADD_CARD}/${data.cardId}`,
+        method: 'PATCH',
+        data: { laneId: data.laneId },
+      }),
+    }),
     searchPhone: builder.query({
       query: (queries = {}) => ({
         url: `${API_SEARCH_PHONE}?${qs.stringify(queries)}`,
@@ -131,6 +173,9 @@ export const {
   useSearchEmailQuery,
   useGetUserQuery,
   useAddAssigneeMutation,
-  useRemoveAssigneeMutation,
   useGetUpdateHistoryQuery,
+  useRemoveAssigneeMutation,
+  useAddCardMutation,
+  useUpdateCardMutation,
+  useUpdateLaneMutation,
 } = kanbanApiSlice
