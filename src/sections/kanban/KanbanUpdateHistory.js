@@ -22,12 +22,21 @@ export default function KanbanUpdateHistory({ title, cardId, ...other }) {
   const { data: historyData } = useGetUpdateHistoryQuery({ cardId })
   const historyList = useMemo(() => {
     if (historyData && historyData.data.historyCard) {
-      return historyData.data.historyCard.map((history) => ({
-        User: history.User,
-        content: history.content,
-        createdAt: history.createdAt,
-        id: history.id,
-      }))
+      return historyData.data.historyCard.map((history) => {
+        let historyContent
+        if (history.type === 'update_card') {
+          historyContent = JSON.parse(history.content)
+        } else {
+          historyContent = history.content
+        }
+        return {
+          User: history.User,
+          content: historyContent,
+          createdAt: history.createdAt,
+          id: history.id,
+          type: history.type,
+        }
+      })
     } else return []
   }, [historyData])
 
@@ -37,9 +46,16 @@ export default function KanbanUpdateHistory({ title, cardId, ...other }) {
 
       <Scrollbar>
         <Stack spacing={2} sx={{ p: 2 }}>
-          {historyList.map((historyItem) => (
-            <KanbanHistoryItem key={historyItem.id} historyItem={historyItem} />
-          ))}
+          {historyList.map((historyItem) => {
+            if (historyItem.content) {
+              return (
+                <KanbanHistoryItem
+                  key={historyItem.id}
+                  historyItem={historyItem}
+                />
+              )
+            }
+          })}
         </Stack>
       </Scrollbar>
     </Card>
@@ -53,7 +69,7 @@ KanbanHistoryItem.propTypes = {
 }
 
 function KanbanHistoryItem({ historyItem }) {
-  const { User, content, createdAt } = historyItem
+  const { User, content, createdAt, type } = historyItem
 
   return (
     <>
@@ -67,7 +83,16 @@ function KanbanHistoryItem({ historyItem }) {
             <Typography mr={1} sx={{ fontWeight: 'bold' }} component='span'>
               {User.name}
             </Typography>
-            {content}
+            {type === 'update_card' && <span>has update this card</span>}
+            {type === 'update_card'
+              ? content.map((e, i) => (
+                  <Typography className='cs_update_history' key={i}>
+                    <span className='key_history'>{`${e.path}: `}</span>
+                    {e.lhs} <span className='change_to'>change to</span> {e.rhs}
+                    {/* {`${e.lhs} => ${e.rhs}`} */}
+                  </Typography>
+                ))
+              : content}
           </Typography>
           <Typography variant='caption'>{fDateTime(createdAt)}</Typography>
         </Box>

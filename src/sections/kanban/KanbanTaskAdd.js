@@ -8,6 +8,7 @@ import { styled } from '@mui/material/styles'
 import { yupResolver } from '@hookform/resolvers/yup'
 // @date-fns
 import { format } from 'date-fns'
+import { useSnackbar } from 'notistack'
 // @prop-types
 import PropTypes from 'prop-types'
 // @react-hooks-form
@@ -117,6 +118,7 @@ export default function KanbanTaskAdd({
   const watchIdJob = watch('idJob')
   const watchEmail = watch('email')
 
+  const { enqueueSnackbar } = useSnackbar()
   const [openHistory, setOpenHistory] = useState(false)
   const [clearKey, setClearKey] = useState(null)
   const [users, setUsers] = useState([])
@@ -204,6 +206,7 @@ export default function KanbanTaskAdd({
         laneId,
         Job,
         approachDate,
+        expectedDate,
         position,
         cv,
         refineCv = '',
@@ -216,8 +219,8 @@ export default function KanbanTaskAdd({
       setValue('idJob', Job.id)
       setValue('nameJob', Job.title)
       setValue('email', Candidate.email)
-      setValue('location', Job.Location.name)
-      setValue('clientName', Job.Client.name)
+      setValue('location', Job.Location?.name || '')
+      setValue('clientName', Job.Client?.name || '')
       setValue('social', ['facebook', 'linkedin', 'skype'])
       setValue(
         'facebook',
@@ -229,7 +232,7 @@ export default function KanbanTaskAdd({
       setValue('skype', Candidate.skype || '')
       setValue('phone', Candidate.phone)
       setValue('approachDate', format(new Date(approachDate), 'yyyy-MM-dd'))
-      setValue('expectedDate', approachDate || new Date())
+      setValue('expectedDate', expectedDate || new Date())
       setValue('position', position || '')
       setValue('linkCv', cv || '')
       setValue('refineCv', refineCv || '')
@@ -272,20 +275,22 @@ export default function KanbanTaskAdd({
     if (checked) {
       try {
         await removeAssignee({ id: cardId, userId })
+        enqueueSnackbar('Remove assignee successfully!')
         setUsers(users.filter((item) => item.id !== userId))
       } catch (error) {
-        // TO DO: handle error
+        enqueueSnackbar('Remove assignee failed!', { variant: 'error' })
       }
     } else {
       try {
         await addAssignee({ id: cardId, userId })
+        enqueueSnackbar('Add assignee successfully!')
         const user = [
           ...users,
           contactData.data.list.find((item) => item.id === userId),
         ]
         setUsers(user)
       } catch (error) {
-        // TO DO: handle error
+        enqueueSnackbar('Add assignee failed!', { variant: 'error' })
       }
     }
   }
@@ -309,15 +314,20 @@ export default function KanbanTaskAdd({
           delete reqData.laneId
         }
         await updateCard({ reqData, cardId }).unwrap()
+        enqueueSnackbar('Update card successfully!')
         handleCloseUpdateTaskReset()
       } else {
         await addCard(reqData).unwrap()
+        enqueueSnackbar('Create card successfully!')
         handleCloseAddTaskReset()
       }
-      reset()
       setClearKey(Math.random())
+      reset()
     } catch (error) {
       // Todo: handle error
+      enqueueSnackbar(error.data[0].toUpperCase() + error.data.slice(1) + '!', {
+        variant: 'error',
+      })
     }
   }
 
@@ -617,7 +627,7 @@ export default function KanbanTaskAdd({
               </Box>
             </Box>
           </FormProvider>
-          {/* TODO: UI History */}
+
           {cardId && (
             <Box sx={{ marginTop: '24px' }}>
               <Box
@@ -652,7 +662,7 @@ export default function KanbanTaskAdd({
               <KanbanUpdateHistory title='News Update' cardId={cardId} />
             </Box>
           )}
-          {/* TODO: UI Comment */}
+
           {cardId && (
             <Box mt={3}>
               <Stack direction='row' mb={2}>

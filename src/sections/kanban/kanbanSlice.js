@@ -68,6 +68,7 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
         method: 'PATCH',
         data: { userId },
       }),
+      invalidatesTags: ['Kanban'],
     }),
     removeAssignee: builder.mutation({
       query: ({ id, userId }) => ({
@@ -75,6 +76,7 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
         method: 'PATCH',
         data: { userId },
       }),
+      invalidatesTags: ['Kanban'],
     }),
     getClient: builder.query({
       query: () => ({
