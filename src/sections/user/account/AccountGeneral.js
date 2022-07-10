@@ -1,8 +1,7 @@
 import { useCallback } from 'react'
 
 // @mui
-import { LoadingButton } from '@mui/lab'
-import { Box, Card, Grid, Stack, Typography } from '@mui/material'
+import { Box, Card, Grid, Typography } from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -38,6 +37,8 @@ export default function AccountGeneral() {
   const defaultValues = {
     displayName: user?.displayName || '',
     email: user?.email || '',
+    team: user?.team || '',
+    role: user?.role || '',
     photoURL: user?.photoURL || '',
     phoneNumber: user?.phoneNumber || '',
     address: user?.address || '',
@@ -53,11 +54,8 @@ export default function AccountGeneral() {
     defaultValues,
   })
 
-  const {
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods
+  const { setValue, handleSubmit } = methods
+
   const onSubmit = async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -124,16 +122,17 @@ export default function AccountGeneral() {
               labelPlacement='start'
               label='Public Profile'
               sx={{ mt: 5 }}
+              disabled='true'
             />
           </Card>
         </Grid>
 
         <Grid item xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{ py: 10, px: 3, textAlign: 'center' }}>
             <Box
               sx={{
                 display: 'grid',
-                rowGap: 3,
+                rowGap: 5,
                 columnGap: 2,
                 gridTemplateColumns: {
                   xs: 'repeat(1, 1fr)',
@@ -141,29 +140,16 @@ export default function AccountGeneral() {
                 },
               }}
             >
-              <RHFTextField name='displayName' label='Name' />
-              <RHFTextField name='email' label='Email Address' />
+              <RHFTextField name='displayName' label='Name' disabled='true' />
+              <RHFTextField
+                name='email'
+                label='Email Address'
+                disabled='true'
+              />
 
-              <RHFTextField name='phoneNumber' label='Phone Number' />
-              <RHFTextField name='address' label='Address' />
-
-              <RHFTextField name='state' label='State/Region' />
-
-              <RHFTextField name='city' label='City' />
-              <RHFTextField name='zipCode' label='Zip/Code' />
+              <RHFTextField name='role' label='Role' disabled='true' />
+              <RHFTextField name='team' label='Team' disabled='true' />
             </Box>
-
-            <Stack spacing={3} alignItems='flex-end' sx={{ mt: 3 }}>
-              <RHFTextField name='about' multiline rows={4} label='About' />
-
-              <LoadingButton
-                type='submit'
-                variant='contained'
-                loading={isSubmitting}
-              >
-                Save Changes
-              </LoadingButton>
-            </Stack>
           </Card>
         </Grid>
       </Grid>

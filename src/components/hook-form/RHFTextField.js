@@ -9,7 +9,7 @@ RHFTextField.propTypes = {
   name: PropTypes.string,
 }
 
-export default function RHFTextField({ name, ...other }) {
+export default function RHFTextField({ name, disabled = false, ...other }) {
   const { control } = useFormContext()
 
   return (
@@ -22,6 +22,7 @@ export default function RHFTextField({ name, ...other }) {
           fullWidth
           error={!!error}
           helperText={error?.message}
+          disabled={disabled}
           {...other}
         />
       )}
