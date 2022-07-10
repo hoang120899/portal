@@ -676,7 +676,7 @@ export default function KanbanTaskAdd({
                 </Typography>
               </Stack>
 
-              <KanbanTaskCommentInput />
+              <KanbanTaskCommentInput cardId={cardId} />
               <Box mt={2}>
                 <KanbanTaskCommentList title='List Comment' cardId={cardId} />
               </Box>

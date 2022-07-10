@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 
 // @mui
 import { Avatar, Box, Card, CardHeader, Stack, Typography } from '@mui/material'
@@ -79,21 +79,21 @@ function KanbanHistoryItem({ historyItem }) {
         </Avatar>
 
         <Box sx={{ minWidth: 240, ml: 2 }}>
-          <Typography>
+          <Box>
             <Typography mr={1} sx={{ fontWeight: 'bold' }} component='span'>
               {User.name}
             </Typography>
             {type === 'update_card' && <span>has update this card</span>}
             {type === 'update_card'
               ? content.map((e, i) => (
-                  <Typography className='cs_update_history' key={i}>
-                    <span className='key_history'>{`${e.path}: `}</span>
-                    {e.lhs} <span className='change_to'>change to</span> {e.rhs}
+                  <Typography key={i}>
+                    <span>{`${e.path}: `}</span>
+                    {e.lhs} <span>change to</span> {e.rhs}
                     {/* {`${e.lhs} => ${e.rhs}`} */}
                   </Typography>
                 ))
               : content}
-          </Typography>
+          </Box>
           <Typography variant='caption'>{fDateTime(createdAt)}</Typography>
         </Box>
       </Box>

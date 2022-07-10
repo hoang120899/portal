@@ -12,13 +12,17 @@ import {
   Typography,
 } from '@mui/material'
 
+import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 
 // components
 // utils
 import Scrollbar from '@/components/Scrollbar'
+import useAuth from '@/hooks/useAuth'
 import { useGetListCommentQuery } from '@/sections/kanban/kanbanSlice'
 import { fDateTime } from '@/utils/formatTime'
+
+import { useEditCommentMutation } from './kanbanSlice'
 
 // ----------------------------------------------------------------------
 
@@ -66,18 +70,33 @@ KanbanCommentItem.propTypes = {
 }
 
 function KanbanCommentItem({ commentItem }) {
-  const { User, content, updatedAt } = commentItem
+  const { User, content, updatedAt, userId, id } = commentItem
+  const { user } = useAuth()
+  const enqueueSnackbar = useSnackbar()
   const [isEdit, setIsEdit] = useState(false)
-  const [editComment, setEditComment] = useState('')
+  const [comment, setComment] = useState('')
+
+  const [editComment] = useEditCommentMutation()
 
   const handleOpenEditCommentInput = () => {
     setIsEdit((prev) => !prev)
-    setEditComment(commentItem.content)
+    setComment(commentItem.content)
   }
 
   const handleCommentChange = (e) => {
-    setEditComment(e.target.value)
-    setEditComment('')
+    setComment(e.target.value)
+  }
+
+  const handleEditComment = async () => {
+    try {
+      await editComment({ id, content: comment }).unwrap()
+      setComment('')
+      setIsEdit(false)
+    } catch (error) {
+      enqueueSnackbar('Add comment failed! Please try again.', {
+        variant: 'error',
+      })
+    }
   }
 
   return (
@@ -91,7 +110,7 @@ function KanbanCommentItem({ commentItem }) {
           {isEdit ? (
             <TextField
               label='Edit Comment'
-              value={editComment}
+              value={comment}
               fullWidth
               multiline
               rows={1}
@@ -109,10 +128,12 @@ function KanbanCommentItem({ commentItem }) {
             </>
           )}
 
-          <Button onClick={handleOpenEditCommentInput}>
-            {isEdit ? 'Cancel' : 'Edit'}
-          </Button>
-          {isEdit && <Button>Save</Button>}
+          {user.userId === userId && (
+            <Button onClick={handleOpenEditCommentInput}>
+              {isEdit ? 'Cancel' : 'Edit'}
+            </Button>
+          )}
+          {isEdit && <Button onClick={handleEditComment}>Save</Button>}
         </Box>
       </Box>
     </>

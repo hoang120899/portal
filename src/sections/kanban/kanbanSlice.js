@@ -20,7 +20,9 @@ import {
   API_V1_CARD,
 } from '@/routes/api'
 
-const apiWithTag = apiSlice.enhanceEndpoints({ addTagTypes: ['Kanban'] })
+const apiWithTag = apiSlice.enhanceEndpoints({
+  addTagTypes: ['Kanban', 'Comment'],
+})
 
 export const kanbanApiSlice = apiWithTag.injectEndpoints({
   endpoints: (builder) => ({
@@ -157,6 +159,23 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
         url: `${API_LIST_COMMENT}/${cardId}/card`,
         method: 'GET',
       }),
+      providesTags: ['Comment'],
+    }),
+    addComment: builder.mutation({
+      query: (data) => ({
+        url: `${API_LIST_COMMENT}/${data.cardId}/card`,
+        method: 'POST',
+        data: { content: data.content },
+      }),
+      invalidatesTags: ['Comment'],
+    }),
+    editComment: builder.mutation({
+      query: (data) => ({
+        url: `${API_LIST_COMMENT}/${data.id}`,
+        method: 'PATCH',
+        data: { content: data.content },
+      }),
+      invalidatesTags: ['Comment'],
     }),
   }),
 })
@@ -180,4 +199,6 @@ export const {
   useAddCardMutation,
   useUpdateCardMutation,
   useUpdateLaneMutation,
+  useAddCommentMutation,
+  useEditCommentMutation,
 } = kanbanApiSlice
