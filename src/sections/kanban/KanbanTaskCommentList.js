@@ -19,6 +19,7 @@ import PropTypes from 'prop-types'
 // utils
 import Scrollbar from '@/components/Scrollbar'
 import useAuth from '@/hooks/useAuth'
+import useLocales from '@/hooks/useLocales'
 import { useGetListCommentQuery } from '@/sections/kanban/kanbanSlice'
 import { fDateTime } from '@/utils/formatTime'
 
@@ -71,6 +72,7 @@ KanbanCommentItem.propTypes = {
 
 function KanbanCommentItem({ commentItem }) {
   const { User, content, updatedAt, userId, id } = commentItem
+  const { translate } = useLocales()
   const { user } = useAuth()
   const enqueueSnackbar = useSnackbar()
   const [isEdit, setIsEdit] = useState(false)
@@ -109,7 +111,7 @@ function KanbanCommentItem({ commentItem }) {
         <Box ml={2} sx={{ flex: '1' }}>
           {isEdit ? (
             <TextField
-              label='Edit Comment'
+              label={translate('Edit Comment')}
               value={comment}
               fullWidth
               multiline
@@ -130,10 +132,12 @@ function KanbanCommentItem({ commentItem }) {
 
           {user.userId === userId && (
             <Button onClick={handleOpenEditCommentInput}>
-              {isEdit ? 'Cancel' : 'Edit'}
+              {isEdit ? translate('Cancel') : translate('Edit')}
             </Button>
           )}
-          {isEdit && <Button onClick={handleEditComment}>Save</Button>}
+          {isEdit && (
+            <Button onClick={handleEditComment}>{translate('Save')}</Button>
+          )}
         </Box>
       </Box>
     </>

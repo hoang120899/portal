@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from 'react'
+import { useMemo } from 'react'
 
 // @mui
 import { Avatar, Box, Card, CardHeader, Stack, Typography } from '@mui/material'
@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 // components
 // utils
 import Scrollbar from '@/components/Scrollbar'
+import useLocales from '@/hooks/useLocales'
 import { useGetUpdateHistoryQuery } from '@/sections/kanban/kanbanSlice'
 import { fDateTime } from '@/utils/formatTime'
 
@@ -69,6 +70,7 @@ KanbanHistoryItem.propTypes = {
 }
 
 function KanbanHistoryItem({ historyItem }) {
+  const { translate } = useLocales()
   const { User, content, createdAt, type } = historyItem
 
   return (
@@ -83,16 +85,18 @@ function KanbanHistoryItem({ historyItem }) {
             <Typography mr={1} sx={{ fontWeight: 'bold' }} component='span'>
               {User.name}
             </Typography>
-            {type === 'update_card' && <span>has update this card</span>}
+            {type === 'update_card' && (
+              <span>{translate('has update this card')}</span>
+            )}
             {type === 'update_card'
               ? content.map((e, i) => (
                   <Typography key={i}>
                     <span>{`${e.path}: `}</span>
-                    {e.lhs} <span>change to</span> {e.rhs}
+                    {e.lhs} <span>{translate('change to')}</span> {e.rhs}
                     {/* {`${e.lhs} => ${e.rhs}`} */}
                   </Typography>
                 ))
-              : content}
+              : translate(content)}
           </Box>
           <Typography variant='caption'>{fDateTime(createdAt)}</Typography>
         </Box>

@@ -28,6 +28,7 @@ import {
   RHFTextField,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
+import useLocales from '@/hooks/useLocales'
 // import { API_ADD_CARD } from '@/routes/api'
 import {
   useAddAssigneeMutation,
@@ -44,6 +45,7 @@ import KanbanFileUpload from './KanbanFileUpload'
 import KanbanTaskCommentInput from './KanbanTaskCommentInput'
 import KanbanTaskCommentList from './KanbanTaskCommentList'
 import KanbanUpdateHistory from './KanbanUpdateHistory'
+import { socialOptions } from './config'
 
 KanbanTaskAdd.propTypes = {
   open: PropTypes.bool,
@@ -119,6 +121,7 @@ export default function KanbanTaskAdd({
   const watchEmail = watch('email')
 
   const { enqueueSnackbar } = useSnackbar()
+  const { translate } = useLocales()
   const [openHistory, setOpenHistory] = useState(false)
   const [clearKey, setClearKey] = useState(null)
   const [users, setUsers] = useState([])
@@ -343,7 +346,7 @@ export default function KanbanTaskAdd({
       <Box p={3}>
         <Box component='header'>
           <Typography variant='h5'>
-            {cardId ? 'Update Card' : 'Add Card'}
+            {cardId ? translate('Update Card') : translate('Add Card')}
           </Typography>
         </Box>
         <Box>
@@ -353,7 +356,7 @@ export default function KanbanTaskAdd({
           >
             <Box mt={2}>
               <RHFTextField
-                label='Name'
+                label={translate('Name')}
                 name='name'
                 type='text'
                 disabled={!hasAddPermission}
@@ -363,7 +366,7 @@ export default function KanbanTaskAdd({
             {isAddTaskNoColumn && (
               <Box mt={2}>
                 <RHFBasicSelect
-                  label='Column Name'
+                  label={translate('Column Name')}
                   name='laneId'
                   options={columnOptions}
                   disabled={!hasAddPermission}
@@ -373,7 +376,7 @@ export default function KanbanTaskAdd({
 
             <Box mt={2}>
               <RHFBasicSelect
-                label='Name Job'
+                label={translate('Name Job')}
                 name='idJob'
                 options={jobOptions}
                 disabled={!!cardId}
@@ -384,7 +387,7 @@ export default function KanbanTaskAdd({
               <Grid container spacing={1}>
                 <Grid item xs={6}>
                   <RHFTextField
-                    label='Location'
+                    label={translate('Location')}
                     name='location'
                     type='text'
                     disabled
@@ -392,7 +395,7 @@ export default function KanbanTaskAdd({
                 </Grid>
                 <Grid item xs={6}>
                   <RHFTextField
-                    label='Client Name'
+                    label={translate('Client Name')}
                     name='clientName'
                     type='text'
                     disabled
@@ -431,14 +434,7 @@ export default function KanbanTaskAdd({
             <Box mt={2}>
               {!cardId && (
                 <CheckboxRootStyle>
-                  <RHFMultiCheckbox
-                    name='social'
-                    options={[
-                      { label: 'Facebook', value: 'facebook' },
-                      { label: 'Linkedin', value: 'linkedin' },
-                      { label: 'Skype', value: 'skype' },
-                    ]}
-                  />
+                  <RHFMultiCheckbox name='social' options={socialOptions} />
                 </CheckboxRootStyle>
               )}
               {watchSocial.includes('facebook') && (
@@ -515,7 +511,7 @@ export default function KanbanTaskAdd({
                     disabled={!hasAddPermission}
                   /> */}
                   <RHFTextField
-                    label='Phone'
+                    label={translate('Phone')}
                     name='phone'
                     fullWidth
                     disabled={!hasAddPermission}
@@ -523,7 +519,7 @@ export default function KanbanTaskAdd({
                 </Grid>
                 <Grid item xs={6}>
                   <RHFDatePicker
-                    label='Approach Date'
+                    label={translate('Approach Date')}
                     name='approachDate'
                     disabled={!hasAddPermission}
                   />
@@ -534,7 +530,7 @@ export default function KanbanTaskAdd({
             {cardId && (
               <Box mt={2}>
                 <RHFDateTimePicker
-                  label='Expected Date'
+                  label={translate('Expected Date')}
                   name='expectedDate'
                   disabled={!hasAddPermission}
                 />
@@ -543,7 +539,7 @@ export default function KanbanTaskAdd({
 
             <Box mt={2}>
               <RHFTextField
-                label='Position'
+                label={translate('Position')}
                 name='position'
                 disabled={!hasAddPermission}
               />
@@ -551,7 +547,7 @@ export default function KanbanTaskAdd({
 
             <Box mt={2}>
               <KanbanFileUpload
-                label='Link CV'
+                label={translate('Link CV')}
                 nameTextField='linkCv'
                 name={watch('name')}
                 nameJob={watch('nameJob')}
@@ -563,7 +559,7 @@ export default function KanbanTaskAdd({
             {cardId && (
               <Box mt={2}>
                 <KanbanFileUpload
-                  label='Link Refine CV'
+                  label={translate('Link Refine CV')}
                   nameTextField='refineCv'
                   name={watch('name')}
                   nameJob={watch('nameJob')}
@@ -576,19 +572,17 @@ export default function KanbanTaskAdd({
 
             <Box mt={2}>
               <RHFTextField
-                label='Approach Point'
+                label={translate('Approach Point')}
                 name='noteApproach'
                 multiline
                 rows={3}
               />
             </Box>
 
-            <Box
+            <Stack
               mt={2}
-              sx={{
-                display: 'flex',
-                justifyContent: cardId ? 'space-between' : 'right',
-              }}
+              direction='row'
+              justifyContent={cardId ? 'space-between' : 'right'}
             >
               {cardId && (
                 <Assignee
@@ -598,10 +592,10 @@ export default function KanbanTaskAdd({
                   listContacts={contactData?.data?.list}
                 />
               )}
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Stack direction='row'>
                 {cardId && (
                   <Button type='button' variant='contained'>
-                    Create Interview
+                    {translate('Create Interview')}
                   </Button>
                 )}
                 {hasAddPermission && (
@@ -610,7 +604,7 @@ export default function KanbanTaskAdd({
                     variant='contained'
                     sx={{ marginLeft: '8px' }}
                   >
-                    {cardId ? 'Update' : 'Save'}
+                    {cardId ? translate('Update') : translate('Save')}
                   </Button>
                 )}
                 <Button
@@ -622,20 +616,18 @@ export default function KanbanTaskAdd({
                       : handleCloseAddTaskReset()
                   }}
                 >
-                  Cancel
+                  {translate('Cancel')}
                 </Button>
-              </Box>
-            </Box>
+              </Stack>
+            </Stack>
           </FormProvider>
 
           {cardId && (
-            <Box sx={{ marginTop: '24px' }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+            <Box mt={3}>
+              <Stack
+                direction='row'
+                alignItems='center'
+                justifyContent='space-between'
               >
                 <Stack direction='row'>
                   <Iconify
@@ -644,7 +636,7 @@ export default function KanbanTaskAdd({
                     height={20}
                   />
                   <Typography variant='span' sx={{ ml: 1 }}>
-                    History
+                    {translate('History')}
                   </Typography>
                 </Stack>
                 <Button
@@ -652,14 +644,17 @@ export default function KanbanTaskAdd({
                   variant='outlined'
                   onClick={handleOpenHistory}
                 >
-                  {openHistory ? 'Hide' : 'Show'}
+                  {openHistory ? translate('Hide') : translate('Show')}
                 </Button>
-              </Box>
+              </Stack>
             </Box>
           )}
           {openHistory && (
             <Box mt={2}>
-              <KanbanUpdateHistory title='News Update' cardId={cardId} />
+              <KanbanUpdateHistory
+                title={translate('News Update')}
+                cardId={cardId}
+              />
             </Box>
           )}
 
@@ -672,13 +667,16 @@ export default function KanbanTaskAdd({
                   height={20}
                 />
                 <Typography variant='span' sx={{ ml: 1 }}>
-                  Comment
+                  {translate('Comment')}
                 </Typography>
               </Stack>
 
               <KanbanTaskCommentInput cardId={cardId} />
               <Box mt={2}>
-                <KanbanTaskCommentList title='List Comment' cardId={cardId} />
+                <KanbanTaskCommentList
+                  title={translate('List Comment')}
+                  cardId={cardId}
+                />
               </Box>
             </Box>
           )}

@@ -6,6 +6,8 @@ import { Button, OutlinedInput, Paper, Stack } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 
+import useLocales from '@/hooks/useLocales'
+
 import { useAddCommentMutation } from './kanbanSlice'
 
 KanbanTaskCommentInput.propTypes = {
@@ -15,6 +17,7 @@ KanbanTaskCommentInput.propTypes = {
 export default function KanbanTaskCommentInput({ cardId }) {
   const [comment, setComment] = useState('')
   const enqueueSnackbar = useSnackbar()
+  const { translate } = useLocales()
 
   const [addComment] = useAddCommentMutation()
 
@@ -40,7 +43,7 @@ export default function KanbanTaskCommentInput({ cardId }) {
           fullWidth
           multiline
           rows={1}
-          placeholder='Type a message'
+          placeholder={translate('Type a message')}
           sx={{ '& fieldset': { display: 'none' } }}
           value={comment}
           onChange={handleChangeComment}
@@ -48,7 +51,7 @@ export default function KanbanTaskCommentInput({ cardId }) {
 
         <Stack direction='row' justifyContent='flex-end'>
           <Button variant='contained' onClick={handleCommentChange}>
-            Comment
+            {translate('Comment')}
           </Button>
         </Stack>
       </Paper>
