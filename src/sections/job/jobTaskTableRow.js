@@ -9,7 +9,6 @@ JobTaskTableRow.propTypes = {
   row: PropTypes.object,
 }
 export default function JobTaskTableRow({ row }) {
-  const { Client } = row
   const useStyles = makeStyles(() => ({
     activeJob: {
       backgroundColor: '#83F2F2',
@@ -25,16 +24,10 @@ export default function JobTaskTableRow({ row }) {
         <Typography variant='subtitle1'>{row.title}</Typography>
       </TableCell>
       <TableCell align='left' width={160}>
-        <Typography variant='subtitle1'>{Client?.name}</Typography>
-      </TableCell>
-      <TableCell align='left' width={160}>
-        <Typography variant='subtitle1'>{row?.time}</Typography>
-      </TableCell>
-      <TableCell align='left' width={160}>
         <Typography variant='subtitle1'>{row?.salary}</Typography>
       </TableCell>
       <TableCell align='left' width={160}>
-        <Typography variant='subtitle1'>{row?.type}</Typography>
+        <Typography variant='subtitle1'>{row?.candidate}</Typography>
       </TableCell>
       <TableCell align='center'>
         <p className={classes.activeJob}>{row.jobStatus}</p>

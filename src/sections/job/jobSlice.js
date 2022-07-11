@@ -1,11 +1,11 @@
 import { apiSlice } from '@/redux/api/apiSlice'
-import { API_LIST_JOBS } from '@/routes/api'
+import { API_LIST_JOBS_PROFILE } from '@/routes/api'
 
 export const listJobSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getListJob: builder.query({
-      query: ({ pageSize, pageNumber, status }) => ({
-        url: `${API_LIST_JOBS}?pageSize=${pageSize}&pageNumber=${pageNumber}&status=${status}`,
+      query: ({ pageSize, pageNumber, idUser }) => ({
+        url: `${API_LIST_JOBS_PROFILE}?pageSize=${pageSize}&pageNumber=${pageNumber}&id=${idUser}`,
         method: 'GET',
       }),
     }),

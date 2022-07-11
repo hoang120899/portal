@@ -6,6 +6,7 @@ import { Card } from '@mui/material'
 // components
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
+import useAuth from '@/hooks/useAuth'
 import useTable from '@/hooks/useTable'
 
 import JobTaskTableRow from './JobTaskTableRow'
@@ -18,14 +19,13 @@ export default function JobList() {
   useEffect(() => {
     setPage(0)
   }, [setPage])
-
+  const { user } = useAuth()
   const { data, isLoading, isFetching } = useGetListJobQuery({
     pageSize: rowsPerPage,
     pageNumber: page + 1,
-    status: 'All',
+    idUser: user.userId,
   })
-  const { list: listJob = [], total: totalRecord = 0 } = data?.data || {}
-
+  const { jobs: listJob = [], total: totalRecord = 0 } = data?.data || {}
   return (
     <Card>
       <BasicTable
