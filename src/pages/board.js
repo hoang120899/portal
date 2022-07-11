@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
+import { useRouter } from 'next/router'
+
 // @mui
 import { Box, Button, Container, Stack } from '@mui/material'
 
@@ -46,6 +48,7 @@ export async function getStaticProps() {
 export default function Board() {
   const { translate } = useLocales()
   const formRef = useRef(null)
+  const { query } = useRouter()
   const [isMounted, setIsMounted] = useState(false)
   const [laneId, setLaneId] = useState('')
   const [open, setOpen] = useState(false)
@@ -94,6 +97,12 @@ export default function Board() {
     const action = getColumns()
     dispatch(action)
   }, [dispatch])
+
+  useEffect(() => {
+    if (isMounted && query && query.cardId && columnData) {
+      handleOpenUpdateTask(query.cardId)
+    }
+  }, [query, isMounted, columnData])
 
   const [updateLane] = useUpdateLaneMutation()
 
