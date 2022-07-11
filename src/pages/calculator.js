@@ -14,6 +14,7 @@ import useSettings from '@/hooks/useSettings'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
+import CaculatorSalary from '@/sections/caculator/CaculatorSalary'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -47,6 +48,7 @@ export default function Calculator() {
           ]}
         />
       </Container>
+      <CaculatorSalary />
     </Page>
   )
 }
