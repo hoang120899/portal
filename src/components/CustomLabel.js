@@ -1,5 +1,5 @@
 // @mui
-import { Box, useTheme } from '@mui/material'
+import { Box, Tooltip, useTheme } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
@@ -10,6 +10,7 @@ CustomLabel.propTypes = {
   color: PropTypes.string,
   variant: PropTypes.oneOf(['filled', 'outlined', 'ghost']),
   sx: PropTypes.object,
+  title: PropTypes.string,
 }
 
 export default function CustomLabel({
@@ -17,6 +18,7 @@ export default function CustomLabel({
   color = 'default',
   startIcon,
   endIcon,
+  title,
   sx,
 }) {
   const style = {
@@ -48,8 +50,13 @@ export default function CustomLabel({
       }}
     >
       {startIcon && <Box sx={{ mr: 0.75, ...style }}>{startIcon}</Box>}
-
-      {children}
+      {title ? (
+        <Tooltip title={title}>
+          <span>{children}</span>
+        </Tooltip>
+      ) : (
+        children
+      )}
 
       {endIcon && <Box sx={{ ml: 0.75, ...style }}>{endIcon}</Box>}
     </Box>
