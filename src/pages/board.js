@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Box, Button, Container, Stack } from '@mui/material'
 
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import Iconify from '@/components/Iconify'
 // components
@@ -19,7 +21,11 @@ import Layout from '@/layouts'
 // sections
 import { KanbanColumn, KanbanTableToolbar } from '@/sections/kanban'
 import KanbanAddTask from '@/sections/kanban/KanbanTaskAdd'
-import { useGetColumnsQuery } from '@/sections/kanban/kanbanSlice'
+import {
+  getColumns,
+  setColumnsAction,
+  useGetColumnsQuery,
+} from '@/sections/kanban/kanbanSlice'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -39,7 +45,6 @@ export default function Board() {
   const { translate } = useLocales()
   const formRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)
-  const [columns, setColumns] = useState([])
   const [laneId, setLaneId] = useState('')
   const [open, setOpen] = useState(false)
   const [cardId, setCardId] = useState('')
@@ -49,6 +54,8 @@ export default function Board() {
 
   const hasAddPermission = isLeaderRole || isMemberRole
 
+  const dispatch = useDispatch()
+  const columns = useSelector((state) => state.kanban.columns)
   const handleOpenAddTask = (laneId) => {
     setOpen((prev) => !prev)
     setLaneId(laneId)
@@ -81,76 +88,23 @@ export default function Board() {
     setIsMounted(true)
   }, [])
 
+  useEffect(() => {
+    const action = getColumns()
+    dispatch(action)
+  }, [dispatch])
+
   const onDragEnd = (result) => {
     // Reorder card
-    const { destination, source, draggableId, type } = result
-
-    if (!destination) return
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    )
-      return
-
-    if (type === 'column') {
-      const newColumnOrder = Array.from(columns, (x) => x.nameColumn)
-      newColumnOrder.splice(source.index, 1)
-      newColumnOrder.splice(destination.index, 0, draggableId)
-
-      // dispatch(persistColumn(newColumnOrder));
-      return
-    }
-
-    // const start = columns[source.droppableId]
-    // const finish = columns[destination.droppableId]
-
-    // if (start.id === finish.id) {
-    //   const updatedCardIds = [...start.cardIds]
-    //   updatedCardIds.splice(source.index, 1)
-    //   updatedCardIds.splice(destination.index, 0, draggableId)
-
-    //   const updatedColumn = {
-    //     ...start,
-    //     cardIds: updatedCardIds,
-    //   };
-
-    //   dispatch(
-    //     persistCard({
-    //       ...board.columns,
-    //       [updatedColumn.id]: updatedColumn,
-    //     })
-    //   );
-    //   return
-    // }
-
-    // const startCardIds = [...start.cardIds]
-    // startCardIds.splice(source.index, 1)
-    // const updatedStart = {
-    //   ...start,
-    //   cardIds: startCardIds,
-    // };
-
-    // const finishCardIds = [...finish.cardIds]
-    // finishCardIds.splice(destination.index, 0, draggableId)
-    // const updatedFinish = {
-    //   ...finish,
-    //   cardIds: finishCardIds,
-    // };
-
-    // dispatch(
-    //   persistCard({
-    //     ...board.columns,
-    //     [updatedStart.id]: updatedStart,
-    //     [updatedFinish.id]: updatedFinish,
-    //   })
-    // );
+    const { destination, source, draggableId } = result
+    if (destination.droppableId === source.droppableId) return
+    const action = setColumnsAction({ destination, source, draggableId })
+    dispatch(action)
   }
 
   return (
     <Page title={translate('nav.board')} sx={{ height: 1 }}>
       <Container maxWidth={false} sx={{ height: 1 }}>
-        <KanbanTableToolbar ref={formRef} setColumns={setColumns} />
+        <KanbanTableToolbar ref={formRef} />
         <KanbanAddTask
           open={open}
           isAddTaskNoColumn={isAddTaskNoColumn}
@@ -179,15 +133,15 @@ export default function Board() {
                     overflowY: 'hidden',
                   }}
                 >
-                  {!columnData?.data.list.length ? (
+                  {columns.isLoading ? (
                     <SkeletonKanbanColumn formRefProp={formRef} />
                   ) : (
-                    columnData.data.list.map((column, index) => (
+                    columns.data?.ids?.map((id, index) => (
                       <KanbanColumn
                         index={index}
-                        key={column.id}
+                        key={id}
                         hasAddPermission={hasAddPermission}
-                        column={column}
+                        column={columns.data.entities[id]}
                         formRefProp={formRef}
                         onOpenAddTask={handleOpenAddTask}
                         onOpenUpdateTask={handleOpenUpdateTask}

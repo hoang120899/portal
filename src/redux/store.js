@@ -6,11 +6,13 @@ import {
 
 import { apiSlice } from '@/redux/api/apiSlice'
 import uploadAvatarSlice from '@/sections/user/account/uploadAvatarSlice'
+import kanbanSlice from '@/sections/kanban/kanbanSlice'
 
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     avatar: uploadAvatarSlice,
+    kanban: kanbanSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

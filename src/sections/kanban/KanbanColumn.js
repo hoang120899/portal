@@ -130,7 +130,7 @@ export default function KanbanColumn({
                   >
                     {CandidateJobs.map((candi, index) => (
                       <KanbanTaskCard
-                        key={candi.id}
+                        key={candi.id || index}
                         onDeleteTask={handleDeleteTask}
                         onOpenUpdateTask={onOpenUpdateTask}
                         hasAddPermission={hasAddPermission}
@@ -140,6 +140,7 @@ export default function KanbanColumn({
                     ))}
                     {provided.placeholder}
                   </Stack>
+                  {/* loading area */}
                 </Box>
               )}
             </Droppable>

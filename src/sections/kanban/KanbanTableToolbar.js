@@ -6,11 +6,10 @@ import { Box } from '@mui/material'
 
 // @date-fns
 import { format } from 'date-fns'
-// @prop-types
-import propTypes from 'prop-types'
 import qs from 'query-string'
 // @react-hooks-form
 import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
 
 import {
   FormProvider,
@@ -25,6 +24,7 @@ import { _getApi } from '@/utils/axios'
 
 import KanbanTaskDetails from './KanbanTaskDetails'
 import {
+  updateColumns,
   useGetClientQuery,
   useGetJobQuery,
   useGetLabelQuery,
@@ -33,7 +33,6 @@ import {
 } from './kanbanSlice'
 
 const KanbanTableToolbar = forwardRef((props, ref) => {
-  const { setColumns } = props
   const defaultValues = {
     search: '',
     labelId: '',
@@ -52,6 +51,8 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
     handleSubmit,
     formState: { isSubmitting },
   } = methods
+
+  const dispatch = useDispatch()
 
   const [openDetails, setOpenDetails] = useState(false)
   const handleOpenDetails = () => {
@@ -81,7 +82,9 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
         url += `?${params}`
       }
       const res = await _getApi(url, rest)
-      setColumns(res.data.list)
+      const action = updateColumns(res.data.list)
+      dispatch(action)
+      // setColumns(res.data.list)
     } catch (error) {
       // console.log(error)
     }
@@ -220,9 +223,5 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
     </>
   )
 })
-
-KanbanTableToolbar.propTypes = {
-  setColumns: propTypes.func,
-}
 
 export default KanbanTableToolbar

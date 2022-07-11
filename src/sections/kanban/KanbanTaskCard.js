@@ -144,17 +144,19 @@ export default function KanbanTaskCard({
                     <Box display='flex' flexWrap='wrap'>
                       <CustomLabel
                         key={index}
-                        color={card.Job.Client?.background}
+                        color={card?.Job?.Client?.background}
                         sx={{
                           margin: '2px',
                         }}
+                        title={card?.Job?.Client?.name}
                       >
-                        {card.Job.Client?.name}
+                        {card?.Job?.Client?.name}
                       </CustomLabel>
                       {labels.map((label, index) => (
                         <CustomLabel
                           key={index}
-                          color={label.background}
+                          color={label?.background}
+                          title={label?.title}
                           sx={{
                             margin: '2px',
                           }}
@@ -172,7 +174,7 @@ export default function KanbanTaskCard({
                             />
                           }
                         >
-                          {label.title}
+                          {label?.title}
                         </CustomLabel>
                       ))}
                     </Box>

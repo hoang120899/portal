@@ -1,3 +1,8 @@
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSlice,
+} from '@reduxjs/toolkit'
 import qs from 'query-string'
 
 import { apiSlice } from '@/redux/api/apiSlice'
@@ -19,6 +24,7 @@ import {
   API_SEARCH_PHONE,
   API_V1_CARD,
 } from '@/routes/api'
+import { _getApi } from '@/utils/axios'
 
 const apiWithTag = apiSlice.enhanceEndpoints({
   addTagTypes: ['Kanban', 'Comment'],
@@ -202,3 +208,65 @@ export const {
   useAddCommentMutation,
   useEditCommentMutation,
 } = kanbanApiSlice
+
+// use reducer
+const columnAdapter = createEntityAdapter()
+
+const initialColumns = columnAdapter.getInitialState()
+const initialState = {
+  columns: {
+    isLoading: false,
+    error: null,
+    data: initialColumns,
+  },
+}
+export const getColumns = createAsyncThunk('culumns/getColumns', async () => {
+  try {
+    // const response = await _getApi(API_LIST_CARD)
+    const response = await _getApi(API_LIST_CARD)
+    return response.data.list
+  } catch (error) {
+    // console.log(error);
+  }
+})
+
+export const kanbanSlice = createSlice({
+  name: 'culumns',
+  initialState,
+  reducers: {
+    setColumnsAction: (state, action) => {
+      const { destination, source, draggableId } = action.payload
+      const card = state.columns.data.entities[
+        source.droppableId
+      ].CandidateJobs.find((item) => item.id === draggableId)
+      //change data column
+      state.columns.data.entities[source.droppableId].CandidateJobs.splice(0, 1)
+      state.columns.data.entities[destination.droppableId].CandidateJobs.splice(
+        0,
+        0,
+        card
+      )
+    },
+    updateColumns: (state, action) => {
+      columnAdapter.upsertMany(state.columns.data, action?.payload || [])
+    },
+  },
+  // extra reducers set get column to state
+  extraReducers: {
+    [getColumns.fulfilled]: (state, action) => {
+      state.columns.isLoading = false
+      columnAdapter.upsertMany(state.columns.data, action?.payload || [])
+    },
+    [getColumns.pending]: (state) => {
+      state.columns.isLoading = true
+    },
+    [getColumns.rejected]: (state, action) => {
+      state.columns.error = action.payload
+      state.columns.isLoading = false
+    },
+  },
+})
+
+export const { setColumnsAction, updateColumns } = kanbanSlice.actions
+
+export default kanbanSlice.reducer
