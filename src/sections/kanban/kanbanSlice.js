@@ -8,6 +8,7 @@ import qs from 'query-string'
 import { apiSlice } from '@/redux/api/apiSlice'
 import {
   API_ADD_CARD,
+  API_ADMIN_CARDS,
   API_ADMIN_LIST_JOB,
   API_ASSIGNMENT,
   API_LIST_ACTIVE_JOB,
@@ -219,6 +220,10 @@ const initialState = {
     error: null,
     data: initialColumns,
   },
+  loadMoreLane: {
+    isLoading: false,
+    error: null,
+  },
 }
 export const getColumns = createAsyncThunk('culumns/getColumns', async () => {
   try {
@@ -229,6 +234,28 @@ export const getColumns = createAsyncThunk('culumns/getColumns', async () => {
     // console.log(error);
   }
 })
+export const getContacts = createAsyncThunk('culumns/getContacts', async () => {
+  try {
+    // const response = await _getApi(API_LIST_CARD)
+    const response = await _getApi(API_LIST_USER)
+    return response.data.list
+  } catch (error) {
+    // console.log(error);
+  }
+})
+export const loadMoreLane = createAsyncThunk(
+  'culumns/loadMoreLane',
+  async (data) => {
+    try {
+      const response = await _getApi(
+        `${API_ADMIN_CARDS}/${data.laneId}/lane?offset=${data.offset}`
+      )
+      return { data: response.data.list, laneId: data.laneId }
+    } catch (error) {
+      // console.log(error);
+    }
+  }
+)
 
 export const kanbanSlice = createSlice({
   name: 'culumns',
@@ -250,6 +277,11 @@ export const kanbanSlice = createSlice({
     updateColumns: (state, action) => {
       columnAdapter.upsertMany(state.columns.data, action?.payload || [])
     },
+    updateLane: (state, action) => {
+      const { laneId, listData } = action.payload
+      const lane = state.columns.data.entities[laneId]
+      lane.CandidateJobs.push(...listData)
+    },
   },
   // extra reducers set get column to state
   extraReducers: {
@@ -263,6 +295,24 @@ export const kanbanSlice = createSlice({
     [getColumns.rejected]: (state, action) => {
       state.columns.error = action.payload
       state.columns.isLoading = false
+    },
+    //load more lane
+    [loadMoreLane.fulfilled]: (state, action) => {
+      state.loadMoreLane.isLoading = false
+      const isEndPage = action.payload.data.length === 0
+      state.columns.data.entities[action.payload.laneId].isEndPage = isEndPage
+      state.columns.data.entities[action.payload.laneId].CandidateJobs = [
+        ...state.columns.data.entities[action.payload.laneId].CandidateJobs,
+        ...action.payload.data,
+      ]
+      // state.columns.data.entities[action.payload.laneId].CandidateJobs.push(...action.payload.data)
+    },
+    [loadMoreLane.pending]: (state) => {
+      state.loadMoreLane.isLoading = true
+    },
+    [loadMoreLane.rejected]: (state, action) => {
+      state.loadMoreLane.error = action.payload
+      state.loadMoreLane.isLoading = false
     },
   },
 })

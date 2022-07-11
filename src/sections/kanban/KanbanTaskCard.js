@@ -96,7 +96,11 @@ export default function KanbanTaskCard({
   }, [card.Users])
 
   return (
-    <Draggable draggableId={card.id} index={index}>
+    <Draggable
+      draggableId={card.id}
+      index={index}
+      isDragDisabled={!hasAddPermission}
+    >
       {(provided) => (
         <div
           {...provided.draggableProps}

@@ -25,9 +25,11 @@ import {
   getColumns,
   setColumnsAction,
   useGetColumnsQuery,
+  useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
 // utils
 import { getRolesByPage } from '@/utils/role'
+import uuidv4 from '@/utils/uuidv4'
 
 Board.getLayout = function getLayout({ roles = [] }, page) {
   return <Layout roles={roles}>{page}</Layout>
@@ -93,12 +95,15 @@ export default function Board() {
     dispatch(action)
   }, [dispatch])
 
+  const [updateLane] = useUpdateLaneMutation()
+
   const onDragEnd = (result) => {
     // Reorder card
     const { destination, source, draggableId } = result
     if (destination.droppableId === source.droppableId) return
     const action = setColumnsAction({ destination, source, draggableId })
     dispatch(action)
+    updateLane({ cardId: draggableId, laneId: destination.droppableId })
   }
 
   return (
@@ -139,7 +144,7 @@ export default function Board() {
                     columns.data?.ids?.map((id, index) => (
                       <KanbanColumn
                         index={index}
-                        key={id}
+                        key={uuidv4()}
                         hasAddPermission={hasAddPermission}
                         column={columns.data.entities[id]}
                         formRefProp={formRef}
@@ -148,7 +153,6 @@ export default function Board() {
                       />
                     ))
                   )}
-
                   {provided.placeholder}
                 </Stack>
               )}

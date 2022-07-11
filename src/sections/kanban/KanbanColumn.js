@@ -1,20 +1,24 @@
-import { useEffect, useRef } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 
 // @mui
 import { Box, Button, Paper, Stack, Typography } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { Draggable, Droppable } from 'react-beautiful-dnd'
+import { useDispatch } from 'react-redux'
 
 // components
 import Iconify from '@/components/Iconify'
 import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
 // hooks
 import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
+import uuidv4 from '@/utils/uuidv4'
 
 //
 import KanbanTaskCard from './KanbanTaskCard'
+import { loadMoreLane } from './kanbanSlice'
 
 KanbanColumn.propTypes = {
   column: PropTypes.object,
@@ -28,7 +32,7 @@ KanbanColumn.propTypes = {
   onOpenUpdateTask: PropTypes.func,
 }
 
-export default function KanbanColumn({
+function KanbanColumn({
   column,
   index,
   hasAddPermission,
@@ -42,9 +46,25 @@ export default function KanbanColumn({
   const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
   const { nameColumn, CandidateJobs, id, background } = column
 
+  const action = loadMoreLane({ laneId: id, offset: CandidateJobs.length })
+  const dispatch = useDispatch()
+
+  const isEndPage = column?.isEndPage || false
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     if (!isScrollToBottom) return
+    if (isEndPage) return
+    setLoading(true)
+    dispatch(action)
+      .then(() => {
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+
     // TODO
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScrollToBottom])
 
   const handleDeleteTask = () => {
@@ -130,7 +150,7 @@ export default function KanbanColumn({
                   >
                     {CandidateJobs.map((candi, index) => (
                       <KanbanTaskCard
-                        key={candi.id || index}
+                        key={uuidv4()}
                         onDeleteTask={handleDeleteTask}
                         onOpenUpdateTask={onOpenUpdateTask}
                         hasAddPermission={hasAddPermission}
@@ -141,6 +161,19 @@ export default function KanbanColumn({
                     {provided.placeholder}
                   </Stack>
                   {/* loading area */}
+                  {loading && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingY: 2,
+                      }}
+                    >
+                      <CircularProgress size={24} sx={{ marginRight: 0.5 }} />
+                      Waiting...
+                    </Box>
+                  )}
                 </Box>
               )}
             </Droppable>
@@ -150,3 +183,5 @@ export default function KanbanColumn({
     </Draggable>
   )
 }
+
+export default memo(KanbanColumn)
