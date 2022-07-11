@@ -10,6 +10,9 @@ import PropTypes from 'prop-types'
 // components
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
+//hooks
+import useSettings from '@/hooks/useSettings'
+//utils
 import getColorPresets from '@/utils/getColorPresets'
 
 const useStyles = makeStyles(() => ({
@@ -50,11 +53,13 @@ const useStyles = makeStyles(() => ({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    fontSize: '1rem',
   },
 }))
 
 const NotifySnackbar = forwardRef(({ id, message }, ref) => {
   const { closeSnackbar } = useSnackbar()
+  const { themeMode } = useSettings()
   const classes = useStyles()
   const { messageNoti, title, type, createdAt } = message
   const { icon } = renderIcon(type)
@@ -104,6 +109,8 @@ const NotifySnackbar = forwardRef(({ id, message }, ref) => {
             sx={{
               display: 'flex',
               alignItems: 'center',
+              color: `${themeMode === 'light' ? '#212B36' : ''}`,
+              justifyContent: 'flex-end',
             }}
           >
             <Iconify
