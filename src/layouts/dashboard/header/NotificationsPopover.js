@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
@@ -21,11 +21,13 @@ import {
 } from '@mui/material'
 
 import { noCase } from 'change-case'
+import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
 import MenuPopover from '@/components/MenuPopover'
+import NotifySnackbar from '@/components/NotifySnackbar'
 import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
 import useAuth from '@/hooks/useAuth'
@@ -55,6 +57,7 @@ export default function NotificationsPopover() {
   })
   const [updateAdminReadAllNotify] = useUpdateAdminReadAllNotifyMutation()
 
+  const { enqueueSnackbar } = useSnackbar()
   const { socket } = useSocket()
   const router = useRouter()
   const { user } = useAuth()
@@ -81,12 +84,13 @@ export default function NotificationsPopover() {
     socket.on('notification', (noti) => {
       noti.content.id = uuidv4() // unique id notification for the same card content in board
       noti.content.createdAt = new Date()
+      renderNotifySnackbar(noti)
       setNotifications((prevState) => [noti.content, ...prevState])
     })
     return () => {
       socket.removeAllListeners()
     }
-  }, [socket, userId])
+  }, [socket, userId, renderNotifySnackbar])
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget)
@@ -137,6 +141,31 @@ export default function NotificationsPopover() {
     router.push(PATH_DASHBOARD.notification)
     handleClose()
   }
+
+  const renderNotifySnackbar = useCallback(
+    (noti) => {
+      const {
+        id,
+        createdAt,
+        type,
+        content: { message, title },
+      } = noti.content
+      enqueueSnackbar(
+        { messageNoti: message, title, type, createdAt: fToNow(createdAt) },
+        {
+          key: id,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
+          },
+          content: (key, message) => (
+            <NotifySnackbar id={key} message={message} />
+          ),
+        }
+      )
+    },
+    [enqueueSnackbar]
+  )
 
   return (
     <>
