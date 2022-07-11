@@ -327,57 +327,15 @@ function renderContent(notification) {
     </Typography>
   )
 
-  if (notification.type === 'order_placed') {
-    return {
-      avatar: (
-        <img
-          alt={notification.content.title}
-          src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_package.svg'
-        />
-      ),
-      title,
-    }
-  }
-  if (notification.type === 'order_shipped') {
-    return {
-      avatar: (
-        <img
-          alt={notification.content.title}
-          src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_shipping.svg'
-        />
-      ),
-      title,
-    }
-  }
-  if (notification.type === 'mail') {
-    return {
-      avatar: (
-        <img
-          alt={notification.content.title}
-          src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_mail.svg'
-        />
-      ),
-      title,
-    }
-  }
-  if (notification.type === 'chat_message') {
-    return {
-      avatar: (
-        <img
-          alt={notification.content.title}
-          src='https://minimal-assets-api-dev.vercel.app/assets/icons/ic_notification_chat.svg'
-        />
-      ),
-      title,
-    }
-  }
   return {
     avatar: notification.User?.linkAvatar ? (
       <img
         alt={notification.content.title}
         src={notification.User?.linkAvatar}
       />
-    ) : null,
+    ) : (
+      <Iconify icon={'bxs:bell'} />
+    ),
     title,
   }
 }
