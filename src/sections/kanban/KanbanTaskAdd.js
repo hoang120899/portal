@@ -379,7 +379,7 @@ export default function KanbanTaskAdd({
                 label={translate('Name Job')}
                 name='idJob'
                 options={jobOptions}
-                disabled={!!cardId}
+                disabled={!hasAddPermission}
               />
             </Box>
 

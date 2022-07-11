@@ -76,9 +76,7 @@ function KanbanHistoryItem({ historyItem }) {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={User.name} src={User.linkAvatar}>
-          A
-        </Avatar>
+        <Avatar alt={User.name} src={User.linkAvatar} />
 
         <Box sx={{ minWidth: 240, ml: 2 }}>
           <Box>

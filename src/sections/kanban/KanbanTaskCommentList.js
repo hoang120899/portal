@@ -104,9 +104,7 @@ function KanbanCommentItem({ commentItem }) {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={User.name} src={User.linkAvatar}>
-          A
-        </Avatar>
+        <Avatar alt={User.name} src={User.linkAvatar} />
 
         <Box ml={2} sx={{ flex: '1' }}>
           {isEdit ? (
