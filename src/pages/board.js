@@ -1,15 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
-
-import { useRouter } from 'next/router'
+import React, { useEffect, useRef } from 'react'
 
 // @mui
-import { Box, Button, Container, Stack } from '@mui/material'
+import { Container, Stack } from '@mui/material'
 
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
+import { DragDropContext } from 'react-beautiful-dnd'
 
-import Iconify from '@/components/Iconify'
 // components
 import Page from '@/components/Page'
 import { SkeletonKanbanColumn } from '@/components/skeleton'
@@ -17,19 +12,17 @@ import { SkeletonKanbanColumn } from '@/components/skeleton'
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
-import useRole from '@/hooks/useRole'
+import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
+// redux
+import { useDispatch, useSelector } from '@/redux/store'
 // sections
 import { KanbanColumn, KanbanTableToolbar } from '@/sections/kanban'
-import KanbanAddTask from '@/sections/kanban/KanbanTaskAdd'
 import {
-  getColumns,
-  setColumnsAction,
-  updateColumns,
-  useGetCardDetailMutation,
-  useGetColumnsQuery,
-  useUpdateLaneMutation,
+  getBoard,
+  selectBoard,
+  updateCardByDestColumn,
 } from '@/sections/kanban/kanbanSlice'
 // utils
 import { getRolesByPage } from '@/utils/role'
@@ -47,157 +40,116 @@ export async function getStaticProps() {
 }
 
 export default function Board() {
+  const formRef = useRef()
+  const { themeStretch } = useSettings()
   const { translate } = useLocales()
-  const formRef = useRef(null)
-  const { query } = useRouter()
-  const [isMounted, setIsMounted] = useState(false)
-  const [laneId, setLaneId] = useState('')
-  const [open, setOpen] = useState(false)
-  const [card, setCard] = useState(null)
-  const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
-  const { isLeaderRole, isMemberRole } = useRole()
-  const { data: columnData } = useGetColumnsQuery()
-  const [getCardDetail] = useGetCardDetailMutation()
-
-  const hasAddPermission = isLeaderRole || isMemberRole
-
   const dispatch = useDispatch()
-  const columns = useSelector((state) => state.kanban.columns)
-  const handleOpenAddTask = (laneId) => {
-    setOpen((prev) => !prev)
-    setLaneId(laneId)
-  }
-
-  const handleOpenAddTaskNoColumn = () => {
-    setOpen((prev) => !prev)
-    setIsAddTaskNoColumn(true)
-  }
-
-  const handleCloseAddTask = () => {
-    setOpen(false)
-    setLaneId('')
-    setIsAddTaskNoColumn(false)
-  }
-
-  const handleOpenUpdateTask = (card) => {
-    setOpen((prev) => !prev)
-    setIsAddTaskNoColumn(true)
-    setCard(card)
-  }
-
-  const handleCloseUpdateTask = () => {
-    setOpen(false)
-    setIsAddTaskNoColumn(false)
-    setCard(null)
-  }
+  const { isLoading } = useSelector((state) => state.kanban)
+  const board = useSelector((state) => selectBoard(state))
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    const action = getColumns()
-    dispatch(action)
+    dispatch(getBoard())
   }, [dispatch])
-
-  useEffect(() => {
-    if (columnData) {
-      dispatch(updateColumns(columnData.data.list))
-    }
-  }, [columnData, dispatch])
-
-  useEffect(() => {
-    async function getCard(cardId) {
-      const cardDetail = await getCardDetail(cardId)
-      return cardDetail
-    }
-    if (isMounted && query && query.cardId) {
-      getCard(query.cardId).then(({ data }) => {
-        handleOpenUpdateTask(data.data.card)
-      })
-    }
-  }, [query, isMounted, getCardDetail])
-
-  const [updateLane] = useUpdateLaneMutation()
 
   const onDragEnd = (result) => {
     // Reorder card
     const { destination, source, draggableId } = result
-    if (destination.droppableId === source.droppableId) return
-    const action = setColumnsAction({ destination, source, draggableId })
-    dispatch(action)
-    updateLane({ cardId: draggableId, laneId: destination.droppableId })
+
+    if (!destination) return
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return
+
+    const start = board.columns[source.droppableId]
+    const finish = board.columns[destination.droppableId]
+    const originalColumns = { ...board.columns }
+
+    // Same column
+    if (start.id === finish.id) {
+      const destCandidateJob =
+        start.CandidateJobs.find((value) => draggableId === value.id) || {}
+      const updatedCandidateJobs = [...start.CandidateJobs]
+
+      updatedCandidateJobs.splice(source.index, 1)
+      updatedCandidateJobs.splice(destination.index, 0, destCandidateJob)
+
+      const updatedColumn = {
+        ...start,
+        CandidateJobs: updatedCandidateJobs,
+      }
+      const newColumns = {
+        ...board.columns,
+        [updatedColumn.id]: updatedColumn,
+      }
+
+      dispatch(
+        updateCardByDestColumn({
+          columnId: updatedColumn.id,
+          cardId: draggableId,
+          originalColumns,
+          newColumns,
+        })
+      )
+      return
+    }
+
+    // Difference column
+    const startCandidateJobs = [...start.CandidateJobs]
+    const destCandidateJob =
+      startCandidateJobs.find((value) => draggableId === value.id) || {}
+    startCandidateJobs.splice(source.index, 1)
+    const updatedStart = {
+      ...start,
+      CandidateJobs: startCandidateJobs,
+    }
+
+    const finishCandidateJobs = [...finish.CandidateJobs]
+    finishCandidateJobs.splice(destination.index, 0, destCandidateJob)
+    const updatedFinish = {
+      ...finish,
+      CandidateJobs: finishCandidateJobs,
+    }
+
+    const newColumns = {
+      ...board.columns,
+      [updatedStart.id]: updatedStart,
+      [updatedFinish.id]: updatedFinish,
+    }
+
+    dispatch(
+      updateCardByDestColumn({
+        columnId: updatedFinish.id,
+        cardId: draggableId,
+        originalColumns,
+        newColumns,
+      })
+    )
   }
 
   return (
-    <Page title={translate('nav.board')} sx={{ height: 1 }}>
-      <Container maxWidth={false} sx={{ height: 1 }}>
-        <KanbanTableToolbar
-          ref={formRef}
-          onOpenUpdateTask={handleOpenUpdateTask}
-        />
-        <KanbanAddTask
-          open={open}
-          isAddTaskNoColumn={isAddTaskNoColumn}
-          columns={columnData}
-          card={card}
-          laneId={laneId}
-          hasAddPermission={hasAddPermission}
-          onClose={handleCloseAddTask}
-          onCloseUpdate={handleCloseUpdateTask}
-        />
-        {isMounted && (
+    <Page title={translate('nav.board')}>
+      <Container maxWidth={themeStretch ? false : 'xl'}>
+        <KanbanTableToolbar ref={formRef} />
+
+        {isLoading && !board.columnOrder.length ? (
+          <SkeletonKanbanColumn formRef={formRef.current} />
+        ) : (
           <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              droppableId='all-columns'
-              direction='horizontal'
-              type='column'
-            >
-              {(provided) => (
-                <Stack
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  direction='row'
-                  alignItems='flex-start'
-                  spacing={2}
-                  sx={{
-                    overflowY: 'hidden',
-                  }}
-                >
-                  {columns.isLoading ? (
-                    <SkeletonKanbanColumn formRefProp={formRef} />
-                  ) : (
-                    columns.data?.ids?.map((id, index) => (
-                      <KanbanColumn
-                        index={index}
-                        key={id}
-                        hasAddPermission={hasAddPermission}
-                        column={columns.data.entities[id]}
-                        formRefProp={formRef}
-                        onOpenAddTask={handleOpenAddTask}
-                        onOpenUpdateTask={handleOpenUpdateTask}
-                      />
-                    ))
-                  )}
-                  {provided.placeholder}
-                </Stack>
-              )}
-            </Droppable>
+            <Stack direction='row' spacing={2} sx={{ overflowY: 'hidden' }}>
+              {board.columnOrder.map((columnId) => (
+                <KanbanColumn
+                  key={columnId}
+                  column={board.columns[columnId]}
+                  formRef={formRef.current}
+                />
+              ))}
+            </Stack>
           </DragDropContext>
         )}
       </Container>
-      {hasAddPermission && (
-        <Box sx={{ position: 'fixed', right: '50px', bottom: '50px' }}>
-          <Button
-            size='large'
-            variant='contained'
-            onClick={handleOpenAddTaskNoColumn}
-            sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
-          >
-            <Iconify icon={'eva:plus-fill'} width={24} height={24} />
-          </Button>
-        </Box>
-      )}
     </Page>
   )
 }

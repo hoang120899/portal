@@ -1,187 +1,161 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 // @mui
-import { Box, Button, Paper, Stack, Typography } from '@mui/material'
-import CircularProgress from '@mui/material/CircularProgress'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material'
 
-import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
-import { Draggable, Droppable } from 'react-beautiful-dnd'
-import { useDispatch } from 'react-redux'
+import { Droppable } from 'react-beautiful-dnd'
 
 // components
 import Iconify from '@/components/Iconify'
-import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
 // hooks
-import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
+import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
+import useKanban from '@/hooks/useKanban'
+// redux
+import { useDispatch, useSelector } from '@/redux/store'
 
 //
 import KanbanTaskCard from './KanbanTaskCard'
-import { loadMoreLane } from './kanbanSlice'
+import { CARD_WIDTH, KANBAN_STATUS_HEADER_HEIGHT } from './config'
+// sections
+import { getMoreCardByColumn } from './kanbanSlice'
 
 KanbanColumn.propTypes = {
   column: PropTypes.object,
-  index: PropTypes.number,
-  hasAddPermission: PropTypes.bool,
-  formRefProp: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.any }),
-  ]),
-  onOpenAddTask: PropTypes.func,
-  onOpenUpdateTask: PropTypes.func,
+  formRef: PropTypes.any,
 }
 
-function KanbanColumn({
-  column,
-  index,
-  hasAddPermission,
-  formRefProp,
-  onOpenAddTask,
-  onOpenUpdateTask,
-}) {
-  const scrollRef = useRef(null)
-  const { enqueueSnackbar } = useSnackbar()
-  const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
-  const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
-  const { nameColumn, CandidateJobs, id, background } = column
-
-  const action = loadMoreLane({ laneId: id, offset: CandidateJobs.length })
+export default function KanbanColumn({ column, formRef }) {
   const dispatch = useDispatch()
+  const { isLoading } = useSelector((state) => state.kanban)
+  const scrollRef = useRef(null)
+  const { kanbanColumn: { lgHeight = 0, xsHeight = 0 } = {} } = useKanban({
+    formRef,
+  })
+  const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
+  const {
+    nameColumn,
+    background,
+    CandidateJobs = [],
+    id: columnId,
+    isEndPage = false,
+  } = column
+  const offset = CandidateJobs.length
 
-  const isEndPage = column?.isEndPage || false
-  const [loading, setLoading] = useState(false)
   useEffect(() => {
-    if (!isScrollToBottom) return
-    if (isEndPage) return
-    setLoading(true)
-    dispatch(action)
-      .then(() => {
-        setLoading(false)
+    if (!isScrollToBottom || isEndPage) return
+    dispatch(
+      getMoreCardByColumn({
+        columnId,
+        offset,
       })
-      .catch(() => {
-        setLoading(false)
-      })
-
-    // TODO
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isScrollToBottom])
-
-  const handleDeleteTask = () => {
-    enqueueSnackbar('Delete success!')
-  }
+    )
+  }, [isScrollToBottom, isEndPage, dispatch, columnId, offset])
 
   return (
-    <Draggable draggableId={id} index={index} isDragDisabled={true}>
-      {(provided) => (
-        <Paper
-          {...provided.draggableProps}
-          ref={provided.innerRef}
-          variant='outlined'
+    <Paper
+      variant='outlined'
+      sx={{
+        px: 2,
+        bgcolor: 'grey.5008',
+        height: {
+          lg: `calc(100vh - ${lgHeight}px)`,
+          xs: `calc(100vh - ${xsHeight}px)`,
+        },
+      }}
+    >
+      <Box
+        sx={{
+          background: background,
+          borderTopLeftRadius: '1rem',
+          borderTopRightRadius: '1rem',
+          height: '8px',
+          marginX: -2,
+        }}
+      />
+
+      <Stack spacing={2} sx={{ pb: 2 }}>
+        <Box
           sx={{
-            px: 2,
-            bgcolor: 'grey.5008',
-            height: {
-              lg: `calc(100vh - ${lgHeight}px)`,
-              xs: `calc(100vh - ${xsHeight}px)`,
-            },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            pt: 2,
           }}
         >
-          <Box
+          <Typography variant='h6'>{nameColumn}</Typography>
+          <Button
+            color='inherit'
+            startIcon={
+              <Iconify
+                icon={'eva:plus-circle-outline'}
+                width={24}
+                height={24}
+              />
+            }
             sx={{
-              background: background,
-              borderTopLeftRadius: '1rem',
-              borderTopRightRadius: '1rem',
+              padding: 0,
+              justifyContent: 'end',
+              minWidth: 0,
+              '& .MuiButton-startIcon': {
+                marginRight: 0,
+              },
             }}
-            height='8px'
-            marginX='-16px'
           />
-          <Stack spacing={3} {...provided.dragHandleProps}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                pt: 2,
-              }}
-            >
-              <Typography variant='h6'>{nameColumn}</Typography>
-              {hasAddPermission && (
-                <Button
-                  color='inherit'
-                  startIcon={
-                    <Iconify
-                      icon={'eva:plus-circle-outline'}
-                      width={24}
-                      height={24}
-                    />
-                  }
-                  onClick={onOpenAddTask.bind(null, id)}
-                  sx={{
-                    padding: 0,
-                    justifyContent: 'end',
-                    minWidth: 0,
-                    '& .MuiButton-startIcon': {
-                      marginRight: 0,
-                    },
-                  }}
-                />
-              )}
-            </Box>
+        </Box>
+      </Stack>
 
-            <Droppable droppableId={id} type='task'>
-              {(provided) => (
-                <Box
-                  ref={scrollRef}
-                  sx={{
-                    height: {
-                      lg: `calc(100vh - ${lgHeight + 16 + 44 + 24}px)`,
-                      xs: `calc(100vh - ${xsHeight + 16 + 44 + 24}px)`,
-                    },
-                    width: '280px',
-                    paddingBottom: 2,
-                    overflowY: 'auto',
-                  }}
-                >
-                  <Stack
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    spacing={2}
-                  >
-                    {CandidateJobs.map((candi, index) => (
-                      <KanbanTaskCard
-                        key={`${candi.id}-${index}`}
-                        onDeleteTask={handleDeleteTask}
-                        onOpenUpdateTask={onOpenUpdateTask}
-                        hasAddPermission={hasAddPermission}
-                        card={candi}
-                        index={index}
-                        laneId={id}
-                      />
-                    ))}
-                    {provided.placeholder}
-                  </Stack>
-                  {/* loading area */}
-                  {loading && (
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingY: 2,
-                      }}
-                    >
-                      <CircularProgress size={24} sx={{ marginRight: 0.5 }} />
-                      Waiting...
-                    </Box>
-                  )}
-                </Box>
-              )}
-            </Droppable>
-          </Stack>
-        </Paper>
-      )}
-    </Draggable>
+      <Droppable droppableId={columnId}>
+        {(provided) => (
+          <Box
+            ref={scrollRef}
+            sx={{
+              height: {
+                lg: `calc(100vh - ${lgHeight + KANBAN_STATUS_HEADER_HEIGHT}px)`,
+                xs: `calc(100vh - ${xsHeight + KANBAN_STATUS_HEADER_HEIGHT}px)`,
+              },
+              width: `${CARD_WIDTH}px`,
+              overflowY: 'auto',
+              mb: 2,
+            }}
+          >
+            <Stack
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              spacing={2}
+            >
+              {CandidateJobs.map((value, index) => (
+                <KanbanTaskCard
+                  key={`${value.id}-${index}`}
+                  card={value}
+                  index={index}
+                />
+              ))}
+              {provided.placeholder}
+            </Stack>
+            {isScrollToBottom && isLoading && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingY: 2,
+                }}
+              >
+                <CircularProgress size={24} sx={{ marginRight: 0.5 }} />
+                Waiting...
+              </Box>
+            )}
+          </Box>
+        )}
+      </Droppable>
+    </Paper>
   )
 }
-
-export default memo(KanbanColumn)

@@ -7,10 +7,8 @@ import { Box } from '@mui/material'
 // @date-fns
 import { format } from 'date-fns'
 import PropTypes from 'prop-types'
-import qs from 'query-string'
 // @react-hooks-form
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 
 import {
   FormProvider,
@@ -19,12 +17,11 @@ import {
   RHFDatePicker,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
-import { API_LIST_CARD } from '@/routes/api'
-// @api
-import { _getApi } from '@/utils/axios'
+// redux
+import { useDispatch } from '@/redux/store'
 
 import {
-  updateColumns,
+  getBoard,
   useGetClientQuery,
   useGetJobQuery,
   useGetLabelQuery,
@@ -33,11 +30,12 @@ import {
 } from './kanbanSlice'
 
 const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
+  const dispatch = useDispatch()
   const defaultValues = {
     search: '',
-    labelId: '',
+    label: '',
     clientId: '',
-    memberId: '',
+    userId: '',
     jobId: '',
     startDate: null,
     endDate: null,
@@ -52,94 +50,81 @@ const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
     formState: { isSubmitting },
   } = methods
 
-  const dispatch = useDispatch()
-
-  const filterNonNull = (obj) =>
-    // eslint-disable-next-line no-unused-vars
-    Object.fromEntries(Object.entries(obj).filter(([k, v]) => v))
   const onSubmit = async (data) => {
     try {
-      // eslint-disable-next-line no-unused-vars
-      let { search, ...rest } = data
-      if (rest.startDate) {
-        rest.startDate = format(rest.startDate, 'yyyy-MM-dd')
-      }
-      if (rest.endDate) {
-        rest.endDate = format(rest.endDate, 'yyyy-MM-dd')
-      }
-      let url = API_LIST_CARD
-      let params = qs.stringify(filterNonNull(rest))
-      if (params) {
-        url += `?${params}`
-      }
-      const res = await _getApi(url, rest)
-      const action = updateColumns(res.data.list)
-      dispatch(action)
-      // setColumns(res.data.list)
+      const queries = Object.keys(data)
+        .filter((key) => key !== 'search' && data[key])
+        .reduce((obj, key) => {
+          const getValue = (key) => {
+            if (['startDate', 'endDate'].includes(key))
+              return format(data[key], 'yyyy-MM-dd')
+            return data[key]
+          }
+          return {
+            ...obj,
+            [key]: getValue(key),
+          }
+        }, {})
+
+      dispatch(getBoard(queries))
     } catch (error) {
-      // console.log(error)
+      // TODO
     }
   }
-  const { data: labelData } = useGetLabelQuery()
-  const { data: clientData } = useGetClientQuery()
-  const { data: jobData } = useGetJobQuery()
-  const { data: memberData } = useGetMemberQuery()
+  const { data: listLabels } = useGetLabelQuery()
+  const { data: listClients } = useGetClientQuery()
+  const { data: listJobs } = useGetJobQuery()
+  const { data: listMembers } = useGetMemberQuery()
+
   const labelOptions = useMemo(() => {
-    if (labelData) {
-      return labelData.data.list.map((label) => ({
-        value: label.title,
-        label: label.title,
-      }))
-    }
-    return []
-  }, [labelData])
+    if (!listLabels) return []
+
+    const { data: { list = [] } = {} } = listLabels
+    return list.map(({ title }) => ({
+      value: title,
+      label: title,
+    }))
+  }, [listLabels])
+
   const clientOptions = useMemo(() => {
-    if (clientData) {
-      return clientData.data.clients.map((client) => ({
-        value: client.id,
-        label: client.name,
-      }))
-    }
-    return []
-  }, [clientData])
+    if (!listClients) return []
+
+    const { data: { clients = [] } = {} } = listClients
+    return clients.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }))
+  }, [listClients])
+
   const jobOptions = useMemo(() => {
-    if (jobData) {
-      return jobData.data.listJob.map((job) => ({
-        value: job.id,
-        label: job.title,
-      }))
-    }
-    return []
-  }, [jobData])
+    if (!listJobs) return []
+
+    const { data: { listJob = [] } = {} } = listJobs
+    return listJob.map(({ id, title }) => ({
+      value: id,
+      label: title,
+    }))
+  }, [listJobs])
+
   const memberOptions = useMemo(() => {
-    if (memberData) {
-      return memberData.data.list.map((member) => ({
-        value: member.id,
-        label: member.name,
-      }))
-    }
-    return []
-  }, [memberData])
+    if (!listMembers) return []
+
+    const { data: { list = [] } = {} } = listMembers
+    return list.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }))
+  }, [listMembers])
+
   const [keySearch, setKeySearch] = useState('')
   const search = useDebounce(keySearch, 1000)
 
-  const { data: cardData, isFetching: isCardFetching } = useSearchCardsQuery({
-    search,
-  })
-  const cardOptions = useMemo(() => {
-    if (cardData || cardData?.data?.list.length > 0) {
-      return cardData.data.list.map((card, i) => ({
-        ...card,
-        value: card.Candidate.name,
-        label: `${card.Candidate.name}-${i}`,
-        id: card.id,
-      }))
+  const { data: cardOptions, isFetching: isCardFetching } = useSearchCardsQuery(
+    {
+      search,
     }
-    return []
-  }, [cardData])
-  const handle = (value) => {
-    onOpenUpdateTask(value)
-  }
+  )
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -165,7 +150,7 @@ const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
                   key={option.key}
                   component='li'
                   {...props}
-                  onClick={() => handle(option)}
+                  onClick={() => onOpenUpdateTask(option.id)}
                 >
                   {option.value}
                 </Box>
@@ -215,6 +200,7 @@ const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
     </>
   )
 })
+
 KanbanTableToolbar.propTypes = {
   onOpenUpdateTask: PropTypes.func,
 }
