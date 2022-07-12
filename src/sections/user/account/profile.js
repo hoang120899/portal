@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 // @mui
-import { Card } from '@mui/material'
+import { Card, CardHeader, Typography } from '@mui/material'
 
 // components
 import BasicTable from '@/components/BasicTable'
@@ -9,11 +9,11 @@ import Pagination from '@/components/Pagination'
 import useAuth from '@/hooks/useAuth'
 import useTable from '@/hooks/useTable'
 
-import JobTaskTableRow from './JobTaskTableRow'
 import { TABLE_HEAD } from './config'
 import { useGetListJobQuery } from './jobSlice'
+import JobTaskTableRow from './jobTaskTableRow'
 
-export default function JobList() {
+export default function JobList({ subheader, ...other }) {
   const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
     useTable()
   useEffect(() => {
@@ -27,7 +27,11 @@ export default function JobList() {
   })
   const { jobs: listJob = [], total: totalRecord = 0 } = data?.data || {}
   return (
-    <Card>
+    <Card {...other}>
+      <CardHeader title='List Jobs' subheader={subheader} />
+      <Typography variant='subtitle1'>
+        You are following {totalRecord} jobs
+      </Typography>
       <BasicTable
         columns={TABLE_HEAD}
         page={page}

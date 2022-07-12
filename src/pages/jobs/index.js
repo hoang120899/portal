@@ -19,7 +19,6 @@ import useSettings from '@/hooks/useSettings'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
-import JobList from '@/sections/job'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -62,7 +61,6 @@ export default function Jobs() {
             </NextLink>
           }
         />
-        <JobList />
       </Container>
     </Page>
   )

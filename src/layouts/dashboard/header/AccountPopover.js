@@ -34,7 +34,7 @@ const MENU_OPTIONS = [
   },
   {
     label: 'setting',
-    linkTo: PATH_DASHBOARD.users.account,
+    linkTo: PATH_DASHBOARD.profile,
   },
 ]
 
@@ -118,6 +118,9 @@ export default function AccountPopover() {
           </Typography>
           <Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
             {user.email}
+          </Typography>
+          <Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
+            {user.role}
           </Typography>
         </Box>
 

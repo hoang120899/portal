@@ -12,7 +12,6 @@ import * as Yup from 'yup'
 // components
 import {
   FormProvider,
-  RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
 } from '@/components/hook-form'
@@ -24,6 +23,7 @@ import { useDispatch } from '@/redux/store'
 import { fData } from '@/utils/formatNumber'
 
 import { fetchUploadAPI } from './uploadAvatarSlice'
+import JobList from './profile'
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar()
@@ -116,19 +116,8 @@ export default function AccountGeneral() {
                 </Typography>
               }
             />
-
-            <RHFSwitch
-              name='isPublic'
-              labelPlacement='start'
-              label='Public Profile'
-              sx={{ mt: 5 }}
-              disabled='true'
-            />
           </Card>
-        </Grid>
-
-        <Grid item xs={12} md={8}>
-          <Card sx={{ py: 10, px: 3, textAlign: 'center' }}>
+          <Card sx={{ py: 10, marginTop: 5, px: 3, textAlign: 'center' }}>
             <Box
               sx={{
                 display: 'grid',
@@ -151,6 +140,10 @@ export default function AccountGeneral() {
               <RHFTextField name='team' label='Team' disabled='true' />
             </Box>
           </Card>
+        </Grid>
+
+        <Grid item xs={8}>
+          <JobList />
         </Grid>
       </Grid>
     </FormProvider>
