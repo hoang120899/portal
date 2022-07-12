@@ -23,8 +23,6 @@ import {
 import { noCase } from 'change-case'
 import PropTypes from 'prop-types'
 
-// _mock_
-// import { _notifications } from '@/_mock'
 // components
 import Iconify from '@/components/Iconify'
 import MenuPopover from '@/components/MenuPopover'
@@ -34,7 +32,7 @@ import useAuth from '@/hooks/useAuth'
 // hooks
 import useRole from '@/hooks/useRole'
 import useSocket from '@/hooks/useSocket'
-import { PATH_DASHBOARD } from '@/routes/paths'
+import { PATH_DASHBOARD, PATH_PAGE } from '@/routes/paths'
 import {
   useGetAdminAllNotifyQuery,
   useUpdateAdminReadAllNotifyMutation,
@@ -77,11 +75,17 @@ export default function NotificationsPopover() {
   useEffect(() => {
     if (!socket) return
     socket.emit('join', userId)
+  }, [socket, userId])
+
+  useEffect(() => {
     socket.on('notification', (noti) => {
       noti.content.id = uuidv4() // unique id notification for the same card content in board
       noti.content.createdAt = new Date()
       setNotifications((prevState) => [noti.content, ...prevState])
     })
+    return () => {
+      socket.removeAllListeners()
+    }
   }, [socket, userId])
 
   const handleOpen = (event) => {
@@ -111,20 +115,20 @@ export default function NotificationsPopover() {
     handleMarkAllAsRead()
     switch (type) {
       case 'assignJob':
-        router.push(`/job-detail/${id}`)
+        router.push(PATH_DASHBOARD.jobDetail.view(id))
         break
       case 'assignCard':
-        router.push(`/board`)
+        router.push(PATH_DASHBOARD.board)
         break
       case 'assignTask':
-        router.push(`/`)
+        router.push(PATH_DASHBOARD.root)
         break
       case 'jobOverTime':
-        router.push(`/404`)
+        router.push(PATH_PAGE.page404)
         break
 
       default:
-        router.push(`/notification`)
+        router.push(PATH_DASHBOARD.notification)
         break
     }
   }
@@ -260,7 +264,7 @@ export default function NotificationsPopover() {
 
 NotificationItem.propTypes = {
   notification: PropTypes.shape({
-    createdAt: PropTypes.string,
+    createdAt: PropTypes.any,
     id: PropTypes.string,
     status: PropTypes.bool,
     title: PropTypes.string,
