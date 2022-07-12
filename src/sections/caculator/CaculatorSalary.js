@@ -1,245 +1,282 @@
 import React from 'react'
 
 import {
+  Alert,
   Button,
   Card,
+  FormControl,
+  FormControlLabel,
   Grid,
+  Radio,
+  RadioGroup,
   Stack,
   Table,
+  TableBody,
   TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   TextField,
   Typography,
 } from '@mui/material'
+import Paper from '@mui/material/Paper'
 
 const CaculatorSalary = () => (
-  // <div className='container'>
+  <Grid sx={{ paddingLeft: 3 }}>
+    <Card sx={{ maxWidth: 1350 }}>
+      <Stack sx={{ width: '100%', p: 3 }} spacing={2}>
+        <Alert severity='warning'>
+          Salary calculator tool Gross to Net / Net to Gross standard 2021
+        </Alert>
+      </Stack>
+      <Stack direction='row' sx={{ p: 3, paddingRight: 35 }}>
+        <Grid container direction='row' alignItems='center'>
+          <Typography>Salary:</Typography>
+          <TextField sx={{ paddingLeft: 2, maxWidth: 220 }} />
+        </Grid>
+        <Grid container direction='row' alignItems='center'>
+          <Typography>SGD:</Typography>
+          <TextField sx={{ paddingLeft: 2, maxWidth: 220 }} />
+        </Grid>
+        <Grid container direction='row' alignItems='center'>
+          <Typography>Exchange rate:</Typography>
+          <TextField sx={{ paddingLeft: 2, maxWidth: 220 }} />
+        </Grid>
+      </Stack>
 
-  //     <FormControl>
-  //       <div className='card-body card-body-caculator'>
-  //         <div className='form-group mb-8'>
-  //           <div className='alert alert-custom alert-default' role='alert'>
-  //             <div className='alert-icon'>
-  //               <i className='flaticon-warning text-primary' />
-  //             </div>
-  //             <div className='alert-text'>
-  //               Salary calculator tool Gross to Net / Net to Gross standard
-  //               2021
-  //             </div>
-  //           </div>
-  //         </div>
-  //         <div className='form-group row'>
-  //           <div className='col-md-3 input-salary'>
-  //             <div className='input-salary__label'>
-  //               <span>Salary:</span>
-  //             </div>
-  //             <div>
-  //               <TextField
-  //                 name='salary'
-  //                 placeholder='VD: 10,000,000'
-  //                 className='form-control'
-  //                 type='text'
-  //               ></TextField>
-  //             </div>
-  //           </div>
-  //           <div className='col-md-3 input-salary'>
-  //             <div className='input-salary__label'>
-  //               <span>SGD:</span>
-  //             </div>
-  //             <div>
-  //               <TextField
-  //                 name='sgd'
-  //                 className='form-control custom-input-usd'
-  //                 type='text'
-  //               ></TextField>
-  //             </div>
-  //           </div>
-  //           <div className='col-md-4 input-salary'>
-  //             <div className='input-salary__label'>
-  //               <span>Exchange rate:</span>
-  //             </div>
-  //             <div>
-  //               <TextField
-  //                 name='tigia'
-  //                 className={'form-control'}
-  //                 type='text'
-  //               ></TextField>
-  //             </div>
-  //           </div>
-  //         </div>
-
-  //         <div className='form-group row'>
-  //           <div className='col-md-8 input-salary'>
-  //             <div className='input-salary__label'>Insurance:</div>
-  //             <div className='div-input-caculator'>
-  //               <div className='radio-inline salary-chinhthuc'>
-  //                 <label className='radio'>
-  //                   <input type='radio' name='radios2' />
-  //                   <span></span>
-  //                   Full wage
-  //                 </label>
-  //               </div>
-  //               <div className='insurance-group'>
-  //                 <div className='radio-inline'>
-  //                   <label className='radio'>
-  //                     <input type='radio' name='radios2' />
-  //                     <span></span>
-  //                     Other
-  //                   </label>
-  //                 </div>
-  //                 <TextField
-  //                   name='insuraneMoney'
-  //                   className='form-control custom-input-bhxh'
-  //                   type='text'
-  //                 />
-  //                 <span className='sub-input-caculator'>(VND)</span>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </div>
-
-  //         <div className='form-group row'>
-  //           <div className='col-md-3 input-salary'>
-  //             <div className='input-salary__label'>PVI:</div>
-  //             <div>
-  //               <TextField
-  //                 name='pvi'
-  //                 className='form-control'
-  //                 type='number'
-  //               />
-  //             </div>
-  //           </div>
-  //           <div className='col-md-4 input-salary'>
-  //             <div className='input-salary__label'>Circumstances:</div>
-  //             <div>
-  //               <TextField
-  //                 name='peopleDependent'
-  //                 className='form-control'
-  //                 type='number'
-  //               />
-  //             </div>
-  //             <span> (people)</span>
-  //           </div>
-  //         </div>
-
-  //         <div className='footer-caculator'>
-  //           <Button
-  //             type='button'
-  //             className='btn btn-primary btn-custom-caculator'
-  //             color="success"
-  //             variant="contained"
-  //           >
-  //             GROSS → NET
-  //           </Button>
-  //           <Button
-  //             type='button'
-  //             className='btn btn-warning btn-custom-caculator'
-  //             color="success"
-  //             variant="contained"
-  //           >
-  //             NET → GROSS
-  //           </Button>
-  //         </div>
-  //       </div>
-  //     </FormControl>
-
-  //   </div>
-  // </div>
-  <Card sx={{ maxWidth: 1300 }}>
-    <Stack direction='row' spacing={3} sx={{ p: 3 }}>
-      <Grid container direction='row' alignItems='center'>
-        <Typography>Salary:</Typography>
-        <TextField />
+      <Grid
+        container
+        direction='row'
+        alignItems='center'
+        sx={{ paddingLeft: 3 }}
+      >
+        <Typography>Insurance:</Typography>
+        <FormControl direction='row' sx={{ paddingLeft: 2 }}>
+          {/* <FormLabel>Insurance:</FormLabel> */}
+          <RadioGroup
+            row
+            aria-labelledby='demo-row-radio-buttons-group-label'
+            name='row-radio-buttons-group'
+            alignItems='center'
+          >
+            <FormControlLabel
+              value='fullwage'
+              control={<Radio />}
+              label='Full Wage'
+            />
+            <FormControlLabel value='other' control={<Radio />} label='other' />
+            <TextField sx={{ maxWidth: 220 }} />
+            <Typography sx={{ p: 1 }}>(VND)</Typography>
+          </RadioGroup>
+        </FormControl>
       </Grid>
-      <Grid container direction='row' alignItems='center'>
-        <Typography>Salary:</Typography>
-        <TextField />
+
+      <Stack direction='row' sx={{ p: 3, paddingRight: 60 }}>
+        <Grid container direction='row' alignItems='center'>
+          <Typography>PVI:</Typography>
+          <TextField sx={{ paddingLeft: 2, maxWidth: 220 }} />
+        </Grid>
+        <Grid container direction='row' alignItems='center'>
+          <Typography>Circumstances:</Typography>
+          <TextField sx={{ paddingLeft: 2, maxWidth: 220 }} />
+          <Typography>(people)</Typography>
+        </Grid>
+      </Stack>
+      <Stack
+        spacing={1}
+        direction='row'
+        justifyContent='center'
+        alignItems='center'
+        sx={{ p: 3 }}
+      >
+        <Button variant='contained'> GROSS → NET</Button>
+        <Button variant='contained'> NET → GROSS</Button>
+      </Stack>
+
+      <Stack direction='row' sx={{ p: 3 }} spacing={2}>
+        <Grid container>
+          <Grid container direction='row' sx={{ p: 1 }} alignItems='center'>
+            <Typography>Description (VND) </Typography>
+            <Button variant='contained'>Copy to clipboard</Button>
+          </Grid>
+          <TableContainer component={Paper} sx={{ paddingTop: 3 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+
+        <Grid container>
+          <Grid container direction='row' sx={{ p: 1 }} alignItems='center'>
+            <Typography>Description (VND) </Typography>
+            <Button variant='contained'>Copy to clipboard</Button>
+          </Grid>
+          <TableContainer sx={{ paddingTop: 3 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>GROSS Salary</TableCell>
+                  <TableCell align='right'>VND: 120,000(SGD: 7)</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Stack>
+
+      <Grid container sx={{ p: 3 }}>
+        <Grid container direction='row' sx={{ p: 1 }} alignItems='center'>
+          <Typography>Description (VND) </Typography>
+          <Button variant='contained'>Copy to clipboard</Button>
+        </Grid>
+        <TableContainer sx={{ paddingTop: 3 }}>
+          <Table>
+            <TableHead>
+              <TableCell>Taxable rate</TableCell>
+              <TableCell>Tax</TableCell>
+              <TableCell>Money</TableCell>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>
+                  <Typography>Up to 5 million VND</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>5%</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>250,000</Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography>Over 5 million VND to 10 million VND</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>10%</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>190,000</Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography>
+                    From over 10 million VND to 18 million VND
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>5%</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>250,000</Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography>
+                    From over 18 million VND to 32 million VND
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>5%</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>250,000</Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography>
+                    From over 32 million VND to 52 million VND
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>5%</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>250,000</Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography>
+                    From over 52 million VND to 80 million VND
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>5%</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>250,000</Typography>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Typography>Over 80 million VND</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>5%</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>250,000</Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Grid>
-      <Grid container direction='row' alignItems='center'>
-        <Typography>Salary:</Typography>
-        <TextField />
-      </Grid>
-    </Stack>
-
-    <Grid container direction='row' alignItems='center'>
-      <Typography>Insurance:</Typography>
-      <label>
-        <input type='radio' name='radios2' />
-        <span> </span>
-        Full wage
-      </label>
-      <label>
-        <input type='radio' name='radios2' />
-        <span> </span>
-        Other
-      </label>
-      <TextField />
-      <Typography>(VND)</Typography>
-    </Grid>
-
-    <Stack direction='row' spacing={2} sx={{ p: 3 }}>
-      <Grid container direction='row' alignItems='center'>
-        <Typography>PVI:</Typography>
-        <TextField />
-      </Grid>
-      <Grid container direction='row' alignItems='center'>
-        <Typography>Circumstances:</Typography>
-        <TextField />
-        <Typography>(people)</Typography>
-      </Grid>
-    </Stack>
-
-    <Button> GROSS → NET</Button>
-    <Button> NET → GROSS</Button>
-
-    <Stack direction='row' spacing={3} sx={{ p: 3 }}>
-      <div>
-        <Typography>Description (VND)</Typography>
-        <Button>Copy to clipboard</Button>
-        <Table sx={{ minWidth: 800 }} aria-label='customized table'>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-        </Table>
-      </div>
-
-      <div>
-        <Typography>Description (VND)</Typography>
-        <Button>Copy to clipboard</Button>
-        <Table sx={{ minWidth: 500 }} aria-label='customized table'>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Gross Salary</TableCell>
-            <TableCell>VND: 12,000,000(SGD: 694)</TableCell>
-          </TableRow>
-        </Table>
-      </div>
-    </Stack>
-  </Card>
+    </Card>
+  </Grid>
 )
 
 export default CaculatorSalary
