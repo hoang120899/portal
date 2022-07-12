@@ -28,14 +28,14 @@ import {
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
 import useLocales from '@/hooks/useLocales'
-// import { API_ADD_CARD } from '@/routes/api'
 import {
   useAddAssigneeMutation,
-  useAddCardMutation, // useSearchPhoneQuery,
+  useAddCardMutation,
   useGetActiveJobsQuery,
   useGetUserQuery,
   useRemoveAssigneeMutation,
   useSearchEmailQuery,
+  useSearchPhoneQuery,
   useUpdateCardMutation,
   useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
@@ -87,7 +87,14 @@ export default function KanbanTaskAdd({
           })
           .nullable()
           .required('Email is required'),
-    phone: Yup.string().required('Phone number is required'),
+    phone: cardId
+      ? Yup.string().required('Email is required')
+      : Yup.object()
+          .shape({
+            value: Yup.string(),
+          })
+          .nullable()
+          .required('Phone is required'),
     noteApproach: Yup.string().required('Approach point is required'),
   })
 
@@ -118,21 +125,18 @@ export default function KanbanTaskAdd({
 
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
-  const watchEmail = watch('email')
 
   const { enqueueSnackbar } = useSnackbar()
   const { translate } = useLocales()
   const [openHistory, setOpenHistory] = useState(false)
-  const [clearKey, setClearKey] = useState(null)
   const [users, setUsers] = useState([])
-  // const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
-  // const phoneSearch = useDebounce(keyPhoneSearch, 500)
+  const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
+  const phoneSearch = useDebounce(keyPhoneSearch, 500)
   const [keyEmailSearch, setKeyEmailSearch] = useState('')
   const emailSearch = useDebounce(keyEmailSearch, 500)
-
-  // const { data: phoneData } = useSearchPhoneQuery({
-  //   phone: phoneSearch,
-  // })
+  const { data: phoneData } = useSearchPhoneQuery({
+    phone: phoneSearch,
+  })
   const { data: emailData } = useSearchEmailQuery({
     email: emailSearch,
   })
@@ -144,17 +148,17 @@ export default function KanbanTaskAdd({
   const [addAssignee] = useAddAssigneeMutation()
   const [removeAssignee] = useRemoveAssigneeMutation()
 
-  // const phoneOptions = useMemo(() => {
-  //   if (phoneData && phoneData.data.candidate.length > 0) {
-  //     const candidates = phoneData.data.candidate
-  //     return candidates.map((candidate) => ({
-  //       label: candidate.phone,
-  //       value: candidate.id,
-  //       name: candidate.name,
-  //       email: candidate.email,
-  //     }))
-  //   }
-  // }, [phoneData])
+  const phoneOptions = useMemo(() => {
+    if (phoneData && phoneData.data.candidate.length > 0) {
+      const candidates = phoneData.data.candidate
+      return candidates.map((candidate) => ({
+        label: candidate.phone,
+        value: candidate.id,
+        name: candidate.name,
+        email: candidate.email,
+      }))
+    }
+  }, [phoneData])
 
   const emailOptions = useMemo(() => {
     if (emailData && emailData.data.candidate.length > 0) {
@@ -244,12 +248,6 @@ export default function KanbanTaskAdd({
   }, [cardId, cardData, setValue])
 
   useEffect(() => {
-    if (!watchEmail || cardId) return
-    setValue('name', watchEmail.name)
-    setValue('phone', watchEmail.phone)
-  }, [cardId, watchEmail, setValue])
-
-  useEffect(() => {
     if (!cardId && watchIdJob) {
       const job = jobOptions.find((job) => job.value === watchIdJob)
       setValue('location', job?.location)
@@ -305,9 +303,10 @@ export default function KanbanTaskAdd({
       reqData.laneId = laneId
     }
     if (!cardId) {
-      reqData.email = reqData.email.label
       delete reqData.refineCv
     }
+    reqData.email = data.email.label
+    reqData.phone = data.phone.label
     delete reqData.social
 
     try {
@@ -324,7 +323,6 @@ export default function KanbanTaskAdd({
         enqueueSnackbar('Create card successfully!')
         handleCloseAddTaskReset()
       }
-      setClearKey(Math.random())
       reset()
     } catch (error) {
       if (error.data) {
@@ -426,12 +424,30 @@ export default function KanbanTaskAdd({
                         {option.label}
                       </Box>
                     ),
+                    onChange: (field) => (event, newValue) => {
+                      field.onChange(newValue)
+                      if (newValue) {
+                        setValue('name', newValue.name)
+                        setKeyEmailSearch(newValue.label)
+                        setKeyPhoneSearch(newValue.phone)
+                        const phoneValue = {
+                          ...newValue,
+                          label: newValue.phone,
+                          email: newValue.label,
+                        }
+                        delete phoneValue.phone
+                        setValue('phone', phoneValue)
+                      }
+                    },
+                    onInputChange: (e, newInputValue, reason) => {
+                      if (reason === 'reset') return
+                      setKeyEmailSearch(newInputValue)
+                    },
+                    inputValue: keyEmailSearch,
                   }}
                   label='Email'
                   name='email'
-                  key={clearKey}
                   options={emailOptions}
-                  onChange={(e) => setKeyEmailSearch(e.target.value)}
                   disabled={!hasAddPermission}
                 />
               )}
@@ -501,27 +517,48 @@ export default function KanbanTaskAdd({
             <Box mt={2}>
               <Grid container spacing={1}>
                 <Grid item xs={6}>
-                  {/* <RHFAutocomplete
-                    AutocompleteProps={{
-                      size: 'small',
-                      renderOption: (props, option) => (
-                        <Box key={option.key} component='li' {...props}>
-                          {option.label}
-                        </Box>
-                      ),
-                    }}
-                    label='Phone'
-                    name='phone'
-                    options={phoneOptions}
-                    onChange={(e) => setKeyPhoneSearch(e.target.value)}
-                    disabled={!hasAddPermission}
-                  /> */}
-                  <RHFTextField
-                    label={translate('Phone')}
-                    name='phone'
-                    fullWidth
-                    disabled={!hasAddPermission}
-                  />
+                  {cardId ? (
+                    <RHFTextField
+                      label={translate('Phone')}
+                      name='phone'
+                      fullWidth
+                      disabled={!hasAddPermission}
+                    />
+                  ) : (
+                    <RHFAutocomplete
+                      AutocompleteProps={{
+                        size: 'small',
+                        renderOption: (props, option) => (
+                          <Box key={option.key} component='li' {...props}>
+                            {option.label}
+                          </Box>
+                        ),
+                        onChange: (field) => (event, newValue) => {
+                          field.onChange(newValue)
+                          if (newValue) {
+                            setValue('name', newValue.name)
+                            setKeyEmailSearch(newValue.email)
+                            const emailValue = {
+                              ...newValue,
+                              label: newValue.email,
+                              phone: newValue.label,
+                            }
+                            delete emailValue.email
+                            setValue('email', emailValue)
+                          }
+                        },
+                        onInputChange: (e, newInputValue, reason) => {
+                          if (reason === 'reset') return
+                          setKeyPhoneSearch(newInputValue)
+                        },
+                        inputValue: keyPhoneSearch,
+                      }}
+                      label='Phone'
+                      name='phone'
+                      options={phoneOptions}
+                      disabled={!hasAddPermission}
+                    />
+                  )}
                 </Grid>
                 <Grid item xs={6}>
                   <RHFDatePicker
