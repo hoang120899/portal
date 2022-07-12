@@ -62,7 +62,7 @@ export default function NotificationList() {
   }, [setPage, searchFormValues])
 
   const { data, isLoading, isFetching } = useGetAdminAllNotifyQuery({
-    ...searchFormValues,
+    ...searchFormValues.payload,
     pageSize: rowsPerPage,
     pageNumber: page + 1,
   })
