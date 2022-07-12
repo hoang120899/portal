@@ -6,6 +6,7 @@ import { Box } from '@mui/material'
 
 // @date-fns
 import { format } from 'date-fns'
+import PropTypes from 'prop-types'
 import qs from 'query-string'
 // @react-hooks-form
 import { useForm } from 'react-hook-form'
@@ -22,7 +23,6 @@ import { API_LIST_CARD } from '@/routes/api'
 // @api
 import { _getApi } from '@/utils/axios'
 
-import KanbanTaskDetails from './KanbanTaskDetails'
 import {
   updateColumns,
   useGetClientQuery,
@@ -32,7 +32,7 @@ import {
   useSearchCardsQuery,
 } from './kanbanSlice'
 
-const KanbanTableToolbar = forwardRef((props, ref) => {
+const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
   const defaultValues = {
     search: '',
     labelId: '',
@@ -53,15 +53,6 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
   } = methods
 
   const dispatch = useDispatch()
-
-  const [openDetails, setOpenDetails] = useState(false)
-  const handleOpenDetails = () => {
-    setOpenDetails(true)
-  }
-
-  const handleCloseDetails = () => {
-    setOpenDetails(false)
-  }
 
   const filterNonNull = (obj) =>
     // eslint-disable-next-line no-unused-vars
@@ -140,12 +131,13 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
       return cardData.data.list.map((card, i) => ({
         value: card.Candidate.name,
         label: `${card.Candidate.name}-${i}`,
+        id: card.id,
       }))
     }
     return []
   }, [cardData])
-  const handle = () => {
-    handleOpenDetails()
+  const handle = (value) => {
+    onOpenUpdateTask(value.id)
   }
   return (
     <>
@@ -172,7 +164,7 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
                   key={option.key}
                   component='li'
                   {...props}
-                  onClick={() => handle(option.value)}
+                  onClick={() => handle(option)}
                 >
                   {option.value}
                 </Box>
@@ -219,9 +211,11 @@ const KanbanTableToolbar = forwardRef((props, ref) => {
           </LoadingButton>
         </Box>
       </FormProvider>
-      <KanbanTaskDetails isOpen={openDetails} onClose={handleCloseDetails} />
     </>
   )
 })
+KanbanTableToolbar.propTypes = {
+  onOpenUpdateTask: PropTypes.func,
+}
 
 export default KanbanTableToolbar
