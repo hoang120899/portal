@@ -17,8 +17,11 @@ import {
   RHFTextField,
   RHFUploadAvatar,
 } from '@/components/hook-form'
+import { MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
+import { API_UPLOAD_AVATAR_PROFILE } from '@/routes/api'
+import { _uploadApi } from '@/utils/axios'
 // utils
 import { fData } from '@/utils/formatNumber'
 
@@ -67,8 +70,10 @@ export default function AccountGeneral() {
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0]
-
-      if (file) {
+      if (file && file.size < MAX_SIZE_FILEIMAGE) {
+        const formData = new FormData()
+        formData.append('linkAvatar', file)
+        _uploadApi(API_UPLOAD_AVATAR_PROFILE, formData)
         setValue(
           'photoURL',
           Object.assign(file, {
