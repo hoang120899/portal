@@ -14,21 +14,29 @@ NotificationTableRow.propTypes = {
 
 export default function NotificationTableRow({ row }) {
   const { User, content, createdAt } = row
+  const styleMessage = {
+    width: '100%',
+    display: '-webkit-box',
+    '-webkitLineClamp': '2',
+    '-webkitBoxOrient': 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }
 
   return (
     <TableRow hover>
       <TableCell align='left'>{User?.name}</TableCell>
 
-      <TableCell align='left' width='40%'>
-        <Typography variant='subtitle2'>
+      <TableCell align='left' width='50%'>
+        <Typography variant='subtitle2' sx={styleMessage}>
           {content?.message}
-          <strong>{content?.title}</strong>
+          <strong> {content?.title}</strong>
         </Typography>
       </TableCell>
 
       <TableCell align='left'>{fDate(createdAt)}</TableCell>
 
-      <TableCell>
+      <TableCell maxWidth='15%'>
         <Tooltip title='Detail'>
           <IconButtonAnimate
             sx={{

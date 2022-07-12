@@ -35,9 +35,14 @@ export default function NotificationTableToolbar() {
         display: 'grid',
         gridTemplateColumns: {
           xl: 'repeat(4, 250px)',
-          md: 'repeat(3, 250px)',
+          md: 'repeat(4, 190px)',
+          sm: 'repeat(2, 240px)',
+          xs: '1fr',
         },
-        gap: 2,
+        gap: {
+          xl: 2,
+          xs: 1,
+        },
       }}
     >
       <RHFBasicSelect
