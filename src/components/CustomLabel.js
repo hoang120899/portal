@@ -22,8 +22,6 @@ export default function CustomLabel({
   sx,
 }) {
   const style = {
-    width: 16,
-    height: 16,
     '& svg, img': { width: 1, height: 1, objectFit: 'cover' },
   }
   const theme = useTheme()

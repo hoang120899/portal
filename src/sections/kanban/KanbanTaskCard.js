@@ -165,17 +165,15 @@ export default function KanbanTaskCard({
                             margin: '2px',
                           }}
                           endIcon={
-                            <IconDelete
-                              fill='#fff'
-                              sx={{
-                                marginLeft: '0.5rem',
-                                marginRight: '0.5rem',
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleDeleteLabel(label)
-                              }}
-                            />
+                            <Box width='10px'>
+                              <IconDelete
+                                fill='#fff'
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDeleteLabel(label)
+                                }}
+                              />
+                            </Box>
                           }
                         >
                           {label?.title}
