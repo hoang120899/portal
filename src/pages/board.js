@@ -26,6 +26,7 @@ import KanbanAddTask from '@/sections/kanban/KanbanTaskAdd'
 import {
   getColumns,
   setColumnsAction,
+  updateColumns,
   useGetColumnsQuery,
   useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
@@ -97,6 +98,12 @@ export default function Board() {
     const action = getColumns()
     dispatch(action)
   }, [dispatch])
+
+  useEffect(() => {
+    if (columnData) {
+      dispatch(updateColumns(columnData.data.list))
+    }
+  }, [columnData, dispatch])
 
   useEffect(() => {
     if (isMounted && query && query.cardId && columnData) {

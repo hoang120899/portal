@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react'
-// @mui
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+// @mui
 import { Box, Button, Drawer, Grid, Stack, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
@@ -56,6 +55,7 @@ KanbanTaskAdd.propTypes = {
   columns: PropTypes.object,
   onClose: PropTypes.func,
   onCloseUpdate: PropTypes.func,
+  setIsUpdated: PropTypes.func,
 }
 
 const CheckboxRootStyle = styled('div')(() => ({
@@ -327,10 +327,16 @@ export default function KanbanTaskAdd({
       setClearKey(Math.random())
       reset()
     } catch (error) {
-      // Todo: handle error
-      enqueueSnackbar(error.data[0].toUpperCase() + error.data.slice(1) + '!', {
-        variant: 'error',
-      })
+      if (error.data) {
+        enqueueSnackbar(
+          error?.data[0].toUpperCase() + error?.data.slice(1) + '!',
+          {
+            variant: 'error',
+          }
+        )
+      } else {
+        enqueueSnackbar('Something went wrong! Please try again')
+      }
     }
   }
 
