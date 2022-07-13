@@ -145,10 +145,7 @@ export default function NotificationsPopover() {
         onClick={handleOpen}
         sx={{ width: 40, height: 40 }}
       >
-        <Badge
-          badgeContent={totalUnRead > NOTI_SIZE ? `${NOTI_SIZE}+` : totalUnRead}
-          color='error'
-        >
+        <Badge badgeContent={totalUnRead} color='error'>
           <Iconify icon='eva:bell-fill' width={20} height={20} />
         </Badge>
       </IconButtonAnimate>
@@ -163,8 +160,7 @@ export default function NotificationsPopover() {
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant='subtitle1'>Notifications</Typography>
             <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-              You have {totalUnRead > NOTI_SIZE ? `${NOTI_SIZE}+` : totalUnRead}{' '}
-              unread messages
+              You have {totalUnRead} unread messages
             </Typography>
           </Box>
 
@@ -191,7 +187,7 @@ export default function NotificationsPopover() {
             <CircularProgress />
           </Box>
         ) : (
-          <Scrollbar sx={{ height: { xs: 340, sm: 'auto' } }}>
+          <Scrollbar sx={{ height: { xs: 340, md: 400, lg: 460, xl: 'auto' } }}>
             {totalUnRead > 0 && (
               <List
                 disablePadding
