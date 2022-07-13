@@ -24,6 +24,9 @@ export default function RHFDateTimePicker({
   const { control } = useFormContext()
   const props = {
     inputFormat: DATETIME_FORMAT_AMPM,
+    componentsProps: {
+      actionBar: { actions: ['clear', 'today'] },
+    },
     ...DateTimePickerProps,
   }
 

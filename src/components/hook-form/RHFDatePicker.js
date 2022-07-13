@@ -24,6 +24,9 @@ export default function RHFDatePicker({
   const { control } = useFormContext()
   const props = {
     inputFormat: DATE_FORMAT,
+    componentsProps: {
+      actionBar: { actions: ['clear', 'today'] },
+    },
     ...DatePickerProps,
   }
 
