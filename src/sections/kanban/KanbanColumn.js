@@ -156,6 +156,7 @@ function KanbanColumn({
                         hasAddPermission={hasAddPermission}
                         card={candi}
                         index={index}
+                        laneId={id}
                       />
                     ))}
                     {provided.placeholder}

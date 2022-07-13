@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 // @mui
-import { Box, Paper, Stack, Typography } from '@mui/material'
+import { Box, MenuItem, Paper, Stack, Typography } from '@mui/material'
 
 import { format } from 'date-fns'
 import PropTypes from 'prop-types'
@@ -20,11 +20,17 @@ import {
   useRemoveAssigneeMutation,
 } from '@/sections/kanban/kanbanSlice'
 
+import KanbanActionCreateLabel from './KanbanActionCreateLabel'
+import KanbanActionMove from './KanbanActionMove'
+import KanbanActionStorage from './KanbanActionStorage'
+import KanbanQuickMenu from './KanbanQuickMenu'
+
 KanbanTaskCard.propTypes = {
   card: PropTypes.object,
   index: PropTypes.number,
   hasAddPermission: PropTypes.bool,
   onOpenUpdateTask: PropTypes.func,
+  laneId: PropTypes.string,
 }
 
 export default function KanbanTaskCard({
@@ -32,8 +38,9 @@ export default function KanbanTaskCard({
   onOpenUpdateTask,
   hasAddPermission,
   index,
+  laneId,
 }) {
-  const { Job, Candidate } = card
+  const { Job, Candidate, id: cardId } = card
   const { translate } = useLocales()
 
   const [labels, setLabels] = useState([])
@@ -87,7 +94,70 @@ export default function KanbanTaskCard({
       }
     }
   }
+  const configAction = () => {
+    switch (actions) {
+      case 'move':
+        return (
+          <KanbanActionMove laneId={laneId} sourceId={laneId} cardId={cardId} />
+        )
+      case 'label':
+        return (
+          <KanbanActionCreateLabel
+            cardId={cardId}
+            labels={labels}
+            setOpenMenuActions={setOpenMenuActions}
+            laneId={laneId}
+          />
+        )
+      case 'storage':
+        return <KanbanActionStorage cardId={cardId} laneId={laneId} />
+      default:
+        return (
+          <>
+            <MenuItem
+              onClick={() => {
+                setActions('move')
+              }}
+            >
+              {translate('pages.board.moveCard')}
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActions('storage')
+              }}
+            >
+              {translate('pages.board.storageCard')}
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setActions('label')
+              }}
+            >
+              {translate('pages.board.createLabel')}
+            </MenuItem>
+          </>
+        )
+    }
+  }
+  const [actions, setActions] = useState('actions')
 
+  const [openMenu, setOpenMenuActions] = useState(null)
+
+  const handleOpenMenu = (event) => {
+    setOpenMenuActions(event.currentTarget)
+    setActions('')
+  }
+
+  const handleCloseMenu = () => {
+    setOpenMenuActions(null)
+  }
+  const handleOnback = () => {
+    if (actions !== 'actions') {
+      setActions('actions')
+    } else {
+      setOpenMenuActions(null)
+    }
+  }
   useEffect(() => {
     setLabels(card.Labels)
   }, [card.Labels])
@@ -243,6 +313,22 @@ export default function KanbanTaskCard({
                   </Box>
                 </Stack>
               </Box>
+            </Box>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+              }}
+            >
+              <KanbanQuickMenu
+                open={openMenu}
+                onOpen={handleOpenMenu}
+                onClose={handleCloseMenu}
+                onBack={handleOnback}
+                title={actions}
+                actions={configAction()}
+              />
             </Box>
           </Paper>
         </div>

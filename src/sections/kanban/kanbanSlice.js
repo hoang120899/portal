@@ -24,8 +24,9 @@ import {
   API_SEARCH_EMAIL,
   API_SEARCH_PHONE,
   API_V1_CARD,
+  API_V1_CARD_LABEL,
 } from '@/routes/api'
-import { _getApi } from '@/utils/axios'
+import { _getApi, _patchApi, _postApi } from '@/utils/axios'
 
 const apiWithTag = apiSlice.enhanceEndpoints({
   addTagTypes: ['Kanban', 'Comment'],
@@ -224,6 +225,7 @@ const initialState = {
     isLoading: false,
     error: null,
   },
+  listColumnName: [],
 }
 export const getColumns = createAsyncThunk('culumns/getColumns', async () => {
   try {
@@ -254,6 +256,38 @@ export const loadMoreLane = createAsyncThunk(
     } catch (error) {
       // console.log(error);
     }
+  }
+)
+export const createLabel = createAsyncThunk(
+  'culumns/createLabel',
+  async (data) => {
+    const { laneId, ...rest } = data
+    const response = await _postApi(API_V1_CARD_LABEL, rest)
+    if (response.data.success) {
+      return { ...data, laneId: laneId }
+    }
+    return response
+  }
+)
+export const moveCard = createAsyncThunk('culumns/moveCard', async (data) => {
+  const { laneId, cardId } = data
+  const url = `${API_ADD_CARD}/${cardId}`
+  const response = await _patchApi(url, { laneId: laneId })
+  if (response.data.success) {
+    return { ...data }
+  }
+  return response
+})
+export const storageCard = createAsyncThunk(
+  'culumns/storageCard',
+  async (data) => {
+    const { cardId } = data
+    const url = `${API_ADD_CARD}/${cardId}`
+    const response = await _patchApi(url, { storage: true })
+    if (response.data.success) {
+      return { ...data }
+    }
+    return response
   }
 )
 
@@ -288,6 +322,11 @@ export const kanbanSlice = createSlice({
     [getColumns.fulfilled]: (state, action) => {
       state.columns.isLoading = false
       columnAdapter.upsertMany(state.columns.data, action?.payload || [])
+      const listName = action.payload.map((item) => ({
+        label: item.nameColumn,
+        value: item.id,
+      }))
+      state.listColumnName = listName
     },
     [getColumns.pending]: (state) => {
       state.columns.isLoading = true
@@ -295,6 +334,43 @@ export const kanbanSlice = createSlice({
     [getColumns.rejected]: (state, action) => {
       state.columns.error = action.payload
       state.columns.isLoading = false
+    },
+    [moveCard.rejected]: () => {},
+    [moveCard.fulfilled]: (state, action) => {
+      const { laneId, cardId, sourceId } = action.payload
+      const card = state.columns.data.entities[sourceId].CandidateJobs.find(
+        (item) => item.id === cardId
+      )
+      const sourceIndex = state.columns.data.entities[
+        sourceId
+      ].CandidateJobs.findIndex((item) => item.id === cardId)
+      // remove card from source
+      state.columns.data.entities[sourceId].CandidateJobs.splice(sourceIndex, 1)
+      // add card to destination
+      state.columns.data.entities[laneId].CandidateJobs.splice(0, 0, card)
+    },
+    [storageCard.fulfilled]: (state, action) => {
+      // remove card after storage
+      const { laneId, cardId } = action.payload
+      const cardIndex = state.columns.data.entities[
+        laneId
+      ].CandidateJobs.findIndex((item) => item.id === cardId)
+      state.columns.data.entities[laneId].CandidateJobs.splice(cardIndex, 1)
+    },
+    [createLabel.fulfilled]: (state, action) => {
+      const { laneId, candidateJobId, ...rest } = action.payload
+      const cardIndex = state.columns.data.entities[
+        laneId
+      ].CandidateJobs.findIndex((item) => item.id === candidateJobId)
+      state.columns.data.entities[laneId].CandidateJobs[cardIndex].Labels.push(
+        rest
+      )
+    },
+    [createLabel.pending]: () => {
+      // TO DO
+    },
+    [createLabel.rejected]: () => {
+      //TO DO
     },
     //load more lane
     [loadMoreLane.fulfilled]: (state, action) => {
