@@ -28,8 +28,8 @@ export default function JobList({ subheader, ...other }) {
   const { jobs: listJob = [], total: totalRecord = 0 } = data?.data || {}
   return (
     <Card {...other}>
-      <CardHeader title='List Jobs' subheader={subheader} />
-      <Typography variant='subtitle1'>
+      <CardHeader sx={{ px: 1 }} title='List Jobs' subheader={subheader} />
+      <Typography sx={{ px: 1 }}>
         You are following {totalRecord} jobs
       </Typography>
       <BasicTable

@@ -27,21 +27,20 @@ import useLocales from '@/hooks/useLocales'
 import { useSelector } from '@/redux/store'
 import { PATH_AUTH, PATH_DASHBOARD } from '@/routes/paths'
 
-const MENU_OPTIONS = [
-  {
-    label: 'home',
-    linkTo: '/',
-  },
-  {
-    label: 'setting',
-    linkTo: PATH_DASHBOARD.profile,
-  },
-]
-
 export default function AccountPopover() {
   const router = useRouter()
   const { translate } = useLocales()
   const { logout, user } = useAuth()
+  const MENU_OPTIONS = [
+    {
+      label: 'home',
+      linkTo: '/',
+    },
+    {
+      label: 'setting',
+      linkTo: PATH_DASHBOARD.profile + user.userId,
+    },
+  ]
   const isMountedRef = useIsMountedRef()
   const { enqueueSnackbar } = useSnackbar()
   const [open, setOpen] = useState(null)
