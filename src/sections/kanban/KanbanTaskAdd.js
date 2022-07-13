@@ -1,7 +1,16 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 
 // @mui
-import { Box, Button, Drawer, Grid, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Drawer,
+  Grid,
+  Modal,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -142,8 +151,8 @@ export default function KanbanTaskAdd({
   })
   const { data: jobData } = useGetActiveJobsQuery()
   const { data: contactData } = useGetUserQuery()
-  const [addCard] = useAddCardMutation()
-  const [updateCard] = useUpdateCardMutation()
+  const [addCard, { isLoading: isAdding }] = useAddCardMutation()
+  const [updateCard, { isLoading: isUpdating }] = useUpdateCardMutation()
   const [updateLane] = useUpdateLaneMutation()
   const [addAssignee] = useAddAssigneeMutation()
   const [removeAssignee] = useRemoveAssigneeMutation()
@@ -333,277 +342,274 @@ export default function KanbanTaskAdd({
           }
         )
       } else {
-        enqueueSnackbar('Something went wrong! Please try again')
+        enqueueSnackbar('Something went wrong! Please try again', {
+          variant: 'error',
+        })
       }
     }
   }
 
   return (
-    <Drawer
-      open={open}
-      onClose={() => {
-        cardId ? handleCloseUpdateTaskReset() : handleCloseAddTaskReset()
-      }}
-      anchor='right'
-      PaperProps={{ sx: { width: { xs: 1, sm: 640 } } }}
-    >
-      <Box p={3}>
-        <Box component='header'>
-          <Typography variant='h5'>
-            {cardId ? translate('Update Card') : translate('Add Card')}
-          </Typography>
-        </Box>
-        <Box>
-          <FormProvider
-            onSubmit={handleSubmit(hanldeAddTask)}
-            methods={methods}
-          >
-            <Box mt={2}>
-              <RHFTextField
-                label={translate('Name')}
-                name='name'
-                type='text'
-                disabled={!hasAddPermission}
-              />
-            </Box>
+    <Fragment>
+      <Modal
+        open={isAdding || isUpdating}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <CircularProgress size={60} />
+      </Modal>
+      <Drawer
+        open={open}
+        onClose={() => {
+          cardId ? handleCloseUpdateTaskReset() : handleCloseAddTaskReset()
+        }}
+        anchor='right'
+        PaperProps={{ sx: { width: { xs: 1, sm: 640 } } }}
+      >
+        <Box p={3}>
+          <Box component='header'>
+            <Typography variant='h5'>
+              {cardId ? translate('Update Card') : translate('Add Card')}
+            </Typography>
+          </Box>
+          <Box>
+            <FormProvider
+              onSubmit={handleSubmit(hanldeAddTask)}
+              methods={methods}
+            >
+              <Box mt={2}>
+                <RHFTextField
+                  label={translate('Name')}
+                  name='name'
+                  type='text'
+                  disabled={!hasAddPermission}
+                />
+              </Box>
 
-            {isAddTaskNoColumn && (
+              {isAddTaskNoColumn && (
+                <Box mt={2}>
+                  <RHFBasicSelect
+                    label={translate('Column Name')}
+                    name='laneId'
+                    options={columnOptions}
+                    disabled={!hasAddPermission}
+                  />
+                </Box>
+              )}
+
               <Box mt={2}>
                 <RHFBasicSelect
-                  label={translate('Column Name')}
-                  name='laneId'
-                  options={columnOptions}
+                  label={translate('Name Job')}
+                  name='idJob'
+                  options={jobOptions}
                   disabled={!hasAddPermission}
                 />
               </Box>
-            )}
 
-            <Box mt={2}>
-              <RHFBasicSelect
-                label={translate('Name Job')}
-                name='idJob'
-                options={jobOptions}
-                disabled={!hasAddPermission}
-              />
-            </Box>
-
-            <Box mt={2}>
-              <Grid container spacing={1}>
-                <Grid item xs={6}>
-                  <RHFTextField
-                    label={translate('Location')}
-                    name='location'
-                    type='text'
-                    disabled
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <RHFTextField
-                    label={translate('Client Name')}
-                    name='clientName'
-                    type='text'
-                    disabled
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-
-            <Box mt={2}>
-              {cardId ? (
-                <RHFTextField
-                  label='Email'
-                  name='email'
-                  disabled={!hasAddPermission}
-                />
-              ) : (
-                <RHFAutocomplete
-                  AutocompleteProps={{
-                    size: 'small',
-                    renderOption: (props, option) => (
-                      <Box key={option.key} component='li' {...props}>
-                        {option.label}
-                      </Box>
-                    ),
-                    onChange: (field) => (event, newValue) => {
-                      field.onChange(newValue)
-                      if (newValue) {
-                        setValue('name', newValue.name)
-                        setKeyEmailSearch(newValue.label)
-                        setKeyPhoneSearch(newValue.phone)
-                        const phoneValue = {
-                          ...newValue,
-                          label: newValue.phone,
-                          email: newValue.label,
-                        }
-                        delete phoneValue.phone
-                        setValue('phone', phoneValue)
-                      }
-                    },
-                    onInputChange: (e, newInputValue, reason) => {
-                      if (reason === 'reset') return
-                      setKeyEmailSearch(newInputValue)
-                    },
-                    inputValue: keyEmailSearch,
-                  }}
-                  label='Email'
-                  name='email'
-                  options={emailOptions}
-                  disabled={!hasAddPermission}
-                />
-              )}
-            </Box>
-
-            <Box mt={2}>
-              {!cardId && (
-                <CheckboxRootStyle>
-                  <RHFMultiCheckbox name='social' options={socialOptions} />
-                </CheckboxRootStyle>
-              )}
-              {watchSocial.includes('facebook') && (
-                <Box mt={2}>
-                  <RHFTextField
-                    label='Facebook'
-                    name='facebook'
-                    InputProps={{
-                      startAdornment: (
-                        <Iconify
-                          icon='ant-design:facebook-filled'
-                          sx={{ width: 24, height: 24 }}
-                        />
-                      ),
-                    }}
-                    disabled={!hasAddPermission}
-                  />
-                </Box>
-              )}
-
-              {watchSocial.includes('linkedin') && (
-                <Box mt={2}>
-                  <RHFTextField
-                    label='Linkedin'
-                    name='linkedin'
-                    InputProps={{
-                      startAdornment: (
-                        <Iconify
-                          icon='ant-design:linkedin-filled'
-                          sx={{ width: 24, height: 24 }}
-                        />
-                      ),
-                    }}
-                    disabled={!hasAddPermission}
-                  />
-                </Box>
-              )}
-
-              {watchSocial.includes('skype') && (
-                <Box mt={2}>
-                  <RHFTextField
-                    label='Skype'
-                    name='skype'
-                    InputProps={{
-                      startAdornment: (
-                        <Iconify
-                          icon='ant-design:skype-filled'
-                          sx={{ width: 24, height: 24 }}
-                        />
-                      ),
-                    }}
-                    disabled={!hasAddPermission}
-                  />
-                </Box>
-              )}
-            </Box>
-
-            <Box mt={2}>
-              <Grid container spacing={1}>
-                <Grid item xs={6}>
-                  {cardId ? (
-                    <RHFTextField
-                      label={translate('Phone')}
-                      name='phone'
-                      fullWidth
-                      disabled={!hasAddPermission}
-                    />
-                  ) : (
-                    <RHFAutocomplete
-                      AutocompleteProps={{
-                        size: 'small',
-                        renderOption: (props, option) => (
-                          <Box key={option.key} component='li' {...props}>
-                            {option.label}
-                          </Box>
-                        ),
-                        onChange: (field) => (event, newValue) => {
-                          field.onChange(newValue)
-                          if (newValue) {
-                            setValue('name', newValue.name)
-                            setKeyEmailSearch(newValue.email)
-                            const emailValue = {
-                              ...newValue,
-                              label: newValue.email,
-                              phone: newValue.label,
-                            }
-                            delete emailValue.email
-                            setValue('email', emailValue)
-                          }
-                        },
-                        onInputChange: (e, newInputValue, reason) => {
-                          if (reason === 'reset') return
-                          setKeyPhoneSearch(newInputValue)
-                        },
-                        inputValue: keyPhoneSearch,
-                      }}
-                      label='Phone'
-                      name='phone'
-                      options={phoneOptions}
-                      disabled={!hasAddPermission}
-                    />
-                  )}
-                </Grid>
-                <Grid item xs={6}>
-                  <RHFDatePicker
-                    label={translate('Approach Date')}
-                    name='approachDate'
-                    disabled={!hasAddPermission}
-                  />
-                </Grid>
-              </Grid>
-            </Box>
-
-            {cardId && (
               <Box mt={2}>
-                <RHFDateTimePicker
-                  label={translate('Expected Date')}
-                  name='expectedDate'
+                <Grid container spacing={1}>
+                  <Grid item xs={6}>
+                    <RHFTextField
+                      label={translate('Location')}
+                      name='location'
+                      type='text'
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <RHFTextField
+                      label={translate('Client Name')}
+                      name='clientName'
+                      type='text'
+                      disabled
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+
+              <Box mt={2}>
+                {cardId ? (
+                  <RHFTextField
+                    label='Email'
+                    name='email'
+                    disabled={!hasAddPermission}
+                  />
+                ) : (
+                  <RHFAutocomplete
+                    AutocompleteProps={{
+                      size: 'small',
+                      renderOption: (props, option) => (
+                        <Box key={option.key} component='li' {...props}>
+                          {option.label}
+                        </Box>
+                      ),
+                      onChange: (field) => (event, newValue) => {
+                        field.onChange(newValue)
+                        if (newValue) {
+                          setValue('name', newValue.name)
+                          setKeyEmailSearch(newValue.label)
+                          setKeyPhoneSearch(newValue.phone)
+                          const phoneValue = {
+                            ...newValue,
+                            label: newValue.phone,
+                            email: newValue.label,
+                          }
+                          delete phoneValue.phone
+                          setValue('phone', phoneValue)
+                        }
+                      },
+                      onInputChange: (e, newInputValue, reason) => {
+                        if (reason === 'reset') return
+                        setKeyEmailSearch(newInputValue)
+                      },
+                      inputValue: keyEmailSearch,
+                    }}
+                    label='Email'
+                    name='email'
+                    options={emailOptions}
+                    disabled={!hasAddPermission}
+                  />
+                )}
+              </Box>
+
+              <Box mt={2}>
+                {!cardId && (
+                  <CheckboxRootStyle>
+                    <RHFMultiCheckbox name='social' options={socialOptions} />
+                  </CheckboxRootStyle>
+                )}
+                {watchSocial.includes('facebook') && (
+                  <Box mt={2}>
+                    <RHFTextField
+                      label='Facebook'
+                      name='facebook'
+                      InputProps={{
+                        startAdornment: (
+                          <Iconify
+                            icon='ant-design:facebook-filled'
+                            sx={{ width: 24, height: 24 }}
+                          />
+                        ),
+                      }}
+                      disabled={!hasAddPermission}
+                    />
+                  </Box>
+                )}
+
+                {watchSocial.includes('linkedin') && (
+                  <Box mt={2}>
+                    <RHFTextField
+                      label='Linkedin'
+                      name='linkedin'
+                      InputProps={{
+                        startAdornment: (
+                          <Iconify
+                            icon='ant-design:linkedin-filled'
+                            sx={{ width: 24, height: 24 }}
+                          />
+                        ),
+                      }}
+                      disabled={!hasAddPermission}
+                    />
+                  </Box>
+                )}
+
+                {watchSocial.includes('skype') && (
+                  <Box mt={2}>
+                    <RHFTextField
+                      label='Skype'
+                      name='skype'
+                      InputProps={{
+                        startAdornment: (
+                          <Iconify
+                            icon='ant-design:skype-filled'
+                            sx={{ width: 24, height: 24 }}
+                          />
+                        ),
+                      }}
+                      disabled={!hasAddPermission}
+                    />
+                  </Box>
+                )}
+              </Box>
+
+              <Box mt={2}>
+                <Grid container spacing={1}>
+                  <Grid item xs={6}>
+                    {cardId ? (
+                      <RHFTextField
+                        label={translate('Phone')}
+                        name='phone'
+                        fullWidth
+                        disabled={!hasAddPermission}
+                      />
+                    ) : (
+                      <RHFAutocomplete
+                        AutocompleteProps={{
+                          size: 'small',
+                          renderOption: (props, option) => (
+                            <Box key={option.key} component='li' {...props}>
+                              {option.label}
+                            </Box>
+                          ),
+                          onChange: (field) => (event, newValue) => {
+                            field.onChange(newValue)
+                            if (newValue) {
+                              setValue('name', newValue.name)
+                              setKeyEmailSearch(newValue.email)
+                              const emailValue = {
+                                ...newValue,
+                                label: newValue.email,
+                                phone: newValue.label,
+                              }
+                              delete emailValue.email
+                              setValue('email', emailValue)
+                            }
+                          },
+                          onInputChange: (e, newInputValue, reason) => {
+                            if (reason === 'reset') return
+                            setKeyPhoneSearch(newInputValue)
+                          },
+                          inputValue: keyPhoneSearch,
+                        }}
+                        label='Phone'
+                        name='phone'
+                        options={phoneOptions}
+                        disabled={!hasAddPermission}
+                      />
+                    )}
+                  </Grid>
+                  <Grid item xs={6}>
+                    <RHFDatePicker
+                      label={translate('Approach Date')}
+                      name='approachDate'
+                      disabled={!hasAddPermission}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+
+              {cardId && (
+                <Box mt={2}>
+                  <RHFDateTimePicker
+                    label={translate('Expected Date')}
+                    name='expectedDate'
+                    disabled={!hasAddPermission}
+                  />
+                </Box>
+              )}
+
+              <Box mt={2}>
+                <RHFTextField
+                  label={translate('Position')}
+                  name='position'
                   disabled={!hasAddPermission}
                 />
               </Box>
-            )}
 
-            <Box mt={2}>
-              <RHFTextField
-                label={translate('Position')}
-                name='position'
-                disabled={!hasAddPermission}
-              />
-            </Box>
-
-            <Box mt={2}>
-              <KanbanFileUpload
-                label={translate('Link CV')}
-                nameTextField='linkCv'
-                name={watch('name')}
-                nameJob={watch('nameJob')}
-                idJob={watchIdJob}
-                hasAddPermission={hasAddPermission}
-                setValue={setValue}
-              />
-            </Box>
-            {cardId && (
               <Box mt={2}>
                 <KanbanFileUpload
-                  label={translate('Link Refine CV')}
-                  nameTextField='refineCv'
+                  label={translate('Link CV')}
+                  nameTextField='linkCv'
                   name={watch('name')}
                   nameJob={watch('nameJob')}
                   idJob={watchIdJob}
@@ -611,120 +617,133 @@ export default function KanbanTaskAdd({
                   setValue={setValue}
                 />
               </Box>
+              {cardId && (
+                <Box mt={2}>
+                  <KanbanFileUpload
+                    label={translate('Link Refine CV')}
+                    nameTextField='refineCv'
+                    name={watch('name')}
+                    nameJob={watch('nameJob')}
+                    idJob={watchIdJob}
+                    hasAddPermission={hasAddPermission}
+                    setValue={setValue}
+                  />
+                </Box>
+              )}
+
+              <Box mt={2}>
+                <RHFTextField
+                  label={translate('Approach Point')}
+                  name='noteApproach'
+                  multiline
+                  rows={3}
+                />
+              </Box>
+
+              <Stack
+                mt={2}
+                direction='row'
+                justifyContent={cardId ? 'space-between' : 'right'}
+              >
+                {cardId && (
+                  <Assignee
+                    onToggleAssignee={onToggleAssignee}
+                    assignee={users}
+                    hasAddAssignee={hasAddPermission}
+                    listContacts={contactData?.data?.list}
+                  />
+                )}
+                <Stack direction='row'>
+                  {cardId && (
+                    <Button type='button' variant='contained'>
+                      {translate('Create Interview')}
+                    </Button>
+                  )}
+                  {hasAddPermission && (
+                    <Button
+                      type='submit'
+                      variant='contained'
+                      sx={{ marginLeft: '8px' }}
+                    >
+                      {cardId ? translate('Update') : translate('Save')}
+                    </Button>
+                  )}
+                  <Button
+                    type='button'
+                    sx={{ marginLeft: '8px' }}
+                    onClick={() => {
+                      cardId
+                        ? handleCloseUpdateTaskReset()
+                        : handleCloseAddTaskReset()
+                    }}
+                  >
+                    {translate('Cancel')}
+                  </Button>
+                </Stack>
+              </Stack>
+            </FormProvider>
+
+            {cardId && (
+              <Box mt={3}>
+                <Stack
+                  direction='row'
+                  alignItems='center'
+                  justifyContent='space-between'
+                >
+                  <Stack direction='row'>
+                    <Iconify
+                      icon='dashicons:calendar-alt'
+                      width={20}
+                      height={20}
+                    />
+                    <Typography variant='span' sx={{ ml: 1 }}>
+                      {translate('History')}
+                    </Typography>
+                  </Stack>
+                  <Button
+                    type='button'
+                    variant='outlined'
+                    onClick={handleOpenHistory}
+                  >
+                    {openHistory ? translate('Hide') : translate('Show')}
+                  </Button>
+                </Stack>
+              </Box>
+            )}
+            {openHistory && (
+              <Box mt={2}>
+                <KanbanUpdateHistory
+                  title={translate('News Update')}
+                  cardId={cardId}
+                />
+              </Box>
             )}
 
-            <Box mt={2}>
-              <RHFTextField
-                label={translate('Approach Point')}
-                name='noteApproach'
-                multiline
-                rows={3}
-              />
-            </Box>
-
-            <Stack
-              mt={2}
-              direction='row'
-              justifyContent={cardId ? 'space-between' : 'right'}
-            >
-              {cardId && (
-                <Assignee
-                  onToggleAssignee={onToggleAssignee}
-                  assignee={users}
-                  hasAddAssignee={hasAddPermission}
-                  listContacts={contactData?.data?.list}
-                />
-              )}
-              <Stack direction='row'>
-                {cardId && (
-                  <Button type='button' variant='contained'>
-                    {translate('Create Interview')}
-                  </Button>
-                )}
-                {hasAddPermission && (
-                  <Button
-                    type='submit'
-                    variant='contained'
-                    sx={{ marginLeft: '8px' }}
-                  >
-                    {cardId ? translate('Update') : translate('Save')}
-                  </Button>
-                )}
-                <Button
-                  type='button'
-                  sx={{ marginLeft: '8px' }}
-                  onClick={() => {
-                    cardId
-                      ? handleCloseUpdateTaskReset()
-                      : handleCloseAddTaskReset()
-                  }}
-                >
-                  {translate('Cancel')}
-                </Button>
-              </Stack>
-            </Stack>
-          </FormProvider>
-
-          {cardId && (
-            <Box mt={3}>
-              <Stack
-                direction='row'
-                alignItems='center'
-                justifyContent='space-between'
-              >
-                <Stack direction='row'>
+            {cardId && (
+              <Box mt={3}>
+                <Stack direction='row' mb={2}>
                   <Iconify
-                    icon='dashicons:calendar-alt'
+                    icon='ant-design:comment-outlined'
                     width={20}
                     height={20}
                   />
                   <Typography variant='span' sx={{ ml: 1 }}>
-                    {translate('History')}
+                    {translate('Comment')}
                   </Typography>
                 </Stack>
-                <Button
-                  type='button'
-                  variant='outlined'
-                  onClick={handleOpenHistory}
-                >
-                  {openHistory ? translate('Hide') : translate('Show')}
-                </Button>
-              </Stack>
-            </Box>
-          )}
-          {openHistory && (
-            <Box mt={2}>
-              <KanbanUpdateHistory
-                title={translate('News Update')}
-                cardId={cardId}
-              />
-            </Box>
-          )}
 
-          {cardId && (
-            <Box mt={3}>
-              <Stack direction='row' mb={2}>
-                <Iconify
-                  icon='ant-design:comment-outlined'
-                  width={20}
-                  height={20}
-                />
-                <Typography variant='span' sx={{ ml: 1 }}>
-                  {translate('Comment')}
-                </Typography>
-              </Stack>
-
-              <KanbanTaskCommentInput cardId={cardId} />
-              <Box mt={2}>
-                <KanbanTaskCommentList
-                  title={translate('List Comment')}
-                  cardId={cardId}
-                />
+                <KanbanTaskCommentInput cardId={cardId} />
+                <Box mt={2}>
+                  <KanbanTaskCommentList
+                    title={translate('List Comment')}
+                    cardId={cardId}
+                  />
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
+          </Box>
         </Box>
-      </Box>
-    </Drawer>
+      </Drawer>
+    </Fragment>
   )
 }
