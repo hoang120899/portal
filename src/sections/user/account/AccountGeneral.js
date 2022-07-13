@@ -144,7 +144,7 @@ export default function AccountGeneral() {
           </Card>
         </Grid>
       </Grid>
-      <Grid item xs={8} sx={{ mx: 0, marginTop: 5 }}>
+      <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
         <JobList />
       </Grid>
     </FormProvider>
