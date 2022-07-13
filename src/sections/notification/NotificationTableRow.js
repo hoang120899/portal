@@ -17,8 +17,8 @@ export default function NotificationTableRow({ row }) {
   const styleMessage = {
     width: '100%',
     display: '-webkit-box',
-    '-webkitLineClamp': '2',
-    '-webkitBoxOrient': 'vertical',
+    WebkitLineClamp: '2',
+    WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   }
@@ -36,7 +36,7 @@ export default function NotificationTableRow({ row }) {
 
       <TableCell align='left'>{fDate(createdAt)}</TableCell>
 
-      <TableCell maxWidth='15%'>
+      <TableCell maxwidth='15%'>
         <Tooltip title='Detail'>
           <IconButtonAnimate
             sx={{

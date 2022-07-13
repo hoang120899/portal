@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form'
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
 import { FormProvider } from '@/components/hook-form'
+import useResponsive from '@/hooks/useResponsive'
 // hooks
 import useTable from '@/hooks/useTable'
 
@@ -16,6 +17,7 @@ import useTable from '@/hooks/useTable'
 import NotificationTableRow from './NotificationTableRow'
 import NotificationTableToolbar from './NotificationTableToolbar'
 import { TABLE_HEAD } from './config'
+import NotificationTableMobile from './mobile/index'
 import { useGetAdminAllNotifyQuery } from './notificationSlice'
 
 const defaultValues = {
@@ -39,6 +41,7 @@ function reducer(state, action) {
 }
 
 export default function NotificationList() {
+  const isSmall = useResponsive('down', 'md')
   const [searchFormValues, dispatch] = useReducer(reducer, defaultValues)
   const methods = useForm({
     defaultValues,
@@ -74,16 +77,21 @@ export default function NotificationList() {
       <FormProvider methods={methods}>
         <NotificationTableToolbar />
       </FormProvider>
-      <BasicTable
-        columns={TABLE_HEAD}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        dataSource={listNotifications}
-        isLoading={isLoading || isFetching}
-        TableRowComp={(row, index) => (
-          <NotificationTableRow key={row?.id || index} row={row} />
-        )}
-      />
+      {isSmall ? (
+        <NotificationTableMobile dataSource={listNotifications} />
+      ) : (
+        <BasicTable
+          columns={TABLE_HEAD}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          dataSource={listNotifications}
+          isLoading={isLoading || isFetching}
+          TableRowComp={(row, index) => (
+            <NotificationTableRow key={row?.id || index} row={row} />
+          )}
+        />
+      )}
+
       <Pagination
         totalRecord={totalRecord}
         page={page}
