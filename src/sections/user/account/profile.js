@@ -9,7 +9,6 @@ import Pagination from '@/components/Pagination'
 import useAuth from '@/hooks/useAuth'
 import useTable from '@/hooks/useTable'
 
-import { TABLE_HEAD } from './config'
 import { useGetListJobQuery } from './jobSlice'
 import JobTaskTableRow from './jobTaskTableRow'
 
@@ -28,12 +27,17 @@ export default function JobList({ subheader, ...other }) {
   const { jobs: listJob = [], total: totalRecord = 0 } = data?.data || {}
   return (
     <Card {...other}>
-      <CardHeader sx={{ px: 1 }} title='List Jobs' subheader={subheader} />
-      <Typography sx={{ px: 1, color: '#b5b5c3', fontSize: 13 }}>
+      <CardHeader
+        sx={{ px: 1, paddingLeft: 3 }}
+        title='List Jobs'
+        subheader={subheader}
+      />
+      <Typography
+        sx={{ px: 1, paddingLeft: 3, color: '#b5b5c3', fontSize: 13 }}
+      >
         You are following {totalRecord} jobs
       </Typography>
       <BasicTable
-        columns={TABLE_HEAD}
         page={page}
         rowsPerPage={rowsPerPage}
         dataSource={listJob}

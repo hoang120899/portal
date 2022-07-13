@@ -19,6 +19,7 @@ import { MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
 import { useDispatch } from '@/redux/store'
+import useResponsive from '@/hooks/useResponsive'
 // utils
 import { fData } from '@/utils/formatNumber'
 
@@ -64,6 +65,7 @@ export default function AccountGeneral() {
       // TODO
     }
   }
+  const isMobile = useResponsive('down', 600, 'md')
   const handleDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0]
@@ -144,9 +146,15 @@ export default function AccountGeneral() {
           </Card>
         </Grid>
       </Grid>
-      <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
-        <JobList />
-      </Grid>
+      {isMobile ? (
+        <Grid item xs={10} sx={{ mx: 0, marginTop: 25 }}>
+          <JobList />
+        </Grid>
+      ) : (
+        <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
+          <JobList />
+        </Grid>
+      )}
     </FormProvider>
   )
 }
