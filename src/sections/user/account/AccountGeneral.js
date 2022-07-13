@@ -57,7 +57,6 @@ export default function AccountGeneral() {
     handleSubmit,
     formState: { isSubmitting },
   } = methods
-
   const onSubmit = async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -66,23 +65,30 @@ export default function AccountGeneral() {
       // TODO
     }
   }
-
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0]
       if (file && file.size < MAX_SIZE_FILEIMAGE) {
         const formData = new FormData()
         formData.append('linkAvatar', file)
-        _uploadApi(API_UPLOAD_AVATAR_PROFILE, formData)
+        _uploadApi(API_UPLOAD_AVATAR_PROFILE, formData).then((res) => {
+          if (res.code === 200) {
+            enqueueSnackbar('Update Avatar thành công!')
+          } else {
+            enqueueSnackbar('Update avatar thất bại!')
+          }
+        })
         setValue(
           'photoURL',
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
         )
+      } else {
+        enqueueSnackbar('Ảnh bạn nhập quá kích thước cho phép')
       }
     },
-    [setValue]
+    [setValue, enqueueSnackbar]
   )
 
   return (

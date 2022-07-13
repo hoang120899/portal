@@ -43,7 +43,6 @@ export default function AccountPopover() {
   const { logout, user } = useAuth()
   const isMountedRef = useIsMountedRef()
   const { enqueueSnackbar } = useSnackbar()
-
   const [open, setOpen] = useState(null)
 
   const handleOpen = (event) => {
@@ -87,8 +86,8 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src='https://minimal-assets-api-dev.vercel.app/assets/images/avatars/avatar_5.jpg'
-          alt='Rayan Moran'
+          src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${user.linkAvatar}`}
+          alt={user.displayName}
         />
       </IconButtonAnimate>
 

@@ -151,6 +151,7 @@ function AuthProvider({ children }) {
       name: displayName = '',
       Role: { id: roleId, name: role } = {},
       id: userId,
+      linkAvatar,
     } = await _getApi(`${API_USER_INFO}/${decoded.userId}`)
 
     return {
@@ -159,6 +160,7 @@ function AuthProvider({ children }) {
       role,
       roleId,
       userId,
+      linkAvatar,
     }
   }
 
