@@ -29,7 +29,7 @@ export default function JobList({ subheader, ...other }) {
   return (
     <Card {...other}>
       <CardHeader sx={{ px: 1 }} title='List Jobs' subheader={subheader} />
-      <Typography sx={{ px: 1 }}>
+      <Typography sx={{ px: 1, color: '#b5b5c3', fontSize: 13 }}>
         You are following {totalRecord} jobs
       </Typography>
       <BasicTable
