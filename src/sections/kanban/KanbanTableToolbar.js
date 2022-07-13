@@ -129,6 +129,7 @@ const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
   const cardOptions = useMemo(() => {
     if (cardData || cardData?.data?.list.length > 0) {
       return cardData.data.list.map((card, i) => ({
+        ...card,
         value: card.Candidate.name,
         label: `${card.Candidate.name}-${i}`,
         id: card.id,
@@ -137,7 +138,7 @@ const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
     return []
   }, [cardData])
   const handle = (value) => {
-    onOpenUpdateTask(value.id)
+    onOpenUpdateTask(value)
   }
   return (
     <>

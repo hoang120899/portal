@@ -59,7 +59,7 @@ KanbanTaskAdd.propTypes = {
   open: PropTypes.bool,
   isAddTaskNoColumn: PropTypes.bool,
   hasAddPermission: PropTypes.bool,
-  cardId: PropTypes.string,
+  card: PropTypes.object,
   laneId: PropTypes.string,
   columns: PropTypes.object,
   onClose: PropTypes.func,
@@ -77,7 +77,7 @@ export default function KanbanTaskAdd({
   open,
   isAddTaskNoColumn,
   hasAddPermission,
-  cardId,
+  card,
   laneId,
   columns,
   onClose,
@@ -88,7 +88,7 @@ export default function KanbanTaskAdd({
     laneId:
       isAddTaskNoColumn && Yup.string().required('Column name is required'),
     idJob: Yup.string().required('Name job is required'),
-    email: cardId
+    email: card
       ? Yup.string().required('Email is required')
       : Yup.object()
           .shape({
@@ -96,7 +96,7 @@ export default function KanbanTaskAdd({
           })
           .nullable()
           .required('Email is required'),
-    phone: cardId
+    phone: card
       ? Yup.string().required('Email is required')
       : Yup.object()
           .shape({
@@ -203,20 +203,8 @@ export default function KanbanTaskAdd({
     }
   }, [jobData])
 
-  const cardData = useMemo(() => {
-    let cardArr = []
-    if (columns) {
-      columns.data.list.forEach((column) => {
-        if (column.CandidateJobs.length > 0) {
-          cardArr = [...cardArr.concat(column.CandidateJobs)]
-        }
-      })
-    }
-    return cardArr
-  }, [columns])
-
   useEffect(() => {
-    if (cardId) {
+    if (card) {
       const {
         Candidate,
         laneId,
@@ -228,9 +216,9 @@ export default function KanbanTaskAdd({
         refineCv = '',
         noteApproach,
         Users,
-      } = cardData.find((card) => card.id === cardId)
+      } = card
       setUsers(Users)
-      setValue('name', Candidate.name || '')
+      setValue('name', Candidate?.name || '')
       setValue('laneId', laneId)
       setValue('idJob', Job.id)
       setValue('nameJob', Job.title)
@@ -254,16 +242,16 @@ export default function KanbanTaskAdd({
       setValue('refineCv', refineCv || '')
       setValue('noteApproach', noteApproach)
     }
-  }, [cardId, cardData, setValue])
+  }, [card, setValue])
 
   useEffect(() => {
-    if (!cardId && watchIdJob) {
+    if (!card && watchIdJob) {
       const job = jobOptions.find((job) => job.value === watchIdJob)
       setValue('location', job?.location)
       setValue('clientName', job?.clientName)
       setValue('nameJob', job?.label)
     }
-  }, [cardId, watchIdJob, jobOptions, setValue])
+  }, [card, watchIdJob, jobOptions, setValue])
 
   const handleCloseAddTaskReset = () => {
     onClose()
@@ -284,7 +272,7 @@ export default function KanbanTaskAdd({
   const onToggleAssignee = async (checked, userId) => {
     if (checked) {
       try {
-        await removeAssignee({ id: cardId, userId })
+        await removeAssignee({ id: card.id, userId })
         enqueueSnackbar('Remove assignee successfully!')
         setUsers(users.filter((item) => item.id !== userId))
       } catch (error) {
@@ -292,7 +280,7 @@ export default function KanbanTaskAdd({
       }
     } else {
       try {
-        await addAssignee({ id: cardId, userId })
+        await addAssignee({ id: card.id, userId })
         enqueueSnackbar('Add assignee successfully!')
         const user = [
           ...users,
@@ -311,7 +299,7 @@ export default function KanbanTaskAdd({
     if (!reqData.laneId) {
       reqData.laneId = laneId
     }
-    if (!cardId) {
+    if (!card) {
       delete reqData.refineCv
     }
     reqData.email = data.email.label
@@ -319,12 +307,12 @@ export default function KanbanTaskAdd({
     delete reqData.social
 
     try {
-      if (cardId) {
+      if (card) {
         if (reqData.laneId) {
-          await updateLane({ cardId, laneId: reqData.laneId })
+          await updateLane({ cardId: card.id, laneId: reqData.laneId })
           delete reqData.laneId
         }
-        await updateCard({ reqData, cardId }).unwrap()
+        await updateCard({ reqData, cardId: card.id }).unwrap()
         enqueueSnackbar('Update card successfully!')
         handleCloseUpdateTaskReset()
       } else {
@@ -360,7 +348,7 @@ export default function KanbanTaskAdd({
       <Drawer
         open={open}
         onClose={() => {
-          cardId ? handleCloseUpdateTaskReset() : handleCloseAddTaskReset()
+          card ? handleCloseUpdateTaskReset() : handleCloseAddTaskReset()
         }}
         anchor='right'
         PaperProps={{ sx: { width: { xs: 1, sm: 640 } } }}
@@ -368,7 +356,7 @@ export default function KanbanTaskAdd({
         <Box p={3}>
           <Box component='header'>
             <Typography variant='h5'>
-              {cardId ? translate('Update Card') : translate('Add Card')}
+              {card ? translate('Update Card') : translate('Add Card')}
             </Typography>
           </Box>
           <Box>
@@ -427,7 +415,7 @@ export default function KanbanTaskAdd({
               </Box>
 
               <Box mt={2}>
-                {cardId ? (
+                {card ? (
                   <RHFTextField
                     label='Email'
                     name='email'
@@ -472,7 +460,7 @@ export default function KanbanTaskAdd({
               </Box>
 
               <Box mt={2}>
-                {!cardId && (
+                {!card && (
                   <CheckboxRootStyle>
                     <RHFMultiCheckbox name='social' options={socialOptions} />
                   </CheckboxRootStyle>
@@ -535,7 +523,7 @@ export default function KanbanTaskAdd({
               <Box mt={2}>
                 <Grid container spacing={1}>
                   <Grid item xs={6}>
-                    {cardId ? (
+                    {card ? (
                       <RHFTextField
                         label={translate('Phone')}
                         name='phone'
@@ -588,7 +576,7 @@ export default function KanbanTaskAdd({
                 </Grid>
               </Box>
 
-              {cardId && (
+              {card && (
                 <Box mt={2}>
                   <RHFDateTimePicker
                     label={translate('Expected Date')}
@@ -617,7 +605,7 @@ export default function KanbanTaskAdd({
                   setValue={setValue}
                 />
               </Box>
-              {cardId && (
+              {card && (
                 <Box mt={2}>
                   <KanbanFileUpload
                     label={translate('Link Refine CV')}
@@ -643,9 +631,9 @@ export default function KanbanTaskAdd({
               <Stack
                 mt={2}
                 direction='row'
-                justifyContent={cardId ? 'space-between' : 'right'}
+                justifyContent={card ? 'space-between' : 'right'}
               >
-                {cardId && (
+                {card && (
                   <Assignee
                     onToggleAssignee={onToggleAssignee}
                     assignee={users}
@@ -654,7 +642,7 @@ export default function KanbanTaskAdd({
                   />
                 )}
                 <Stack direction='row'>
-                  {cardId && (
+                  {card && (
                     <Button type='button' variant='contained'>
                       {translate('Create Interview')}
                     </Button>
@@ -665,14 +653,14 @@ export default function KanbanTaskAdd({
                       variant='contained'
                       sx={{ marginLeft: '8px' }}
                     >
-                      {cardId ? translate('Update') : translate('Save')}
+                      {card ? translate('Update') : translate('Save')}
                     </Button>
                   )}
                   <Button
                     type='button'
                     sx={{ marginLeft: '8px' }}
                     onClick={() => {
-                      cardId
+                      card
                         ? handleCloseUpdateTaskReset()
                         : handleCloseAddTaskReset()
                     }}
@@ -683,7 +671,7 @@ export default function KanbanTaskAdd({
               </Stack>
             </FormProvider>
 
-            {cardId && (
+            {card && (
               <Box mt={3}>
                 <Stack
                   direction='row'
@@ -714,12 +702,12 @@ export default function KanbanTaskAdd({
               <Box mt={2}>
                 <KanbanUpdateHistory
                   title={translate('News Update')}
-                  cardId={cardId}
+                  cardId={card.id}
                 />
               </Box>
             )}
 
-            {cardId && (
+            {card && (
               <Box mt={3}>
                 <Stack direction='row' mb={2}>
                   <Iconify
@@ -732,11 +720,11 @@ export default function KanbanTaskAdd({
                   </Typography>
                 </Stack>
 
-                <KanbanTaskCommentInput cardId={cardId} />
+                <KanbanTaskCommentInput cardId={card.id} />
                 <Box mt={2}>
                   <KanbanTaskCommentList
                     title={translate('List Comment')}
-                    cardId={cardId}
+                    cardId={card.id}
                   />
                 </Box>
               </Box>

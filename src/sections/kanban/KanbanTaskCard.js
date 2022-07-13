@@ -33,7 +33,7 @@ export default function KanbanTaskCard({
   hasAddPermission,
   index,
 }) {
-  const { Job, Candidate, id: cardId } = card
+  const { Job, Candidate } = card
   const { translate } = useLocales()
 
   const [labels, setLabels] = useState([])
@@ -118,7 +118,7 @@ export default function KanbanTaskCard({
             }}
           >
             <Box
-              onClick={onOpenUpdateTask.bind(null, cardId)}
+              onClick={onOpenUpdateTask.bind(null, card)}
               sx={{ cursor: 'pointer' }}
             >
               <Box
@@ -141,7 +141,7 @@ export default function KanbanTaskCard({
                   }}
                   onClick={(e) => {
                     e.stopPropagation()
-                    onOpenUpdateTask(cardId)
+                    onOpenUpdateTask(card)
                   }}
                 >
                   <Box>

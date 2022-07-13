@@ -53,7 +53,7 @@ export default function Board() {
   const [isMounted, setIsMounted] = useState(false)
   const [laneId, setLaneId] = useState('')
   const [open, setOpen] = useState(false)
-  const [cardId, setCardId] = useState('')
+  const [card, setCard] = useState(null)
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
   const { isLeaderRole, isMemberRole } = useRole()
   const { data: columnData } = useGetColumnsQuery()
@@ -78,16 +78,16 @@ export default function Board() {
     setIsAddTaskNoColumn(false)
   }
 
-  const handleOpenUpdateTask = (cardId) => {
+  const handleOpenUpdateTask = (card) => {
     setOpen((prev) => !prev)
     setIsAddTaskNoColumn(true)
-    setCardId(cardId)
+    setCard(card)
   }
 
   const handleCloseUpdateTask = () => {
     setOpen(false)
     setIsAddTaskNoColumn(false)
-    setCardId('')
+    setCard(null)
   }
 
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function Board() {
           open={open}
           isAddTaskNoColumn={isAddTaskNoColumn}
           columns={columnData}
-          cardId={cardId}
+          card={card}
           laneId={laneId}
           hasAddPermission={hasAddPermission}
           onClose={handleCloseAddTask}
