@@ -227,7 +227,7 @@ const initialState = {
   },
   listColumnName: [],
 }
-export const getColumns = createAsyncThunk('culumns/getColumns', async () => {
+export const getColumns = createAsyncThunk('columns/getColumns', async () => {
   try {
     // const response = await _getApi(API_LIST_CARD)
     const response = await _getApi(API_LIST_CARD)
@@ -236,7 +236,7 @@ export const getColumns = createAsyncThunk('culumns/getColumns', async () => {
     // console.log(error);
   }
 })
-export const getContacts = createAsyncThunk('culumns/getContacts', async () => {
+export const getContacts = createAsyncThunk('columns/getContacts', async () => {
   try {
     // const response = await _getApi(API_LIST_CARD)
     const response = await _getApi(API_LIST_USER)
@@ -246,7 +246,7 @@ export const getContacts = createAsyncThunk('culumns/getContacts', async () => {
   }
 })
 export const loadMoreLane = createAsyncThunk(
-  'culumns/loadMoreLane',
+  'columns/loadMoreLane',
   async (data) => {
     try {
       const response = await _getApi(
@@ -259,7 +259,7 @@ export const loadMoreLane = createAsyncThunk(
   }
 )
 export const createLabel = createAsyncThunk(
-  'culumns/createLabel',
+  'columns/createLabel',
   async (data) => {
     const { laneId, ...rest } = data
     const response = await _postApi(API_V1_CARD_LABEL, rest)
@@ -269,7 +269,7 @@ export const createLabel = createAsyncThunk(
     return response
   }
 )
-export const moveCard = createAsyncThunk('culumns/moveCard', async (data) => {
+export const moveCard = createAsyncThunk('columns/moveCard', async (data) => {
   const { laneId, cardId } = data
   const url = `${API_ADD_CARD}/${cardId}`
   const response = await _patchApi(url, { laneId: laneId })
@@ -279,7 +279,7 @@ export const moveCard = createAsyncThunk('culumns/moveCard', async (data) => {
   return response
 })
 export const storageCard = createAsyncThunk(
-  'culumns/storageCard',
+  'columns/storageCard',
   async (data) => {
     const { cardId } = data
     const url = `${API_ADD_CARD}/${cardId}`
@@ -292,7 +292,7 @@ export const storageCard = createAsyncThunk(
 )
 
 export const kanbanSlice = createSlice({
-  name: 'culumns',
+  name: 'columns',
   initialState,
   reducers: {
     setColumnsAction: (state, action) => {

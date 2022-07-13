@@ -64,7 +64,6 @@ KanbanTaskAdd.propTypes = {
   columns: PropTypes.object,
   onClose: PropTypes.func,
   onCloseUpdate: PropTypes.func,
-  setIsUpdated: PropTypes.func,
 }
 
 const CheckboxRootStyle = styled('div')(() => ({
@@ -143,10 +142,10 @@ export default function KanbanTaskAdd({
   const phoneSearch = useDebounce(keyPhoneSearch, 500)
   const [keyEmailSearch, setKeyEmailSearch] = useState('')
   const emailSearch = useDebounce(keyEmailSearch, 500)
-  const { data: phoneData } = useSearchPhoneQuery({
+  const { data: phoneData, isFetching: isPhoneFetching } = useSearchPhoneQuery({
     phone: phoneSearch,
   })
-  const { data: emailData } = useSearchEmailQuery({
+  const { data: emailData, isFetching: isEmailFetching } = useSearchEmailQuery({
     email: emailSearch,
   })
   const { data: jobData } = useGetActiveJobsQuery()
@@ -319,6 +318,8 @@ export default function KanbanTaskAdd({
         await addCard(reqData).unwrap()
         enqueueSnackbar('Create card successfully!')
         handleCloseAddTaskReset()
+        setKeyEmailSearch('')
+        setKeyPhoneSearch('')
       }
       reset()
     } catch (error) {
@@ -425,6 +426,7 @@ export default function KanbanTaskAdd({
                   <RHFAutocomplete
                     AutocompleteProps={{
                       size: 'small',
+                      loading: isEmailFetching,
                       renderOption: (props, option) => (
                         <Box key={option.key} component='li' {...props}>
                           {option.label}
@@ -534,6 +536,7 @@ export default function KanbanTaskAdd({
                       <RHFAutocomplete
                         AutocompleteProps={{
                           size: 'small',
+                          loading: isPhoneFetching,
                           renderOption: (props, option) => (
                             <Box key={option.key} component='li' {...props}>
                               {option.label}
