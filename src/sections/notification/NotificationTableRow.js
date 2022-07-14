@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 // components
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
-import useSettings from '@/hooks/useSettings'
 import { fDate } from '@/utils/formatTime'
 import getColorPresets from '@/utils/getColorPresets'
 
@@ -16,7 +15,6 @@ NotificationTableRow.propTypes = {
 
 export default function NotificationTableRow({ row }) {
   const { User, content, createdAt } = row
-  const { themeMode } = useSettings()
 
   const styles = {
     message: {
@@ -29,10 +27,7 @@ export default function NotificationTableRow({ row }) {
       fontWeight: 300,
       transition: 'all 0.3s',
       '&:hover': {
-        color:
-          themeMode === 'light'
-            ? '#1BC5BD'
-            : `${getColorPresets('yellow').main}`,
+        color: `${getColorPresets('yellow').main}`,
       },
     },
     buttonDetail: {
@@ -41,10 +36,7 @@ export default function NotificationTableRow({ row }) {
       border: (theme) => `dashed 1px ${theme.palette.divider}`,
       transition: 'all 0.15s',
       '&:hover': {
-        color:
-          themeMode === 'light'
-            ? '#1BC5BD'
-            : `${getColorPresets('yellow').main}`,
+        color: `${getColorPresets('yellow').main}`,
       },
     },
   }

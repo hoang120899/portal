@@ -18,7 +18,6 @@ import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
 // hooks
 import useLocales from '@/hooks/useLocales'
-import useSettings from '@/hooks/useSettings'
 // utils
 import { fDate } from '@/utils/formatTime'
 import getColorPresets from '@/utils/getColorPresets'
@@ -26,7 +25,6 @@ import getColorPresets from '@/utils/getColorPresets'
 function CollapsibleTableRow({ row }) {
   const { User, content, createdAt } = row
   const { translate } = useLocales()
-  const { themeMode } = useSettings()
   const [isOpenDropdown, setIsOpenDropdown] = useState(true)
 
   const styles = {
@@ -34,10 +32,7 @@ function CollapsibleTableRow({ row }) {
       fontWeight: 300,
       transition: 'all 0.3s',
       '&:hover': {
-        color:
-          themeMode === 'light'
-            ? '#1BC5BD'
-            : `${getColorPresets('yellow').main}`,
+        color: `${getColorPresets('yellow').main}`,
       },
     },
     buttonDetail: {
@@ -46,10 +41,7 @@ function CollapsibleTableRow({ row }) {
       border: (theme) => `dashed 1px ${theme.palette.divider}`,
       transition: 'all 0.15s',
       '&:hover': {
-        color:
-          themeMode === 'light'
-            ? '#1BC5BD'
-            : `${getColorPresets('yellow').main}`,
+        color: `${getColorPresets('yellow').main}`,
       },
     },
   }
