@@ -27,6 +27,7 @@ import {
   getColumns,
   setColumnsAction,
   updateColumns,
+  useGetCardDetailMutation,
   useGetColumnsQuery,
   useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
@@ -57,6 +58,7 @@ export default function Board() {
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
   const { isLeaderRole, isMemberRole } = useRole()
   const { data: columnData } = useGetColumnsQuery()
+  const [getCardDetail] = useGetCardDetailMutation()
 
   const hasAddPermission = isLeaderRole || isMemberRole
 
@@ -106,10 +108,16 @@ export default function Board() {
   }, [columnData, dispatch])
 
   useEffect(() => {
-    if (isMounted && query && query.cardId && columnData) {
-      handleOpenUpdateTask(query.cardId)
+    async function getCard(cardId) {
+      const cardDetail = await getCardDetail(cardId)
+      return cardDetail
     }
-  }, [query, isMounted, columnData])
+    if (isMounted && query && query.cardId) {
+      getCard(query.cardId).then(({ data }) => {
+        handleOpenUpdateTask(data.data.card)
+      })
+    }
+  }, [query, isMounted, getCardDetail])
 
   const [updateLane] = useUpdateLaneMutation()
 

@@ -165,7 +165,7 @@ export default function KanbanTaskAdd({
         name: candidate.name,
         email: candidate.email,
       }))
-    }
+    } else return []
   }, [phoneData])
 
   const emailOptions = useMemo(() => {
@@ -255,12 +255,16 @@ export default function KanbanTaskAdd({
   const handleCloseAddTaskReset = () => {
     onClose()
     setOpenHistory(false)
+    setKeyEmailSearch('')
+    setKeyPhoneSearch('')
     reset()
   }
 
   const handleCloseUpdateTaskReset = () => {
     onCloseUpdate()
     setOpenHistory(false)
+    setKeyEmailSearch('')
+    setKeyPhoneSearch('')
     reset()
   }
 
@@ -318,10 +322,7 @@ export default function KanbanTaskAdd({
         await addCard(reqData).unwrap()
         enqueueSnackbar('Create card successfully!')
         handleCloseAddTaskReset()
-        setKeyEmailSearch('')
-        setKeyPhoneSearch('')
       }
-      reset()
     } catch (error) {
       if (error.data) {
         enqueueSnackbar(

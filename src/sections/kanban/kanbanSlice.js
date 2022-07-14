@@ -54,6 +54,12 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
         ]
       },
     }),
+    getCardDetail: builder.mutation({
+      query: (cardId) => ({
+        url: `${API_ADD_CARD}/${cardId}`,
+        method: 'GET',
+      }),
+    }),
     getActiveJobs: builder.query({
       query: () => ({
         url: API_LIST_ACTIVE_JOB,
@@ -209,6 +215,7 @@ export const {
   useUpdateLaneMutation,
   useAddCommentMutation,
   useEditCommentMutation,
+  useGetCardDetailMutation,
 } = kanbanApiSlice
 
 // use reducer
