@@ -78,7 +78,7 @@ export default function Dashboard() {
             <DashboardActiveJob title='Active Jobs' />
           </Grid>
           {dashboardConfigs.map((config, key) => (
-            <Grid item xs={4} key={key}>
+            <Grid item xs={4} key={key} sx={{ height: '560px ' }}>
               {config.render()}
             </Grid>
           ))}

@@ -17,7 +17,7 @@ export default function Applicants({ title, subheader, ...other }) {
   }))
 
   return (
-    <Card {...other}>
+    <Card {...other} sx={{ height: 560 }}>
       <CardHeader title={title} subheader={subheader} />
       <ApplicantsDetails list={list} />
     </Card>

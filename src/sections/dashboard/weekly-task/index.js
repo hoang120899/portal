@@ -43,7 +43,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
   }))
 
   return (
-    <Card {...other}>
+    <Card {...other} sx={{ height: 560 }}>
       <CardHeader title={title} subheader={subheader} />
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <WeeklyTaskTableToolbar />

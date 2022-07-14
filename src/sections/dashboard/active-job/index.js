@@ -70,6 +70,7 @@ const DashboardActiveJob = ({ title, subheader, ...other }) => {
         dataSource={DATASOURCE.splice(0, 5)}
         page={page}
         rowsPerPage={rowsPerPage}
+        tableStyle={{ height: '395px', overflow: 'hidden' }}
         TableRowComp={(row, index) => (
           <ActiveJobTableRow key={row?.id || index} row={row} />
         )}
