@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 
 // @mui
-import { Box, MenuItem, Paper, Stack, Typography } from '@mui/material'
+import { Box, Button, MenuItem, Paper, Stack, Typography } from '@mui/material'
 
-import { format } from 'date-fns'
+import { compareAsc, format, parseISO } from 'date-fns'
 import PropTypes from 'prop-types'
 import { Draggable } from 'react-beautiful-dnd'
 
@@ -11,6 +11,7 @@ import IconDelete from '@/assets/icon_delete'
 import IconTimer from '@/assets/icon_timer'
 import Assignee from '@/components/Assignee'
 import CustomLabel from '@/components/CustomLabel'
+import { DATETIME_FORMAT, DATE_FORMAT_DAY_MONTH } from '@/config'
 // components
 import useLocales from '@/hooks/useLocales'
 import {
@@ -158,6 +159,7 @@ export default function KanbanTaskCard({
       setOpenMenuActions(null)
     }
   }
+  const isAfterNow = (date) => compareAsc(parseISO(date), new Date()) === 1
   useEffect(() => {
     setLabels(card.Labels)
   }, [card.Labels])
@@ -251,29 +253,52 @@ export default function KanbanTaskCard({
                       ))}
                     </Box>
                     <Typography variant='h5'>{Candidate?.name}</Typography>
-                    {card.Interviews.length > 0 && (
-                      <Box
-                        sx={{
-                          background: '#3699FF',
-                          color: 'white',
-                          width: 'fit-content',
-                          padding: '0.55rem 0.75rem',
-                          borderRadius: '0.42rem',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <IconTimer
-                          fill='#fff'
-                          color='white'
+                    <Stack spacing={1} sx={{ marginY: '8px' }}>
+                      {card.Interviews?.map((interview) => (
+                        <Button
+                          key={interview.id}
+                          variant='contained'
+                          color='secondary'
+                          size='small'
                           sx={{
-                            marginRight: '0.5rem',
+                            paddingX: '0.75rem',
+                            borderRadius: '0.42rem',
+                            width: 'fit-content',
+                            boxShadow: 'none',
+                            svg: {
+                              marginRight: '0.5rem',
+                            },
                           }}
-                        />
-                        {format(new Date('2021-05-07T04:55:00.000Z'), 'do MMM')}
-                      </Box>
-                    )}
+                        >
+                          <IconTimer fill='#fff' color='white' />
+                          {format(
+                            new Date(interview.timeInterview),
+                            DATE_FORMAT_DAY_MONTH
+                          )}
+                        </Button>
+                      ))}
+                      {card.expectedDate && (
+                        <Button
+                          variant='contained'
+                          color={`${
+                            isAfterNow(card.expectedDate) ? 'primary' : 'error'
+                          }`}
+                          size='small'
+                          sx={{
+                            width: 'fit-content',
+                            boxShadow: 'none',
+                            paddingX: '0.75rem',
+                            borderRadius: '0.42rem',
+                            svg: {
+                              marginRight: '0.5rem',
+                            },
+                          }}
+                        >
+                          <IconTimer fill='#fff' color='white' />
+                          {format(new Date(card.expectedDate), DATETIME_FORMAT)}
+                        </Button>
+                      )}
+                    </Stack>
                     <Typography variant='subtitle2' color='#777'>
                       {Job.title}
                     </Typography>
