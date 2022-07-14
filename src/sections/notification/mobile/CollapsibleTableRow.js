@@ -13,35 +13,46 @@ import {
   Typography,
 } from '@mui/material'
 
+// component
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
+// hooks
 import useLocales from '@/hooks/useLocales'
+import useSettings from '@/hooks/useSettings'
+// utils
 import { fDate } from '@/utils/formatTime'
-
-const styles = {
-  message: {
-    color: '#3F4254',
-    fontWeight: 300,
-    transition: 'all 0.3s',
-    '&:hover': {
-      color: '#1BC5BD',
-    },
-  },
-  buttonDetail: {
-    p: 1,
-    ml: 0.5,
-    border: (theme) => `dashed 1px ${theme.palette.divider}`,
-    transition: 'all 0.15s',
-    '&:hover': {
-      color: '#1BC5BD',
-    },
-  },
-}
+import getColorPresets from '@/utils/getColorPresets'
 
 function CollapsibleTableRow({ row }) {
   const { User, content, createdAt } = row
   const { translate } = useLocales()
+  const { themeMode } = useSettings()
   const [isOpenDropdown, setIsOpenDropdown] = useState(true)
+
+  const styles = {
+    message: {
+      fontWeight: 300,
+      transition: 'all 0.3s',
+      '&:hover': {
+        color:
+          themeMode === 'light'
+            ? '#1BC5BD'
+            : `${getColorPresets('yellow').main}`,
+      },
+    },
+    buttonDetail: {
+      p: 1,
+      ml: 0.5,
+      border: (theme) => `dashed 1px ${theme.palette.divider}`,
+      transition: 'all 0.15s',
+      '&:hover': {
+        color:
+          themeMode === 'light'
+            ? '#1BC5BD'
+            : `${getColorPresets('yellow').main}`,
+      },
+    },
+  }
 
   const handleToggleDropdown = () => {
     setIsOpenDropdown(!isOpenDropdown)
@@ -70,7 +81,7 @@ function CollapsibleTableRow({ row }) {
           </IconButton>
           <Typography
             variant='subtitle2'
-            sx={{ color: 'black', cursor: 'pointer', fontWeight: 'bold' }}
+            sx={{ cursor: 'pointer', fontWeight: 'bold' }}
           >
             {User?.name}
           </Typography>

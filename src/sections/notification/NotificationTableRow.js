@@ -6,7 +6,9 @@ import PropTypes from 'prop-types'
 // components
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
+import useSettings from '@/hooks/useSettings'
 import { fDate } from '@/utils/formatTime'
+import getColorPresets from '@/utils/getColorPresets'
 
 NotificationTableRow.propTypes = {
   row: PropTypes.object,
@@ -14,13 +16,37 @@ NotificationTableRow.propTypes = {
 
 export default function NotificationTableRow({ row }) {
   const { User, content, createdAt } = row
-  const styleMessage = {
-    width: '100%',
-    display: '-webkit-box',
-    WebkitLineClamp: '2',
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
+  const { themeMode } = useSettings()
+
+  const styles = {
+    message: {
+      width: '100%',
+      display: '-webkit-box',
+      WebkitLineClamp: '2',
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      fontWeight: 300,
+      transition: 'all 0.3s',
+      '&:hover': {
+        color:
+          themeMode === 'light'
+            ? '#1BC5BD'
+            : `${getColorPresets('yellow').main}`,
+      },
+    },
+    buttonDetail: {
+      p: 1,
+      ml: 0.5,
+      border: (theme) => `dashed 1px ${theme.palette.divider}`,
+      transition: 'all 0.15s',
+      '&:hover': {
+        color:
+          themeMode === 'light'
+            ? '#1BC5BD'
+            : `${getColorPresets('yellow').main}`,
+      },
+    },
   }
 
   return (
@@ -28,7 +54,7 @@ export default function NotificationTableRow({ row }) {
       <TableCell align='left'>{User?.name}</TableCell>
 
       <TableCell align='left' width='50%'>
-        <Typography variant='subtitle2' sx={styleMessage}>
+        <Typography variant='body2' sx={styles.message}>
           {content?.message}
           <strong> {content?.title}</strong>
         </Typography>
@@ -38,13 +64,7 @@ export default function NotificationTableRow({ row }) {
 
       <TableCell maxwidth='15%'>
         <Tooltip title='Detail'>
-          <IconButtonAnimate
-            sx={{
-              p: 1,
-              ml: 0.5,
-              border: (theme) => `dashed 1px ${theme.palette.divider}`,
-            }}
-          >
+          <IconButtonAnimate sx={styles.buttonDetail}>
             <Iconify icon={'eva:eye-fill'} width={20} height={20} />
           </IconButtonAnimate>
         </Tooltip>
