@@ -94,7 +94,7 @@ function CollapsibleTableRow({ row }) {
                 <TableBody>
                   <TableRow sx={{ verticalAlign: 'top' }}>
                     <TableCell>{translate('Message')}</TableCell>
-                    <TableCell>
+                    <TableCell sx={{ width: 644 }}>
                       <Typography variant='body2' sx={styles.message}>
                         {content?.message} <strong>{content?.title}</strong>
                       </Typography>
