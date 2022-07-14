@@ -44,7 +44,6 @@ export default function AccountPopover() {
   const isMountedRef = useIsMountedRef()
   const { enqueueSnackbar } = useSnackbar()
   const [open, setOpen] = useState(null)
-
   const handleOpen = (event) => {
     setOpen(event.currentTarget)
   }

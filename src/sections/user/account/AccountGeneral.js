@@ -73,9 +73,9 @@ export default function AccountGeneral() {
         formData.append('linkAvatar', file)
         _uploadApi(API_UPLOAD_AVATAR_PROFILE, formData).then((res) => {
           if (res.code === 200) {
-            enqueueSnackbar('Update Avatar thành công!')
+            enqueueSnackbar('Upload avatar success!')
           } else {
-            enqueueSnackbar('Update avatar thất bại!')
+            enqueueSnackbar('Update avatar Error!')
           }
         })
         setValue(
@@ -85,7 +85,7 @@ export default function AccountGeneral() {
           })
         )
       } else {
-        enqueueSnackbar('Ảnh bạn nhập quá kích thước cho phép')
+        enqueueSnackbar('The photo you entered is over the allowed size!')
       }
     },
     [setValue, enqueueSnackbar]
