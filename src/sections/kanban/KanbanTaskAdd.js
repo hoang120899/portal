@@ -702,7 +702,7 @@ export default function KanbanTaskAdd({
                 </Stack>
               </Box>
             )}
-            {openHistory && (
+            {openHistory && card && (
               <Box mt={2}>
                 <KanbanUpdateHistory
                   title={translate('News Update')}
