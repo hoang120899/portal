@@ -33,7 +33,6 @@ import {
 } from '@/sections/kanban/kanbanSlice'
 // utils
 import { getRolesByPage } from '@/utils/role'
-import uuidv4 from '@/utils/uuidv4'
 
 Board.getLayout = function getLayout({ roles = [] }, page) {
   return <Layout roles={roles}>{page}</Layout>
@@ -171,7 +170,7 @@ export default function Board() {
                     columns.data?.ids?.map((id, index) => (
                       <KanbanColumn
                         index={index}
-                        key={uuidv4()}
+                        key={id}
                         hasAddPermission={hasAddPermission}
                         column={columns.data.entities[id]}
                         formRefProp={formRef}

@@ -14,7 +14,6 @@ import Iconify from '@/components/Iconify'
 import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
 // hooks
 import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
-import uuidv4 from '@/utils/uuidv4'
 
 //
 import KanbanTaskCard from './KanbanTaskCard'
@@ -150,7 +149,7 @@ function KanbanColumn({
                   >
                     {CandidateJobs.map((candi, index) => (
                       <KanbanTaskCard
-                        key={uuidv4()}
+                        key={`${candi.id}-${index}`}
                         onDeleteTask={handleDeleteTask}
                         onOpenUpdateTask={onOpenUpdateTask}
                         hasAddPermission={hasAddPermission}
