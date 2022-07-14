@@ -20,10 +20,11 @@ import {
 import { MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
-import { API_UPLOAD_AVATAR_PROFILE } from '@/routes/api'
-import { _uploadApi } from '@/utils/axios'
+import { useDispatch } from '@/redux/store'
 // utils
 import { fData } from '@/utils/formatNumber'
+
+import { fetchUploadAPI } from './uploadAvatarSlice'
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar()
@@ -46,7 +47,7 @@ export default function AccountGeneral() {
     about: user?.about || '',
     isPublic: user?.isPublic || false,
   }
-
+  const dispatch = useDispatch()
   const methods = useForm({
     resolver: yupResolver(UpdateUserSchema),
     defaultValues,
@@ -66,18 +67,18 @@ export default function AccountGeneral() {
     }
   }
   const handleDrop = useCallback(
-    (acceptedFiles) => {
+    async (acceptedFiles) => {
       const file = acceptedFiles[0]
       if (file && file.size < MAX_SIZE_FILEIMAGE) {
         const formData = new FormData()
         formData.append('linkAvatar', file)
-        _uploadApi(API_UPLOAD_AVATAR_PROFILE, formData).then((res) => {
-          if (res.code === 200) {
-            enqueueSnackbar('Upload avatar success!')
-          } else {
-            enqueueSnackbar('Update avatar Error!')
-          }
-        })
+
+        const response = await dispatch(fetchUploadAPI(formData))
+        if (response.payload.code === 200) {
+          enqueueSnackbar('Update Avatar Success!')
+        } else {
+          enqueueSnackbar('Update Avatar Error!')
+        }
         setValue(
           'photoURL',
           Object.assign(file, {
@@ -88,7 +89,7 @@ export default function AccountGeneral() {
         enqueueSnackbar('The photo you entered is over the allowed size!')
       }
     },
-    [setValue, enqueueSnackbar]
+    [setValue, enqueueSnackbar, dispatch]
   )
 
   return (

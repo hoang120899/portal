@@ -5,10 +5,12 @@ import {
 } from 'react-redux'
 
 import { apiSlice } from '@/redux/api/apiSlice'
+import uploadAvatarSlice from '@/sections/user/account/uploadAvatarSlice'
 
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
+    avatar: uploadAvatarSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

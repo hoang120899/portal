@@ -24,6 +24,7 @@ import { IconButtonAnimate } from '@/components/animate'
 import useAuth from '@/hooks/useAuth'
 import useIsMountedRef from '@/hooks/useIsMountedRef'
 import useLocales from '@/hooks/useLocales'
+import { useSelector } from '@/redux/store'
 import { PATH_AUTH, PATH_DASHBOARD } from '@/routes/paths'
 
 const MENU_OPTIONS = [
@@ -51,7 +52,7 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null)
   }
-
+  const avatar = useSelector((state) => state.avatar)
   const handleLogout = async () => {
     try {
       await logout()
@@ -84,10 +85,17 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar
-          src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${user.linkAvatar}`}
-          alt={user.displayName}
-        />
+        {Object.keys(avatar.avatar).length === 0 ? (
+          <Avatar
+            src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${user.linkAvatar}`}
+            alt={user.displayName}
+          />
+        ) : (
+          <Avatar
+            src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${avatar.avatar}`}
+            alt={user.displayName}
+          />
+        )}
       </IconButtonAnimate>
 
       <MenuPopover
