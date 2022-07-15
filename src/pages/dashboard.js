@@ -30,6 +30,9 @@ Dashboard.getLayout = function getLayout({ roles = [] }, page) {
   return <Layout roles={roles}>{page}</Layout>
 }
 
+const FIRST_ROW_HEIGHT_TABLE = 640
+const SECOND_ROW_HEIGHT_TABLE = 600
+
 export async function getStaticProps() {
   return {
     props: {
@@ -46,25 +49,80 @@ export default function Dashboard() {
   const dashboardConfigs = [
     {
       render: () => {
-        if (isDirectorRole) return <Performance title='Performance' />
-        return <InterviewSchedule title='Interview Schedule' />
+        if (isDirectorRole)
+          return (
+            <Performance
+              title='Performance'
+              sx={{
+                height: {
+                  xs: 'auto',
+                  sm: SECOND_ROW_HEIGHT_TABLE,
+                  lg: FIRST_ROW_HEIGHT_TABLE,
+                },
+              }}
+            />
+          )
+        return (
+          <InterviewSchedule
+            title='Interview Schedule'
+            sx={{
+              height: {
+                xs: 'auto',
+                sm: SECOND_ROW_HEIGHT_TABLE,
+                lg: FIRST_ROW_HEIGHT_TABLE,
+              },
+            }}
+          />
+        )
       },
     },
     {
-      render: () => <WeeklyTask title='Weekly Task' />,
+      render: () => (
+        <WeeklyTask
+          title='Weekly Task'
+          sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
+        />
+      ),
     },
     {
       render: () => {
-        if (isDirectorRole) return <Applicants title='New Applicants' />
-        if (isLeaderRole) return <Performance title='Performance' />
-        return <RecruitementProgress title='Recruitment progress' />
+        if (isDirectorRole)
+          return (
+            <Applicants
+              title='New Applicants'
+              sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
+            />
+          )
+        if (isLeaderRole)
+          return (
+            <Performance
+              title='Performance'
+              sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
+            />
+          )
+        return (
+          <RecruitementProgress
+            title='Recruitment progress'
+            sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
+          />
+        )
       },
     },
     {
       render: () => {
         if (isDirectorRole)
-          return <MemberActivities title='Member Activities' />
-        return <Applicants title='New Applicants' />
+          return (
+            <MemberActivities
+              title='Member Activities'
+              sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
+            />
+          )
+        return (
+          <Applicants
+            title='New Applicants'
+            sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
+          />
+        )
       },
     },
   ]
@@ -74,11 +132,11 @@ export default function Dashboard() {
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs heading={translate('nav.dashboard')} />
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item xs={12} lg={8}>
             <DashboardActiveJob title='Active Jobs' />
           </Grid>
           {dashboardConfigs.map((config, key) => (
-            <Grid item xs={4} key={key}>
+            <Grid item xs={12} sm={6} lg={4} key={key}>
               {config.render()}
             </Grid>
           ))}
