@@ -3,25 +3,39 @@ import React, { memo } from 'react'
 // @mui
 import { Box, Paper, Stack, Typography } from '@mui/material'
 
-import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 import { Draggable } from 'react-beautiful-dnd'
 
-// assets
-import IconDelete from '@/assets/icon_delete'
-import IconTimer from '@/assets/icon_timer'
-import CustomLabel from '@/components/CustomLabel'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import { useDispatch } from '@/redux/store'
+
+import KanbanAssignee from './KanbanAssignee'
+import KanbanBasicInfo from './KanbanBasicInfo'
+import KanbanLabels from './KanbanLabels'
+import KanbanQuickMenu from './KanbanQuickMenu'
+import { deleteLabel } from './kanbanSlice'
 
 KanbanTaskCard.propTypes = {
   card: PropTypes.object,
   index: PropTypes.number,
+  laneId: PropTypes.string,
 }
 
-function KanbanTaskCard({ card, index }) {
+function KanbanTaskCard({ card, index, laneId }) {
   const { translate } = useLocales()
-  const { Job, Candidate = {}, Labels = [] } = card
+  const { Job, Candidate = {}, Labels = [], id: cardId } = card
+
+  const dispatch = useDispatch()
+  const handleDeleteLabel = async (label) => {
+    try {
+      const data = { ...label, laneId, cardId: cardId }
+      await dispatch(deleteLabel(data))
+    } catch (error) {
+      // TO DO: handle error
+    }
+  }
+
   const configUserInfo = [
     {
       label: translate('Email'),
@@ -68,72 +82,23 @@ function KanbanTaskCard({ card, index }) {
                 }}
               >
                 <Stack
-                  spacing={2}
+                  spacing={1}
                   sx={{
                     p: 2,
                     background: 'white',
                     boxShadow: '0 1px 0 rgb(9 30 66 / 25%)',
                   }}
                 >
-                  <Box>
-                    <Box display='flex' flexWrap='wrap'>
-                      <CustomLabel
-                        key={index}
-                        color={card?.Job?.Client?.background}
-                        sx={{
-                          margin: '2px',
-                        }}
-                        title={card?.Job?.Client?.name}
-                      >
-                        {card?.Job?.Client?.name}
-                      </CustomLabel>
-
-                      {Labels.map((label, index) => (
-                        <CustomLabel
-                          key={index}
-                          color={label?.background}
-                          title={label?.title}
-                          sx={{
-                            margin: '2px',
-                          }}
-                          endIcon={
-                            <Box width='10px'>
-                              <IconDelete fill='#fff' />
-                            </Box>
-                          }
-                        >
-                          {label?.title}
-                        </CustomLabel>
-                      ))}
-                    </Box>
-                    <Typography variant='h5'>{Candidate?.name}</Typography>
-                    {card.Interviews.length > 0 && (
-                      <Box
-                        sx={{
-                          background: '#3699FF',
-                          color: 'white',
-                          width: 'fit-content',
-                          padding: '0.55rem 0.75rem',
-                          borderRadius: '0.42rem',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <IconTimer
-                          fill='#fff'
-                          color='white'
-                          sx={{
-                            marginRight: '0.5rem',
-                          }}
-                        />
-                        {format(new Date('2021-05-07T04:55:00.000Z'), 'do MMM')}
-                      </Box>
-                    )}
-                    <Typography variant='subtitle2' color='#777'>
-                      {Job.title}
-                    </Typography>
-                  </Box>
+                  <KanbanLabels
+                    Job={Job}
+                    Labels={Labels}
+                    handleDeleteLabel={handleDeleteLabel}
+                  />
+                  <KanbanBasicInfo
+                    Candidate={Candidate}
+                    card={card}
+                    Job={Job}
+                  />
                   <Box
                     display={'Grid'}
                     alignItems={'center'}
@@ -159,8 +124,26 @@ function KanbanTaskCard({ card, index }) {
                       </React.Fragment>
                     ))}
                   </Box>
+                  <KanbanAssignee
+                    Users={card?.Users}
+                    laneId={laneId}
+                    cardId={cardId}
+                  />
                 </Stack>
               </Box>
+            </Box>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+              }}
+            >
+              <KanbanQuickMenu
+                laneId={laneId}
+                cardId={cardId}
+                Labels={Labels}
+              />
             </Box>
           </Paper>
         </div>

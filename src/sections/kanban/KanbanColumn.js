@@ -136,6 +136,7 @@ export default function KanbanColumn({ column, formRef }) {
                   key={`${value.id}-${index}`}
                   card={value}
                   index={index}
+                  laneId={columnId}
                 />
               ))}
               {provided.placeholder}
