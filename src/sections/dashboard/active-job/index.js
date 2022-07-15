@@ -1,13 +1,15 @@
 // @mui
+import { useEffect } from 'react'
+
 import { Card, CardHeader, Divider, Tab, Tabs } from '@mui/material'
 
 import PropTypes from 'prop-types'
-import { useForm } from 'react-hook-form'
 
+// import { useForm } from 'react-hook-form'
 // components
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
-import { FormProvider } from '@/components/hook-form'
+// import { FormProvider } from '@/components/hook-form'
 import { PAGINATION } from '@/config'
 // hooks
 import useTable from '@/hooks/useTable'
@@ -15,74 +17,88 @@ import useTabs from '@/hooks/useTabs'
 
 //
 import ActiveJobTableRow from './ActiveJobTableRow'
-import ActiveJobTableToolbar from './ActiveJobTableToolbar'
-import { DATASOURCE, STATUS_OPTIONS, TABLE_HEAD } from './config'
+import { STATUS_OPTIONS, TABLE_HEAD } from './config'
+// import ActiveJobTableToolbar from './ActiveJobTableToolbar'
+import { useGetJobsQuery } from './jobsApiSlice'
 
-const DashboardActiveJob = ({ title, subheader, ...other }) => {
+const DashboardActiveJob = ({ subheader, ...other }) => {
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
     useTabs('active')
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = useTable({
-    defaultRowsPerPage: PAGINATION[0],
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
+    useTable({
+      defaultRowsPerPage: PAGINATION[0],
+    })
+  useEffect(() => {
+    setPage(0)
+  }, [setPage])
+  useEffect(() => {
+    setPage(0)
+  }, [filterStatus, setPage])
+  const titleJobs = STATUS_OPTIONS.find(
+    (obj) => obj.value === filterStatus
+  ).label
+  const { data, isLoading, isFetching } = useGetJobsQuery({
+    pageSize: rowsPerPage,
+    pageNumberJob: page + 1,
+    statusJob: titleJobs,
   })
-  const methods = useForm({
-    defaultValues: {
-      startDate: null,
-      endDate: null,
-    },
-  })
-  const {
-    handleSubmit,
-    // formState: { errors, isSubmitting },
-  } = methods
-  const onSubmit = async (data) => {
-    try {
-      // eslint-disable-next-line no-console
-      console.log('data', data)
-    } catch (error) {
-      // TODO
-    }
-  }
+  const { list: dataJobs = [], total: totalRecord = 0 } = data?.data || {}
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
-      <Tabs
-        allowScrollButtonsMobile
-        variant='scrollable'
-        scrollButtons='auto'
-        value={filterStatus}
-        onChange={onChangeFilterStatus}
-        sx={{ px: 2, bgcolor: 'background.neutral' }}
+      <div
+        style={{
+          display: 'flex',
+          alignContent: 'center',
+          justifyContent: 'space-between',
+        }}
       >
-        {STATUS_OPTIONS.map(({ label, value }) => (
-          <Tab disableRipple key={value} label={label} value={value} />
-        ))}
-      </Tabs>
+        <CardHeader
+          title={`${titleJobs} Jobs`}
+          subheader={subheader}
+          sx={{ padding: 2 }}
+        />
+        <Tabs
+          allowScrollButtonsMobile
+          variant='scrollable'
+          scrollButtons='auto'
+          value={filterStatus}
+          onChange={onChangeFilterStatus}
+          sx={{ px: 2 }}
+        >
+          {STATUS_OPTIONS.map(({ label, value }) => (
+            <Tab disableRipple key={value} label={label} value={value} />
+          ))}
+        </Tabs>
+      </div>
 
       <Divider />
-
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <ActiveJobTableToolbar />
-      </FormProvider>
-
       <BasicTable
         columns={TABLE_HEAD}
-        dataSource={DATASOURCE.splice(0, 5)}
+        dataSource={dataJobs}
         page={page}
         rowsPerPage={rowsPerPage}
-        tableStyle={{ height: '395px', overflow: 'hidden' }}
+        isLoading={isLoading || isFetching}
+        tableStyle={{
+          paddingTop: 4,
+          paddingBottom: 4,
+          height: '395px',
+          overflow: 'hidden',
+        }}
         TableRowComp={(row, index) => (
-          <ActiveJobTableRow key={row?.id || index} row={row} />
+          <ActiveJobTableRow key={`${row?.id}-${index}`} row={row} />
         )}
       />
-      <Pagination
-        totalRecord={DATASOURCE.length}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onChangePage={onChangePage}
-        onChangeRowsPerPage={onChangeRowsPerPage}
-        rowsPerPageOptions={[]}
-      />
+      {totalRecord >= 5 ? (
+        <Pagination
+          totalRecord={totalRecord}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
+          rowsPerPageOptions={[]}
+        />
+      ) : null}
     </Card>
   )
 }

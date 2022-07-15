@@ -14,17 +14,10 @@ export const STATUS_OPTIONS = [
 ]
 
 export const TABLE_HEAD = [
-  { id: 'name', label: 'Name', align: 'left' },
-  { id: 'company', label: 'Company', align: 'left' },
-  { id: 'role', label: 'Role', align: 'left' },
+  { id: 'job', label: 'Jobs', align: 'left' },
+  { id: 'client', label: 'Clients', align: 'left' },
+  { id: 'team', label: 'Teams', align: 'left' },
+  { id: 'candidate', label: 'Candidates', align: 'left' },
   { id: 'status', label: 'Status', align: 'left' },
-  { id: '' },
+  { id: '', label: '', align: 'left' },
 ]
-
-export const DATASOURCE = [...Array(24)].map((_, index) => ({
-  id: `e99f09a7-dd88-49d5-b1c8-1daf80c2d7b${index + 1}`,
-  name: `Test - ${index}`,
-  company: `Company-${index}`,
-  status: 'active',
-  role: 'project manager',
-}))

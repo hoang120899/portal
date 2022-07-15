@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 // @mui
-import { MenuItem, TableCell, TableRow, Typography } from '@mui/material'
+import { Link, MenuItem, TableCell, TableRow, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
@@ -18,7 +18,14 @@ UserTableRow.propTypes = {
 export default function UserTableRow({ row }) {
   const theme = useTheme()
 
-  const { name, company, role, status } = row
+  const {
+    title,
+    clientName = '',
+    nameTeam,
+    jobStatus,
+    numberCandidate,
+    type,
+  } = row
 
   const [openMenu, setOpenMenuActions] = useState(null)
 
@@ -33,16 +40,19 @@ export default function UserTableRow({ row }) {
   return (
     <TableRow hover>
       <TableCell>
+        <Link href='/'>{title}</Link>
         <Typography variant='subtitle2' noWrap>
-          {name}
+          {type}
         </Typography>
       </TableCell>
 
-      <TableCell align='left'>{company}</TableCell>
+      <TableCell align='left'>{clientName || ''}</TableCell>
 
       <TableCell align='left' sx={{ textTransform: 'capitalize' }}>
-        {role}
+        {nameTeam}
       </TableCell>
+
+      <TableCell align='left'>{numberCandidate}</TableCell>
 
       <TableCell align='left'>
         <Label
@@ -50,7 +60,7 @@ export default function UserTableRow({ row }) {
           color={(status === 'banned' && 'error') || 'success'}
           sx={{ textTransform: 'capitalize' }}
         >
-          {status}
+          {jobStatus}
         </Label>
       </TableCell>
 
