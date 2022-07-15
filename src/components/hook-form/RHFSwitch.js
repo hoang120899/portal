@@ -9,7 +9,7 @@ RHFSwitch.propTypes = {
   name: PropTypes.string,
 }
 
-export default function RHFSwitch({ name, disabled = false, ...other }) {
+export default function RHFSwitch({ name, ...other }) {
   const { control } = useFormContext()
 
   return (
@@ -18,9 +18,7 @@ export default function RHFSwitch({ name, disabled = false, ...other }) {
         <Controller
           name={name}
           control={control}
-          render={({ field }) => (
-            <Switch disabled={disabled} {...field} checked={field.value} />
-          )}
+          render={({ field }) => <Switch {...field} checked={field.value} />}
         />
       }
       {...other}

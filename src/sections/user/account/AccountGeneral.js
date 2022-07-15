@@ -18,13 +18,13 @@ import {
 import { MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
-import { useDispatch } from '@/redux/store'
 import useResponsive from '@/hooks/useResponsive'
+import { useDispatch } from '@/redux/store'
 // utils
 import { fData } from '@/utils/formatNumber'
 
-import { fetchUploadAPI } from './uploadAvatarSlice'
 import JobList from './profile'
+import { fetchUploadAPI } from './uploadAvatarSlice'
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar()
@@ -133,15 +133,11 @@ export default function AccountGeneral() {
                 },
               }}
             >
-              <RHFTextField name='displayName' label='Name' disabled='true' />
-              <RHFTextField
-                name='email'
-                label='Email Address'
-                disabled='true'
-              />
+              <RHFTextField name='displayName' label='Name' disabled />
+              <RHFTextField name='email' label='Email Address' disabled />
 
-              <RHFTextField name='role' label='Role' disabled='true' />
-              <RHFTextField name='team' label='Team' disabled='true' />
+              <RHFTextField name='role' label='Role' disabled />
+              <RHFTextField name='team' label='Team' disabled />
             </Box>
           </Card>
         </Grid>
