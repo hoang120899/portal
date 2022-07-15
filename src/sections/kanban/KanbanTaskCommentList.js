@@ -1,74 +1,143 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 // @mui
-import { Avatar, Stack, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material'
 
+import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 
 // components
-import Image from '@/components/Image'
-import LightboxModal from '@/components/LightboxModal'
 // utils
-import { fToNow } from '@/utils/formatTime'
+import Scrollbar from '@/components/Scrollbar'
+import useAuth from '@/hooks/useAuth'
+import useLocales from '@/hooks/useLocales'
+import { useGetListCommentQuery } from '@/sections/kanban/kanbanSlice'
+import { fDateTime } from '@/utils/formatTime'
 
-KanbanTaskCommentList.propTypes = {
-  comments: PropTypes.array,
+import { useEditCommentMutation } from './kanbanSlice'
+
+// ----------------------------------------------------------------------
+
+KanbanCommentList.propTypes = {
+  title: PropTypes.string,
+  cardId: PropTypes.string,
 }
 
-export default function KanbanTaskCommentList({ comments }) {
-  const [openLightbox, setOpenLightbox] = useState(false)
+export default function KanbanCommentList({ title, cardId, ...other }) {
+  const { data: commentData } = useGetListCommentQuery(cardId)
 
-  const [selectedImage, setSelectedImage] = useState(0)
+  const commentList = useMemo(() => {
+    if (commentData && commentData.data.list) {
+      return commentData.data.list.map((comment) => ({
+        id: comment.id,
+        User: comment.User,
+        content: comment.content,
+        userId: comment.userId,
+        updatedAt: comment.updatedAt,
+      }))
+    } else {
+      return []
+    }
+  }, [commentData])
 
-  const imagesLightbox = comments
-    .filter((comment) => comment.messageType === 'image')
-    .map((item) => item.message)
+  return (
+    <Card {...other}>
+      <CardHeader title={title} sx={{ p: 2, pb: 0 }} />
 
-  const handleOpenLightbox = (url) => {
-    const selectedImage = imagesLightbox.findIndex((index) => index === url)
-    setOpenLightbox(true)
-    setSelectedImage(selectedImage)
+      <Scrollbar>
+        <Stack spacing={2} sx={{ p: 2 }}>
+          {commentList.map((commentItem) => (
+            <KanbanCommentItem key={commentItem.id} commentItem={commentItem} />
+          ))}
+        </Stack>
+      </Scrollbar>
+    </Card>
+  )
+}
+
+// ----------------------------------------------------------------------
+
+KanbanCommentItem.propTypes = {
+  commentItem: PropTypes.object,
+}
+
+function KanbanCommentItem({ commentItem }) {
+  const { User, content, updatedAt, userId, id } = commentItem
+  const { translate } = useLocales()
+  const { user } = useAuth()
+  const enqueueSnackbar = useSnackbar()
+  const [isEdit, setIsEdit] = useState(false)
+  const [comment, setComment] = useState('')
+
+  const [editComment] = useEditCommentMutation()
+
+  const handleOpenEditCommentInput = () => {
+    setIsEdit((prev) => !prev)
+    setComment(commentItem.content)
+  }
+
+  const handleCommentChange = (e) => {
+    setComment(e.target.value)
+  }
+
+  const handleEditComment = async () => {
+    try {
+      await editComment({ id, content: comment }).unwrap()
+      setComment('')
+      setIsEdit(false)
+    } catch (error) {
+      enqueueSnackbar('Add comment failed! Please try again.', {
+        variant: 'error',
+      })
+    }
   }
 
   return (
     <>
-      <Stack spacing={3} sx={{ py: 3, px: 2.5, bgcolor: 'background.neutral' }}>
-        {comments.map((comment) => (
-          <Stack key={comment.id} direction='row' spacing={2}>
-            <Avatar src={comment.avatar} sx={{ width: 32, height: 32 }} />
-            <div>
-              <Stack direction='row' alignItems='center' spacing={1}>
-                <Typography variant='subtitle2'> {comment.name}</Typography>
-                <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-                  {fToNow(comment.createdAt)}
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Avatar alt={User.name} src={User.linkAvatar} />
+
+        <Box ml={2} sx={{ flex: '1' }}>
+          {isEdit ? (
+            <TextField
+              label={translate('Edit Comment')}
+              value={comment}
+              fullWidth
+              multiline
+              rows={1}
+              onChange={handleCommentChange}
+            />
+          ) : (
+            <>
+              <Stack direction='row'>
+                <Typography mr={1} sx={{ fontWeight: 'bold' }}>
+                  {User.name}
                 </Typography>
+                <Typography>{content}</Typography>
               </Stack>
+              <Typography variant='caption'>{fDateTime(updatedAt)}</Typography>
+            </>
+          )}
 
-              {comment.messageType === 'image' ? (
-                <Image
-                  alt={comment.message}
-                  src={comment.message}
-                  onClick={() => handleOpenLightbox(comment.message)}
-                  sx={{ mt: 2, borderRadius: 1 }}
-                />
-              ) : (
-                <Typography variant='body2' sx={{ mt: 0.5 }}>
-                  {comment.message}
-                </Typography>
-              )}
-            </div>
-          </Stack>
-        ))}
-      </Stack>
-
-      <LightboxModal
-        images={imagesLightbox}
-        mainSrc={imagesLightbox[selectedImage]}
-        photoIndex={selectedImage}
-        setPhotoIndex={setSelectedImage}
-        isOpen={openLightbox}
-        onCloseRequest={() => setOpenLightbox(false)}
-      />
+          {user.userId === userId && (
+            <Button onClick={handleOpenEditCommentInput}>
+              {isEdit ? translate('Cancel') : translate('Edit')}
+            </Button>
+          )}
+          {isEdit && (
+            <Button onClick={handleEditComment}>{translate('Save')}</Button>
+          )}
+        </Box>
+      </Box>
     </>
   )
 }

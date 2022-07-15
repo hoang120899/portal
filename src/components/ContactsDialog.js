@@ -102,7 +102,7 @@ export default function ContactsDialog({
           const checked = checkSelectedUser(id)
 
           return (
-            <MenuItem key={id || index} onClick={onToggleMenuItem(id)}>
+            <MenuItem key={`${id}-${index}`} onClick={onToggleMenuItem(id)}>
               <ListItemAvatar sx={{ position: 'relative' }}>
                 <Avatar src={avatar} />
               </ListItemAvatar>

@@ -1,49 +1,58 @@
+import { useState } from 'react'
+
 // @mui
-import {
-  Button,
-  IconButton,
-  OutlinedInput,
-  Paper,
-  Stack,
-  Tooltip,
-} from '@mui/material'
+import { Button, OutlinedInput, Paper, Stack } from '@mui/material'
 
-// components
-import Iconify from '@/components/Iconify'
+import { useSnackbar } from 'notistack'
+import PropTypes from 'prop-types'
 
-export default function KanbanTaskCommentInput() {
+import useLocales from '@/hooks/useLocales'
+
+import { useAddCommentMutation } from './kanbanSlice'
+
+KanbanTaskCommentInput.propTypes = {
+  cardId: PropTypes.string,
+}
+
+export default function KanbanTaskCommentInput({ cardId }) {
+  const [comment, setComment] = useState('')
+  const enqueueSnackbar = useSnackbar()
+  const { translate } = useLocales()
+
+  const [addComment] = useAddCommentMutation()
+
+  const handleChangeComment = (e) => {
+    setComment(e.target.value)
+  }
+
+  const handleCommentChange = async () => {
+    try {
+      await addComment({ cardId, content: comment }).unwrap()
+      setComment('')
+    } catch (error) {
+      enqueueSnackbar('Add comment failed! Please try again.', {
+        variant: 'error',
+      })
+    }
+  }
+
   return (
-    <Stack direction='row' spacing={2} sx={{ py: 3, px: 2.5 }}>
+    <Stack direction='row' spacing={2}>
       <Paper variant='outlined' sx={{ p: 1, flexGrow: 1 }}>
         <OutlinedInput
           fullWidth
           multiline
-          rows={2}
-          placeholder='Type a message'
+          rows={1}
+          placeholder={translate('Type a message')}
           sx={{ '& fieldset': { display: 'none' } }}
+          value={comment}
+          onChange={handleChangeComment}
         />
 
-        <Stack
-          direction='row'
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <Stack direction='row' spacing={0.5}>
-            <Tooltip title='Add photo'>
-              <IconButton size='small'>
-                <Iconify
-                  icon={'ic:round-add-photo-alternate'}
-                  width={20}
-                  height={20}
-                />
-              </IconButton>
-            </Tooltip>
-            <IconButton size='small'>
-              <Iconify icon={'eva:attach-2-fill'} width={20} height={20} />
-            </IconButton>
-          </Stack>
-
-          <Button variant='contained'>Comment</Button>
+        <Stack direction='row' justifyContent='flex-end'>
+          <Button variant='contained' onClick={handleCommentChange}>
+            {translate('Comment')}
+          </Button>
         </Stack>
       </Paper>
     </Stack>

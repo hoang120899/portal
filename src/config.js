@@ -62,6 +62,7 @@ export const defaultPagination = PAGINATION[1] // 10
 export const DATE_FORMAT = 'dd/MM/yyyy'
 export const DATETIME_FORMAT = 'dd/MM/yyyy hh:mm'
 export const DATETIME_FORMAT_AMPM = 'dd/MM/yyyy hh:mm a'
+export const DATE_FORMAT_DAY_MONTH = 'do MMM'
 
 // User setting
 export const PAGES = {

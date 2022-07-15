@@ -1,125 +1,180 @@
-import { useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 
 // @mui
-import { Button, Paper, Stack } from '@mui/material'
+import { Box, Button, Paper, Stack, Typography } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { Draggable, Droppable } from 'react-beautiful-dnd'
+import { useDispatch } from 'react-redux'
 
-// _mock_
-import { board } from '@/_mock'
 // components
 import Iconify from '@/components/Iconify'
+import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
+// hooks
+import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
 
 //
-import KanbanColumnToolBar from './KanbanColumnToolBar'
-import KanbanAddTask from './KanbanTaskAdd'
 import KanbanTaskCard from './KanbanTaskCard'
+import { loadMoreLane } from './kanbanSlice'
 
 KanbanColumn.propTypes = {
   column: PropTypes.object,
   index: PropTypes.number,
+  hasAddPermission: PropTypes.bool,
+  formRefProp: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]),
+  onOpenAddTask: PropTypes.func,
+  onOpenUpdateTask: PropTypes.func,
 }
 
-export default function KanbanColumn({ column, index }) {
+function KanbanColumn({
+  column,
+  index,
+  hasAddPermission,
+  formRefProp,
+  onOpenAddTask,
+  onOpenUpdateTask,
+}) {
+  const scrollRef = useRef(null)
   const { enqueueSnackbar } = useSnackbar()
+  const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
+  const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
+  const { nameColumn, CandidateJobs, id, background } = column
 
-  const [open, setOpen] = useState(false)
+  const action = loadMoreLane({ laneId: id, offset: CandidateJobs.length })
+  const dispatch = useDispatch()
 
-  const { name, cardIds, id } = column
+  const isEndPage = column?.isEndPage || false
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    if (!isScrollToBottom) return
+    if (isEndPage) return
+    setLoading(true)
+    dispatch(action)
+      .then(() => {
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
 
-  const handleOpenAddTask = () => {
-    setOpen((prev) => !prev)
-  }
-
-  const handleCloseAddTask = () => {
-    setOpen(false)
-  }
+    // TODO
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isScrollToBottom])
 
   const handleDeleteTask = () => {
     enqueueSnackbar('Delete success!')
   }
 
-  const handleUpdateColumn = async (newName) => {
-    try {
-      if (newName !== name) {
-        enqueueSnackbar('Update success!')
-      }
-    } catch (error) {
-      // TODO
-    }
-  }
-
-  const handleDeleteColumn = async () => {
-    try {
-      enqueueSnackbar('Delete success!')
-    } catch (error) {
-      // TODO
-    }
-  }
-
-  const handleAddTask = () => {
-    handleCloseAddTask()
-  }
-
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={id} index={index} isDragDisabled={true}>
       {(provided) => (
         <Paper
           {...provided.draggableProps}
           ref={provided.innerRef}
           variant='outlined'
-          sx={{ px: 2, bgcolor: 'grey.5008' }}
+          sx={{
+            px: 2,
+            bgcolor: 'grey.5008',
+            height: {
+              lg: `calc(100vh - ${lgHeight}px)`,
+              xs: `calc(100vh - ${xsHeight}px)`,
+            },
+          }}
         >
+          <Box
+            sx={{
+              background: background,
+              borderTopLeftRadius: '1rem',
+              borderTopRightRadius: '1rem',
+            }}
+            height='8px'
+            marginX='-16px'
+          />
           <Stack spacing={3} {...provided.dragHandleProps}>
-            <KanbanColumnToolBar
-              columnName={name}
-              onDelete={handleDeleteColumn}
-              onUpdate={handleUpdateColumn}
-            />
-
-            <Stack spacing={2} sx={{ pb: 2 }}>
-              {open && (
-                <KanbanAddTask
-                  onAddTask={handleAddTask}
-                  onCloseAddTask={handleCloseAddTask}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                pt: 2,
+              }}
+            >
+              <Typography variant='h6'>{nameColumn}</Typography>
+              {hasAddPermission && (
+                <Button
+                  color='inherit'
+                  startIcon={
+                    <Iconify
+                      icon={'eva:plus-circle-outline'}
+                      width={24}
+                      height={24}
+                    />
+                  }
+                  onClick={onOpenAddTask.bind(null, id)}
+                  sx={{
+                    padding: 0,
+                    justifyContent: 'end',
+                    minWidth: 0,
+                    '& .MuiButton-startIcon': {
+                      marginRight: 0,
+                    },
+                  }}
                 />
               )}
-
-              <Button
-                fullWidth
-                size='large'
-                color='inherit'
-                startIcon={
-                  <Iconify icon={'eva:plus-fill'} width={20} height={20} />
-                }
-                onClick={handleOpenAddTask}
-                sx={{ fontSize: 14 }}
-              >
-                Add Task
-              </Button>
-            </Stack>
+            </Box>
 
             <Droppable droppableId={id} type='task'>
               {(provided) => (
-                <Stack
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  spacing={2}
-                  width={280}
-                  sx={{ pb: 2 }}
+                <Box
+                  ref={scrollRef}
+                  sx={{
+                    height: {
+                      lg: `calc(100vh - ${lgHeight + 16 + 44 + 24}px)`,
+                      xs: `calc(100vh - ${xsHeight + 16 + 44 + 24}px)`,
+                    },
+                    width: '280px',
+                    paddingBottom: 2,
+                    overflowY: 'auto',
+                  }}
                 >
-                  {cardIds.map((cardId, index) => (
-                    <KanbanTaskCard
-                      key={cardId}
-                      onDeleteTask={handleDeleteTask}
-                      card={board?.cards[cardId]}
-                      index={index}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </Stack>
+                  <Stack
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    spacing={2}
+                  >
+                    {CandidateJobs.map((candi, index) => (
+                      <KanbanTaskCard
+                        key={`${candi.id}-${index}`}
+                        onDeleteTask={handleDeleteTask}
+                        onOpenUpdateTask={onOpenUpdateTask}
+                        hasAddPermission={hasAddPermission}
+                        card={candi}
+                        index={index}
+                        laneId={id}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </Stack>
+                  {/* loading area */}
+                  {loading && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingY: 2,
+                      }}
+                    >
+                      <CircularProgress size={24} sx={{ marginRight: 0.5 }} />
+                      Waiting...
+                    </Box>
+                  )}
+                </Box>
               )}
             </Droppable>
           </Stack>
@@ -128,3 +183,5 @@ export default function KanbanColumn({ column, index }) {
     </Draggable>
   )
 }
+
+export default memo(KanbanColumn)

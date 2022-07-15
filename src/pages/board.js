@@ -1,27 +1,36 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+
+import { useRouter } from 'next/router'
 
 // @mui
-import { Container, Stack } from '@mui/material'
+import { Box, Button, Container, Stack } from '@mui/material'
 
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
-// _mock_
-import { board } from '@/_mock'
+import Iconify from '@/components/Iconify'
 // components
-import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
 import Page from '@/components/Page'
 import { SkeletonKanbanColumn } from '@/components/skeleton'
 // config
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
-import useSettings from '@/hooks/useSettings'
+import useRole from '@/hooks/useRole'
 // layouts
 import Layout from '@/layouts'
-// routes
-import { PATH_DASHBOARD } from '@/routes/paths'
 // sections
-import { KanbanColumn } from '@/sections/kanban'
+import { KanbanColumn, KanbanTableToolbar } from '@/sections/kanban'
+import KanbanAddTask from '@/sections/kanban/KanbanTaskAdd'
+import {
+  getColumns,
+  setColumnsAction,
+  updateColumns,
+  useGetCardDetailMutation,
+  useGetColumnsQuery,
+  useUpdateLaneMutation,
+} from '@/sections/kanban/kanbanSlice'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -38,92 +47,104 @@ export async function getStaticProps() {
 }
 
 export default function Board() {
-  const { themeStretch } = useSettings()
   const { translate } = useLocales()
+  const formRef = useRef(null)
+  const { query } = useRouter()
   const [isMounted, setIsMounted] = useState(false)
+  const [laneId, setLaneId] = useState('')
+  const [open, setOpen] = useState(false)
+  const [card, setCard] = useState(null)
+  const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
+  const { isLeaderRole, isMemberRole } = useRole()
+  const { data: columnData } = useGetColumnsQuery()
+  const [getCardDetail] = useGetCardDetailMutation()
+
+  const hasAddPermission = isLeaderRole || isMemberRole
+
+  const dispatch = useDispatch()
+  const columns = useSelector((state) => state.kanban.columns)
+  const handleOpenAddTask = (laneId) => {
+    setOpen((prev) => !prev)
+    setLaneId(laneId)
+  }
+
+  const handleOpenAddTaskNoColumn = () => {
+    setOpen((prev) => !prev)
+    setIsAddTaskNoColumn(true)
+  }
+
+  const handleCloseAddTask = () => {
+    setOpen(false)
+    setLaneId('')
+    setIsAddTaskNoColumn(false)
+  }
+
+  const handleOpenUpdateTask = (card) => {
+    setOpen((prev) => !prev)
+    setIsAddTaskNoColumn(true)
+    setCard(card)
+  }
+
+  const handleCloseUpdateTask = () => {
+    setOpen(false)
+    setIsAddTaskNoColumn(false)
+    setCard(null)
+  }
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
+  useEffect(() => {
+    const action = getColumns()
+    dispatch(action)
+  }, [dispatch])
+
+  useEffect(() => {
+    if (columnData) {
+      dispatch(updateColumns(columnData.data.list))
+    }
+  }, [columnData, dispatch])
+
+  useEffect(() => {
+    async function getCard(cardId) {
+      const cardDetail = await getCardDetail(cardId)
+      return cardDetail
+    }
+    if (isMounted && query && query.cardId) {
+      getCard(query.cardId).then(({ data }) => {
+        handleOpenUpdateTask(data.data.card)
+      })
+    }
+  }, [query, isMounted, getCardDetail])
+
+  const [updateLane] = useUpdateLaneMutation()
+
   const onDragEnd = (result) => {
     // Reorder card
-    const { destination, source, draggableId, type } = result
-
-    if (!destination) return
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    )
-      return
-
-    if (type === 'column') {
-      const newColumnOrder = Array.from(board.columnOrder)
-      newColumnOrder.splice(source.index, 1)
-      newColumnOrder.splice(destination.index, 0, draggableId)
-
-      // dispatch(persistColumn(newColumnOrder));
-      return
-    }
-
-    const start = board.columns[source.droppableId]
-    const finish = board.columns[destination.droppableId]
-
-    if (start.id === finish.id) {
-      const updatedCardIds = [...start.cardIds]
-      updatedCardIds.splice(source.index, 1)
-      updatedCardIds.splice(destination.index, 0, draggableId)
-
-      // const updatedColumn = {
-      //   ...start,
-      //   cardIds: updatedCardIds,
-      // };
-
-      // dispatch(
-      //   persistCard({
-      //     ...board.columns,
-      //     [updatedColumn.id]: updatedColumn,
-      //   })
-      // );
-      return
-    }
-
-    const startCardIds = [...start.cardIds]
-    startCardIds.splice(source.index, 1)
-    // const updatedStart = {
-    //   ...start,
-    //   cardIds: startCardIds,
-    // };
-
-    const finishCardIds = [...finish.cardIds]
-    finishCardIds.splice(destination.index, 0, draggableId)
-    // const updatedFinish = {
-    //   ...finish,
-    //   cardIds: finishCardIds,
-    // };
-
-    // dispatch(
-    //   persistCard({
-    //     ...board.columns,
-    //     [updatedStart.id]: updatedStart,
-    //     [updatedFinish.id]: updatedFinish,
-    //   })
-    // );
+    const { destination, source, draggableId } = result
+    if (destination.droppableId === source.droppableId) return
+    const action = setColumnsAction({ destination, source, draggableId })
+    dispatch(action)
+    updateLane({ cardId: draggableId, laneId: destination.droppableId })
   }
 
   return (
-    <Page title={translate('nav.board')}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
-        <HeaderBreadcrumbs
-          heading={translate('nav.board')}
-          links={[
-            {
-              name: translate('nav.dashboard'),
-              href: PATH_DASHBOARD.dashboard,
-            },
-            { name: translate('nav.board') },
-          ]}
+    <Page title={translate('nav.board')} sx={{ height: 1 }}>
+      <Container maxWidth={false} sx={{ height: 1 }}>
+        <KanbanTableToolbar
+          ref={formRef}
+          onOpenUpdateTask={handleOpenUpdateTask}
+        />
+        <KanbanAddTask
+          open={open}
+          isAddTaskNoColumn={isAddTaskNoColumn}
+          columns={columnData}
+          card={card}
+          laneId={laneId}
+          hasAddPermission={hasAddPermission}
+          onClose={handleCloseAddTask}
+          onCloseUpdate={handleCloseUpdateTask}
         />
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
@@ -138,21 +159,26 @@ export default function Board() {
                   ref={provided.innerRef}
                   direction='row'
                   alignItems='flex-start'
-                  spacing={3}
-                  sx={{ height: 'calc(100% - 32px)', overflowY: 'hidden' }}
+                  spacing={2}
+                  sx={{
+                    overflowY: 'hidden',
+                  }}
                 >
-                  {!board.columnOrder.length ? (
-                    <SkeletonKanbanColumn />
+                  {columns.isLoading ? (
+                    <SkeletonKanbanColumn formRefProp={formRef} />
                   ) : (
-                    board.columnOrder.map((columnId, index) => (
+                    columns.data?.ids?.map((id, index) => (
                       <KanbanColumn
                         index={index}
-                        key={columnId}
-                        column={board.columns[columnId]}
+                        key={id}
+                        hasAddPermission={hasAddPermission}
+                        column={columns.data.entities[id]}
+                        formRefProp={formRef}
+                        onOpenAddTask={handleOpenAddTask}
+                        onOpenUpdateTask={handleOpenUpdateTask}
                       />
                     ))
                   )}
-
                   {provided.placeholder}
                 </Stack>
               )}
@@ -160,6 +186,18 @@ export default function Board() {
           </DragDropContext>
         )}
       </Container>
+      {hasAddPermission && (
+        <Box sx={{ position: 'fixed', right: '50px', bottom: '50px' }}>
+          <Button
+            size='large'
+            variant='contained'
+            onClick={handleOpenAddTaskNoColumn}
+            sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
+          >
+            <Iconify icon={'eva:plus-fill'} width={24} height={24} />
+          </Button>
+        </Box>
+      )}
     </Page>
   )
 }

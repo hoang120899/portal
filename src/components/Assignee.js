@@ -37,7 +37,7 @@ export default function Assignee({
     <Stack direction='row' flexWrap='wrap' alignItems='center'>
       {assignee.map(({ id, name, avatar }, index) => (
         <Avatar
-          key={id || index}
+          key={`${id}-${index}`}
           alt={name}
           src={avatar}
           sx={{ m: 0.5, width: 36, height: 36 }}
