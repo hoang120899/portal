@@ -150,10 +150,11 @@ function AuthProvider({ children }) {
       email,
       name: displayName = '',
       Role: { id: roleId, name: role } = {},
-      Team: { id: teamId, name: team } = {},
+      Team = {},
       id: userId,
       linkAvatar,
     } = await _getApi(`${API_USER_INFO}/${decoded.userId}`)
+    const { id: teamId, name: team } = Team || {}
 
     return {
       email,
