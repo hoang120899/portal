@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React from 'react'
 
 // @mui
 import { Box, Paper, Stack, Typography } from '@mui/material'
@@ -20,9 +20,10 @@ KanbanTaskCard.propTypes = {
   card: PropTypes.object,
   index: PropTypes.number,
   laneId: PropTypes.string,
+  onOpenUpdateTask: PropTypes.func,
 }
 
-function KanbanTaskCard({ card, index, laneId }) {
+function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
   const { translate } = useLocales()
   const { Job, Candidate = {}, Labels = [], id: cardId } = card
 
@@ -69,7 +70,10 @@ function KanbanTaskCard({ card, index, laneId }) {
               },
             }}
           >
-            <Box sx={{ cursor: 'pointer' }}>
+            <Box
+              sx={{ cursor: 'pointer' }}
+              onClick={onOpenUpdateTask.bind(null, card)}
+            >
               <Box
                 sx={{
                   borderRadius: 1,
@@ -152,4 +156,4 @@ function KanbanTaskCard({ card, index, laneId }) {
   )
 }
 
-export default memo(KanbanTaskCard)
+export default React.memo(KanbanTaskCard)

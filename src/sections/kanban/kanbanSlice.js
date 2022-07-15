@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
+import { format } from 'date-fns'
 import qs from 'query-string'
 
 import { apiSlice } from '@/redux/api/apiSlice'
@@ -7,8 +8,10 @@ import {
   API_ADMIN_CARDS,
   API_ADMIN_LIST_JOB,
   API_ASSIGNMENT,
+  API_LIST_ACTIVE_JOB,
   API_LIST_CARD,
   API_LIST_CLIENT,
+  API_LIST_COMMENT,
   API_LIST_LABEL,
   API_LIST_MEMBER,
   API_LIST_USER,
@@ -16,6 +19,9 @@ import {
   API_SEARCH_CARD,
   API_V1_CARD,
   API_V1_CARD_LABEL,
+  API_LIST_UPDATE_HISTORY,
+  API_SEARCH_EMAIL,
+  API_SEARCH_PHONE,
 } from '@/routes/api'
 import { _deleteApi, _getApi, _patchApi, _postApi } from '@/utils/axios'
 
@@ -49,19 +55,59 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getActiveJobs: builder.query({
+      query: () => ({
+        url: API_LIST_ACTIVE_JOB,
+        method: 'GET',
+      }),
+    }),
+    searchPhone: builder.query({
+      query: (queries = {}) => ({
+        url: `${API_SEARCH_PHONE}?${qs.stringify(queries)}`,
+        method: 'GET',
+      }),
+    }),
+    searchEmail: builder.query({
+      query: (queries = {}) => ({
+        url: `${API_SEARCH_EMAIL}?${qs.stringify(queries)}`,
+        method: 'GET',
+      }),
+    }),
     searchCards: builder.query({
       query: (queries = {}) => ({
         url: `${API_SEARCH_CARD}?${qs.stringify(queries)}`,
         method: 'GET',
       }),
-      transformResponse: (responseData) =>
-        (responseData.data.list || []).map(
-          ({ id: cardId, Candidate: { name: candidateName } }, index) => ({
-            value: candidateName,
-            label: `${candidateName}-${index}`,
-            id: cardId,
-          })
-        ),
+    }),
+    getUpdateHistory: builder.query({
+      query: (data) => ({
+        url: `${API_LIST_UPDATE_HISTORY}`,
+        method: 'POST',
+        data,
+      }),
+    }),
+    getListComment: builder.query({
+      query: (cardId) => ({
+        url: `${API_LIST_COMMENT}/${cardId}/card`,
+        method: 'GET',
+      }),
+      providesTags: ['Comment'],
+    }),
+    addComment: builder.mutation({
+      query: (data) => ({
+        url: `${API_LIST_COMMENT}/${data.cardId}/card`,
+        method: 'POST',
+        data: { content: data.content },
+      }),
+      invalidatesTags: ['Comment'],
+    }),
+    editComment: builder.mutation({
+      query: (data) => ({
+        url: `${API_LIST_COMMENT}/${data.id}`,
+        method: 'PATCH',
+        data: { content: data.content },
+      }),
+      invalidatesTags: ['Comment'],
     }),
     getUser: builder.query({
       query: () => ({
@@ -80,17 +126,37 @@ export const {
   useSearchCardsQuery,
   useDeleteLabelMutation,
   useGetUserQuery,
+  useSearchPhoneQuery,
+  useSearchEmailQuery,
+  useGetActiveJobsQuery,
+  useGetListCommentQuery,
+  useAddCommentMutation,
+  useEditCommentMutation,
+  useGetUpdateHistory,
 } = kanbanApiSlice
 
-export const getBoard = createAsyncThunk(
-  'kanban/getBoard',
-  async (queries = {}) => {
-    const response = await _getApi(API_LIST_CARD, {
-      params: queries,
-    })
-    return response.data.list
+export const getBoard = createAsyncThunk('kanban/getBoard', async (data) => {
+  let queries
+  if (data) {
+    queries = Object.keys(data)
+      .filter((key) => key !== 'search' && data[key])
+      .reduce((obj, key) => {
+        const getValue = (key) => {
+          if (['startDate', 'endDate'].includes(key))
+            return format(data[key], 'yyyy-MM-dd')
+          return data[key]
+        }
+        return {
+          ...obj,
+          [key]: getValue(key),
+        }
+      }, {})
   }
-)
+  const response = await _getApi(API_LIST_CARD, {
+    params: queries,
+  })
+  return response.data.list
+})
 
 export const getMoreCardByColumn = createAsyncThunk(
   'kanban/getMoreCardByColumn',

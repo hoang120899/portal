@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 // @mui
 import {
@@ -30,9 +30,18 @@ import { getMoreCardByColumn } from './kanbanSlice'
 KanbanColumn.propTypes = {
   column: PropTypes.object,
   formRef: PropTypes.any,
+  hasAddPermission: PropTypes.bool,
+  onOpenAddTask: PropTypes.func,
+  onOpenUpdateTask: PropTypes.func,
 }
 
-export default function KanbanColumn({ column, formRef }) {
+function KanbanColumn({
+  column,
+  formRef,
+  hasAddPermission,
+  onOpenAddTask,
+  onOpenUpdateTask,
+}) {
   const dispatch = useDispatch()
   const { isLoading } = useSelector((state) => state.kanban)
   const scrollRef = useRef(null)
@@ -91,24 +100,27 @@ export default function KanbanColumn({ column, formRef }) {
           }}
         >
           <Typography variant='h6'>{nameColumn}</Typography>
-          <Button
-            color='inherit'
-            startIcon={
-              <Iconify
-                icon={'eva:plus-circle-outline'}
-                width={24}
-                height={24}
-              />
-            }
-            sx={{
-              padding: 0,
-              justifyContent: 'end',
-              minWidth: 0,
-              '& .MuiButton-startIcon': {
-                marginRight: 0,
-              },
-            }}
-          />
+          {hasAddPermission && (
+            <Button
+              color='inherit'
+              startIcon={
+                <Iconify
+                  icon={'eva:plus-circle-outline'}
+                  width={24}
+                  height={24}
+                />
+              }
+              sx={{
+                padding: 0,
+                justifyContent: 'end',
+                minWidth: 0,
+                '& .MuiButton-startIcon': {
+                  marginRight: 0,
+                },
+              }}
+              onClick={onOpenAddTask.bind(null, columnId)}
+            />
+          )}
         </Box>
       </Stack>
 
@@ -135,8 +147,10 @@ export default function KanbanColumn({ column, formRef }) {
                 <KanbanTaskCard
                   key={`${value.id}-${index}`}
                   card={value}
-                  index={index}
+                  hasAddPermission={hasAddPermission}
+                  onOpenUpdateTask={onOpenUpdateTask}
                   laneId={columnId}
+                  index={index}
                 />
               ))}
               {provided.placeholder}
@@ -160,3 +174,4 @@ export default function KanbanColumn({ column, formRef }) {
     </Paper>
   )
 }
+export default React.memo(KanbanColumn)

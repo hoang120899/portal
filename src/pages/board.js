@@ -1,17 +1,21 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // @mui
-import { Container, Stack } from '@mui/material'
+import { Box, Button, Container, Stack } from '@mui/material'
 
 import { DragDropContext } from 'react-beautiful-dnd'
+import { useForm } from 'react-hook-form'
 
+import Iconify from '@/components/Iconify'
 // components
 import Page from '@/components/Page'
+import { FormProvider } from '@/components/hook-form'
 import { SkeletonKanbanColumn } from '@/components/skeleton'
 // config
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import useRole from '@/hooks/useRole'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
@@ -19,10 +23,20 @@ import Layout from '@/layouts'
 import { useDispatch, useSelector } from '@/redux/store'
 // sections
 import { KanbanColumn, KanbanTableToolbar } from '@/sections/kanban'
+import KanbanTaskAdd from '@/sections/kanban/KanbanTaskAdd'
 import {
   getBoard,
   selectBoard,
-  updateCardByDestColumn,
+  updateCardByDestColumn, // useGetClientQuery,
+  // useGetJobQuery,
+  // useGetLabelQuery,
+  // useGetMemberQuery,
+  // useSearchCardsQuery,
+  useGetActiveJobsQuery,
+  useGetClientQuery,
+  useGetJobQuery,
+  useGetLabelQuery,
+  useGetMemberQuery,
 } from '@/sections/kanban/kanbanSlice'
 // utils
 import { getRolesByPage } from '@/utils/role'
@@ -43,9 +57,139 @@ export default function Board() {
   const formRef = useRef()
   const { themeStretch } = useSettings()
   const { translate } = useLocales()
+  const { isLeaderRole, isMemberRole } = useRole()
   const dispatch = useDispatch()
+  const [laneId, setLaneId] = useState('')
+  const [card, setCard] = useState(null)
+  const [open, setOpen] = useState(false)
+  const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
   const { isLoading } = useSelector((state) => state.kanban)
   const board = useSelector((state) => selectBoard(state))
+
+  const hasAddPermission = isLeaderRole || isMemberRole
+
+  const { data: listLabels } = useGetLabelQuery()
+  const { data: listClients } = useGetClientQuery()
+  const { data: listJobs } = useGetJobQuery()
+  const { data: listMembers } = useGetMemberQuery()
+  const { data: activeJobData } = useGetActiveJobsQuery()
+
+  const columnOptions = useMemo(() => {
+    if (board) {
+      return board.columnOrder.map((id) => ({
+        label: board.columns[id].nameColumn,
+        value: id,
+      }))
+    }
+  }, [board])
+
+  const labelOptions = useMemo(() => {
+    if (!listLabels) return []
+
+    const { data: { list = [] } = {} } = listLabels
+    return list.map(({ title }) => ({
+      value: title,
+      label: title,
+    }))
+  }, [listLabels])
+
+  const clientOptions = useMemo(() => {
+    if (!listClients) return []
+
+    const { data: { clients = [] } = {} } = listClients
+    return clients.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }))
+  }, [listClients])
+
+  const jobOptions = useMemo(() => {
+    if (!listJobs) return []
+
+    const { data: { listJob = [] } = {} } = listJobs
+    return listJob.map(({ id, title }) => ({
+      value: id,
+      label: title,
+    }))
+  }, [listJobs])
+
+  const memberOptions = useMemo(() => {
+    if (!listMembers) return []
+
+    const { data: { list = [] } = {} } = listMembers
+    return list.map(({ id, name }) => ({
+      value: id,
+      label: name,
+    }))
+  }, [listMembers])
+
+  const activeJobOptions = useMemo(() => {
+    if (activeJobData) {
+      const activeJobs = activeJobData.data.arrJob
+      const formatActiveJobs = activeJobs.map((job) => ({
+        label: job.title,
+        value: job.id,
+        location: job.Location ? job.Location.name : '',
+        clientName: job.Client ? job.Client.name : '',
+      }))
+      return formatActiveJobs
+    }
+  }, [activeJobData])
+
+  const defaultValues = {
+    search: '',
+    label: '',
+    clientId: '',
+    userId: '',
+    jobId: '',
+    startDate: null,
+    endDate: null,
+  }
+
+  const methods = useForm({
+    defaultValues,
+  })
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods
+
+  const onSubmit = async (data) => {
+    try {
+      dispatch(getBoard(data))
+    } catch (error) {
+      // TODO
+    }
+  }
+
+  const handleOpenAddTask = useCallback((laneId) => {
+    setOpen((prev) => !prev)
+    setLaneId(laneId)
+  }, [])
+
+  const handleOpenAddTaskNoColumn = () => {
+    setOpen((prev) => !prev)
+    setIsAddTaskNoColumn(true)
+  }
+
+  const handleCloseAddTask = useCallback(() => {
+    setOpen(false)
+    setLaneId('')
+    setIsAddTaskNoColumn(false)
+  }, [])
+
+  const handleOpenUpdateTask = useCallback((card) => {
+    setOpen((prev) => !prev)
+    setIsAddTaskNoColumn(true)
+    setCard(card)
+  }, [])
+
+  const handleCloseUpdateTask = useCallback(() => {
+    setOpen(false)
+    setIsAddTaskNoColumn(false)
+    setCard(null)
+  }, [])
 
   useEffect(() => {
     dispatch(getBoard())
@@ -132,7 +276,28 @@ export default function Board() {
   return (
     <Page title={translate('nav.board')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
-        <KanbanTableToolbar ref={formRef} />
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <KanbanTableToolbar
+            ref={formRef}
+            onOpenUpdateTask={handleOpenUpdateTask}
+            isSubmitting={isSubmitting}
+            labelOptions={labelOptions}
+            jobOptions={jobOptions}
+            clientOptions={clientOptions}
+            memberOptions={memberOptions}
+          />
+        </FormProvider>
+        <KanbanTaskAdd
+          open={open}
+          isAddTaskNoColumn={isAddTaskNoColumn}
+          card={card}
+          laneId={laneId}
+          hasAddPermission={hasAddPermission}
+          columnOptions={columnOptions}
+          activeJobOptions={activeJobOptions}
+          onClose={handleCloseAddTask}
+          onCloseUpdate={handleCloseUpdateTask}
+        />
 
         {isLoading && !board.columnOrder.length ? (
           <SkeletonKanbanColumn formRef={formRef.current} />
@@ -144,10 +309,25 @@ export default function Board() {
                   key={columnId}
                   column={board.columns[columnId]}
                   formRef={formRef.current}
+                  hasAddPermission={hasAddPermission}
+                  onOpenAddTask={handleOpenAddTask}
+                  onOpenUpdateTask={handleOpenUpdateTask}
                 />
               ))}
             </Stack>
           </DragDropContext>
+        )}
+        {hasAddPermission && (
+          <Box sx={{ position: 'fixed', right: '50px', bottom: '50px' }}>
+            <Button
+              size='large'
+              variant='contained'
+              onClick={handleOpenAddTaskNoColumn}
+              sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
+            >
+              <Iconify icon={'eva:plus-fill'} width={24} height={24} />
+            </Button>
+          </Box>
         )}
       </Container>
     </Page>
