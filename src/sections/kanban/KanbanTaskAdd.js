@@ -547,6 +547,7 @@ export default function KanbanTaskAdd({
                             field.onChange(newValue)
                             if (newValue) {
                               setValue('name', newValue.name)
+                              setKeyPhoneSearch(newValue.label)
                               setKeyEmailSearch(newValue.email)
                               const emailValue = {
                                 ...newValue,
