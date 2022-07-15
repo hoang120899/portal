@@ -1,8 +1,7 @@
 import { useCallback } from 'react'
 
 // @mui
-import { LoadingButton } from '@mui/lab'
-import { Box, Card, Grid, Stack, Typography } from '@mui/material'
+import { Box, Card, Grid, Typography } from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -13,7 +12,6 @@ import * as Yup from 'yup'
 // components
 import {
   FormProvider,
-  RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
 } from '@/components/hook-form'
@@ -21,10 +19,12 @@ import { MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
 import { useDispatch } from '@/redux/store'
+import useResponsive from '@/hooks/useResponsive'
 // utils
 import { fData } from '@/utils/formatNumber'
 
 import { fetchUploadAPI } from './uploadAvatarSlice'
+import JobList from './profile'
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar()
@@ -38,6 +38,8 @@ export default function AccountGeneral() {
   const defaultValues = {
     displayName: user?.displayName || '',
     email: user?.email || '',
+    team: user?.team || '',
+    role: user?.role || '',
     photoURL: user?.photoURL || '',
     phoneNumber: user?.phoneNumber || '',
     address: user?.address || '',
@@ -53,11 +55,8 @@ export default function AccountGeneral() {
     defaultValues,
   })
 
-  const {
-    setValue,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods
+  const { setValue, handleSubmit } = methods
+
   const onSubmit = async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -66,6 +65,7 @@ export default function AccountGeneral() {
       // TODO
     }
   }
+  const isMobile = useResponsive('down', 600, 'md')
   const handleDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0]
@@ -96,7 +96,7 @@ export default function AccountGeneral() {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <Card sx={{ py: 10, px: 3, textAlign: 'center' }}>
+          <Card sx={{ py: 10, px: 3, textAlign: 'center' }} height={350}>
             <RHFUploadAvatar
               name='photoURL'
               accept='image/*'
@@ -118,22 +118,14 @@ export default function AccountGeneral() {
                 </Typography>
               }
             />
-
-            <RHFSwitch
-              name='isPublic'
-              labelPlacement='start'
-              label='Public Profile'
-              sx={{ mt: 5 }}
-            />
           </Card>
         </Grid>
-
-        <Grid item xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
+        <Grid item xs={12} md={8} height={350}>
+          <Card sx={{ py: 15, marginTop: 0, px: 3, textAlign: 'center' }}>
             <Box
               sx={{
                 display: 'grid',
-                rowGap: 3,
+                rowGap: 5,
                 columnGap: 2,
                 gridTemplateColumns: {
                   xs: 'repeat(1, 1fr)',
@@ -141,32 +133,28 @@ export default function AccountGeneral() {
                 },
               }}
             >
-              <RHFTextField name='displayName' label='Name' />
-              <RHFTextField name='email' label='Email Address' />
+              <RHFTextField name='displayName' label='Name' disabled='true' />
+              <RHFTextField
+                name='email'
+                label='Email Address'
+                disabled='true'
+              />
 
-              <RHFTextField name='phoneNumber' label='Phone Number' />
-              <RHFTextField name='address' label='Address' />
-
-              <RHFTextField name='state' label='State/Region' />
-
-              <RHFTextField name='city' label='City' />
-              <RHFTextField name='zipCode' label='Zip/Code' />
+              <RHFTextField name='role' label='Role' disabled='true' />
+              <RHFTextField name='team' label='Team' disabled='true' />
             </Box>
-
-            <Stack spacing={3} alignItems='flex-end' sx={{ mt: 3 }}>
-              <RHFTextField name='about' multiline rows={4} label='About' />
-
-              <LoadingButton
-                type='submit'
-                variant='contained'
-                loading={isSubmitting}
-              >
-                Save Changes
-              </LoadingButton>
-            </Stack>
           </Card>
         </Grid>
       </Grid>
+      {isMobile ? (
+        <Grid item xs={10} sx={{ mx: 0, marginTop: 25 }}>
+          <JobList />
+        </Grid>
+      ) : (
+        <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
+          <JobList />
+        </Grid>
+      )}
     </FormProvider>
   )
 }
