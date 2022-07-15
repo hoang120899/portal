@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
 import { fDate } from '@/utils/formatTime'
+import getColorPresets from '@/utils/getColorPresets'
 
 NotificationTableRow.propTypes = {
   row: PropTypes.object,
@@ -15,28 +16,47 @@ NotificationTableRow.propTypes = {
 export default function NotificationTableRow({ row }) {
   const { User, content, createdAt } = row
 
+  const styles = {
+    message: {
+      width: '100%',
+      display: '-webkit-box',
+      WebkitLineClamp: '2',
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      fontWeight: 300,
+      transition: 'all 0.3s',
+      '&:hover': {
+        color: `${getColorPresets('yellow').main}`,
+      },
+    },
+    buttonDetail: {
+      p: 1,
+      ml: 0.5,
+      border: (theme) => `dashed 1px ${theme.palette.divider}`,
+      transition: 'all 0.15s',
+      '&:hover': {
+        color: `${getColorPresets('yellow').main}`,
+      },
+    },
+  }
+
   return (
     <TableRow hover>
       <TableCell align='left'>{User?.name}</TableCell>
 
-      <TableCell align='left' width='40%'>
-        <Typography variant='subtitle2'>
+      <TableCell align='left' width='50%'>
+        <Typography variant='body2' sx={styles.message}>
           {content?.message}
-          <strong>{content?.title}</strong>
+          <strong> {content?.title}</strong>
         </Typography>
       </TableCell>
 
       <TableCell align='left'>{fDate(createdAt)}</TableCell>
 
-      <TableCell>
+      <TableCell maxwidth='15%'>
         <Tooltip title='Detail'>
-          <IconButtonAnimate
-            sx={{
-              p: 1,
-              ml: 0.5,
-              border: (theme) => `dashed 1px ${theme.palette.divider}`,
-            }}
-          >
+          <IconButtonAnimate sx={styles.buttonDetail}>
             <Iconify icon={'eva:eye-fill'} width={20} height={20} />
           </IconButtonAnimate>
         </Tooltip>
