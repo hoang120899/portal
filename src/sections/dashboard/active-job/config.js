@@ -21,3 +21,4 @@ export const TABLE_HEAD = [
   { id: 'status', label: 'Status', align: 'left' },
   { id: '', label: '', align: 'left' },
 ]
+export const TABLE_FIXED_HEIGHT = 512

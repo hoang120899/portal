@@ -3,8 +3,6 @@ export default function Card(theme) {
     MuiCard: {
       styleOverrides: {
         root: {
-          width: '100%',
-          height: '100%',
           position: 'relative',
           boxShadow: theme.customShadows.card,
           borderRadius: Number(theme.shape.borderRadius) * 2,

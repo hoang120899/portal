@@ -11,15 +11,17 @@ import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
 // import { FormProvider } from '@/components/hook-form'
 import { PAGINATION } from '@/config'
+import useResponsive from '@/hooks/useResponsive'
 // hooks
 import useTable from '@/hooks/useTable'
 import useTabs from '@/hooks/useTabs'
 
 //
 import ActiveJobTableRow from './ActiveJobTableRow'
-import { STATUS_OPTIONS, TABLE_HEAD } from './config'
+import { STATUS_OPTIONS, TABLE_FIXED_HEIGHT, TABLE_HEAD } from './config'
 // import ActiveJobTableToolbar from './ActiveJobTableToolbar'
 import { useGetJobsQuery } from './jobsApiSlice'
+import ActiveJobMobile from './mobile'
 
 const DashboardActiveJob = ({ subheader, ...other }) => {
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
@@ -28,6 +30,7 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
     useTable({
       defaultRowsPerPage: PAGINATION[0],
     })
+  const isDesktop = useResponsive('down', 768, 'sm')
   useEffect(() => {
     setPage(0)
   }, [setPage])
@@ -71,24 +74,30 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
           ))}
         </Tabs>
       </div>
+      {isDesktop ? (
+        <ActiveJobMobile dataSource={dataJobs} />
+      ) : (
+        <>
+          <Divider />
+          <BasicTable
+            columns={TABLE_HEAD}
+            dataSource={dataJobs}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            isLoading={isLoading || isFetching}
+            tableStyle={{
+              paddingTop: 4,
+              paddingBottom: 4,
+              height: TABLE_FIXED_HEIGHT,
+              overflow: 'hidden',
+            }}
+            TableRowComp={(row, index) => (
+              <ActiveJobTableRow key={`${row?.id}-${index}`} row={row} />
+            )}
+          />
+        </>
+      )}
 
-      <Divider />
-      <BasicTable
-        columns={TABLE_HEAD}
-        dataSource={dataJobs}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        isLoading={isLoading || isFetching}
-        tableStyle={{
-          paddingTop: 4,
-          paddingBottom: 4,
-          height: '395px',
-          overflow: 'hidden',
-        }}
-        TableRowComp={(row, index) => (
-          <ActiveJobTableRow key={`${row?.id}-${index}`} row={row} />
-        )}
-      />
       {totalRecord >= 5 ? (
         <Pagination
           totalRecord={totalRecord}
