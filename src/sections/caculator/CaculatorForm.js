@@ -8,16 +8,9 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tooltip,
   Typography,
 } from '@mui/material'
-import Paper from '@mui/material/Paper'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -28,6 +21,9 @@ import * as Yup from 'yup'
 import { FormProvider, RHFTextField } from '@/components/hook-form'
 import useLocales from '@/hooks/useLocales'
 
+import NetSalaryTable from './NetSalaryTable'
+import TaxrableTable from './TaxrableTable'
+import TotalExpenseTable from './TotalExpenseTable'
 import { getSalary } from './salarySlice'
 
 const initialValues = {
@@ -42,6 +38,8 @@ const CaculatorForm = () => {
   const dispatch = useDispatch()
   const { data: data } = useSelector((state) => state.salary)
   const [insuranceOther, setInsuranceOther] = useState(false)
+  const [salary, setSalary] = useState(0)
+  const [submit, setSubmit] = useState(false)
 
   const [isOpen, setIsOpen] = useState(false)
 
@@ -57,24 +55,27 @@ const CaculatorForm = () => {
   const { handleSubmit } = methods
 
   const handleChangeInsurance = () => {
-    setInsuranceOther(true)
+    setSalary(false)
+    setInsuranceOther(!insuranceOther)
   }
 
   const handleChangeOther = () => {
     setInsuranceOther(!insuranceOther)
+    setSalary(true)
   }
 
-  const handleChangeOpen = () => {
+  const handleChangeOpen = (type) => {
+    setSubmit(type)
     setIsOpen(true)
   }
   const onSubmit = async (data) => {
     try {
       const dataSending = {
         salary: data.salary,
-        insuraneMoney: data.insuraneMoney,
+        insuraneMoney: salary ? data.insuraneMoney : data.salary,
         pvi: data.pvi,
         peopleDependent: data.peopleDependent,
-        type: data.type,
+        type: submit ? 0 : 1,
       }
       await dispatch(getSalary(dataSending))
       enqueueSnackbar(translate('Get success!'))
@@ -86,25 +87,69 @@ const CaculatorForm = () => {
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={8} direction='row' sx={{ p: 3 }}>
-          <Stack spacing={2} direction='row' alignItems='center'>
-            <Typography>Salary:</Typography>
-            <RHFTextField
-              type='number'
-              name='salary'
-              sx={{ minWidth: 220 }}
-              label='VD: 10,000,000'
-            />
-          </Stack>
-          <Stack spacing={2} direction='row' alignItems='center'>
-            <Typography>SGD:</Typography>
-            <RHFTextField type='number' name='sgd' sx={{ minWidth: 220 }} />
-          </Stack>
-          <Stack spacing={2} direction='row' alignItems='center'>
-            <Typography>Exchange rate:</Typography>
-            <RHFTextField type='number' name='rate' sx={{ maxWidth: 220 }} />
-          </Stack>
-        </Stack>
+        <Grid container direction='row' sx={{ p: 3 }}>
+          <Grid
+            container
+            direction='row'
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            alignItems='center'
+          >
+            <Grid item xs={12} sm={2} md={2} sx={{ paddingTop: 1 }}>
+              <Typography>Salary:</Typography>
+            </Grid>
+            <Grid item xs={12} sm={10} md={10} sx={{ paddingTop: 2 }}>
+              <RHFTextField
+                type='number'
+                name='salary'
+                sx={{ maxWidth: 250 }}
+                label='VD: 10,000,000'
+              />
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            direction='row'
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            alignItems='center'
+          >
+            <Grid item xs={12} sm={2} sx={{ paddingTop: 1 }}>
+              <Typography>SGD:</Typography>
+            </Grid>
+            <Grid item xs={12} sm={10} sx={{ paddingTop: 2 }}>
+              <RHFTextField
+                type='number'
+                name='sgd'
+                sx={{ minWidth: 100, maxWidth: 250 }}
+              />
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            direction='row'
+            item
+            xs={12}
+            sm={9}
+            md={4}
+            alignItems='center'
+          >
+            <Grid item xs={12} sm={3} md={4} sx={{ paddingTop: 1 }}>
+              <Typography>Exchange rate:</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={8} sx={{ paddingTop: 2 }}>
+              <RHFTextField
+                type='number'
+                name='rate'
+                sx={{ minWidth: 100, maxWidth: 250 }}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
 
         <Grid
           container
@@ -138,32 +183,54 @@ const CaculatorForm = () => {
                 type='number'
                 name='insuraneMoney'
                 sx={{ maxWidth: 220 }}
-                InputProps={{ disabled: insuranceOther }}
+                InputProps={{ disabled: !insuranceOther }}
               />
               <Typography sx={{ p: 1 }}>(VND)</Typography>
             </RadioGroup>
           </FormControl>
         </Grid>
 
-        <Stack direction='row' sx={{ p: 3, paddingRight: 65 }}>
-          <Grid container direction='row' alignItems='center'>
-            <Typography>PVI:</Typography>
-            <RHFTextField
-              type='number'
-              name='pvi'
-              sx={{ paddingLeft: 2, maxWidth: 220 }}
-            />
+        <Grid container direction='row' sx={{ p: 3 }}>
+          <Grid
+            item
+            xs={12}
+            sm={4}
+            md={4}
+            container
+            direction='row'
+            alignItems='center'
+          >
+            <Grid container item xs={12} sm={2} md={2} sx={{ paddingTop: 1 }}>
+              <Typography>PVI:</Typography>
+            </Grid>
+            <Grid container item xs={12} sm={10} md={10} sx={{ paddingTop: 1 }}>
+              <RHFTextField type='number' name='pvi' sx={{ maxWidth: 250 }} />
+            </Grid>
           </Grid>
-          <Grid container direction='row' alignItems='center'>
-            <Typography>Circumstances:</Typography>
-            <RHFTextField
-              type='number'
-              name='peopleDependent'
-              sx={{ paddingLeft: 2, maxWidth: 220 }}
-            />
-            <Typography>(people)</Typography>
+          <Grid
+            container
+            item
+            xs={12}
+            sm={12}
+            md={10}
+            direction='row'
+            alignItems='center'
+          >
+            <Grid container item xs={12} sm={2} md={2} sx={{ paddingTop: 1 }}>
+              <Typography>Circumstances:</Typography>
+            </Grid>
+            <Grid container item xs={12} sm={4} md={5} sx={{ paddingTop: 1 }}>
+              <RHFTextField
+                type='number'
+                name='peopleDependent'
+                sx={{ minWidth: 100, maxWidth: 250 }}
+              />
+            </Grid>
+            <Grid container item xs={12} sm={3}>
+              <Typography>(people)</Typography>
+            </Grid>
           </Grid>
-        </Stack>
+        </Grid>
         <Stack
           spacing={1}
           direction='row'
@@ -175,11 +242,15 @@ const CaculatorForm = () => {
             type='submit'
             variant='contained'
             color='secondary'
-            onClick={handleChangeOpen}
+            onClick={() => handleChangeOpen(true)}
           >
             GROSS → NET
           </Button>
-          <Button type='submit' variant='contained' onClick={handleChangeOpen}>
+          <Button
+            type='submit'
+            variant='contained'
+            onClick={() => handleChangeOpen(false)}
+          >
             NET → GROSS
           </Button>
         </Stack>
@@ -187,8 +258,8 @@ const CaculatorForm = () => {
       <Grid>
         {isOpen ? (
           <Grid>
-            <Stack direction='row' sx={{ p: 3, paddingTop: 10 }} spacing={2}>
-              <Grid container>
+            <Grid container direction='row'>
+              <Grid item xs={12} sm={6}>
                 <Stack
                   spacing={1}
                   direction='row'
@@ -202,75 +273,10 @@ const CaculatorForm = () => {
                     </Button>
                   </Tooltip>
                 </Stack>
-                <TableContainer component={Paper} sx={{ paddingTop: 3 }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          GROSS Salary
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.gross}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Social insurance (8 %)
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.bhxh}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Health Insurance (1.5 %)
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.bhyt}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          UnEmployment Insurance (1 %)
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.companyBhtn}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Taxable Income
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.tnct}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Personal income tax
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.tncn}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Net salary
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.net}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                  </Table>
-                </TableContainer>
+                <NetSalaryTable data={data} />
               </Grid>
 
-              <Grid container>
+              <Grid item xs={12} sm={6}>
                 <Stack
                   spacing={1}
                   direction='row'
@@ -284,74 +290,9 @@ const CaculatorForm = () => {
                     </Button>
                   </Tooltip>
                 </Stack>
-                <TableContainer sx={{ paddingTop: 3 }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          GROSS Salary
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.gross}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Social insurance (17.5%)
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.companyBhxh}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Health Insurance (3%)
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.companyBhyt}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          UnEmployment Insurance (1 %)
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.bhtn}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Pvi care
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.pvi}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Union tax
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.unionTax}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 'bold' }}>
-                          Total expense
-                        </TableCell>
-                        <TableCell align='right'>
-                          VND: {data.total}(SGD: 7)
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                  </Table>
-                </TableContainer>
+                <TotalExpenseTable data={data} />
               </Grid>
-            </Stack>
+            </Grid>
 
             <Grid container sx={{ p: 3 }}>
               <Stack
@@ -367,104 +308,7 @@ const CaculatorForm = () => {
                   </Button>
                 </Tooltip>
               </Stack>
-              <TableContainer sx={{ paddingTop: 3 }}>
-                <Table>
-                  <TableHead>
-                    <TableCell>Taxable rate</TableCell>
-                    <TableCell>Tax</TableCell>
-                    <TableCell>Money</TableCell>
-                  </TableHead>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>
-                        <Typography>Up to 5 million VND</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>5%</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{data.percent5}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography>
-                          Over 5 million VND to 10 million VND
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>10%</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{data.percent10}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography>
-                          From over 10 million VND to 18 million VND
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>15%</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{data.percent15}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography>
-                          From over 18 million VND to 32 million VND
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>20%</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{data.percent20}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography>
-                          From over 32 million VND to 52 million VND
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>25%</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{data.percent25}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography>
-                          From over 52 million VND to 80 million VND
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>30%</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{data.percent30}</Typography>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <Typography>Over 80 million VND</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>35%</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography>{data.percent35}</Typography>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <TaxrableTable data={data} />
             </Grid>
           </Grid>
         ) : (
