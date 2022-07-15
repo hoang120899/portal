@@ -8,6 +8,7 @@ import { useDropzone } from 'react-dropzone'
 // components
 import Iconify from '@/components/Iconify'
 import Image from '@/components/Image'
+import useAuth from '@/hooks/useAuth'
 
 import RejectionFiles from './RejectionFiles'
 
@@ -69,6 +70,7 @@ export default function UploadAvatar({
   sx,
   ...other
 }) {
+  const { user } = useAuth()
   const {
     getRootProps,
     getInputProps,
@@ -79,7 +81,6 @@ export default function UploadAvatar({
     multiple: false,
     ...other,
   })
-
   return (
     <>
       <RootStyle
@@ -98,10 +99,16 @@ export default function UploadAvatar({
         >
           <input {...getInputProps()} />
 
-          {file && (
+          {file ? (
             <Image
               alt='avatar'
               src={typeof file === 'string' ? file : file.preview}
+              sx={{ zIndex: 8 }}
+            />
+          ) : (
+            <Image
+              alt='avatar'
+              src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${user.linkAvatar}`}
               sx={{ zIndex: 8 }}
             />
           )}
