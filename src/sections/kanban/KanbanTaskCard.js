@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 // @mui
 import { Box, Paper, Stack, Typography } from '@mui/material'
@@ -19,7 +19,7 @@ KanbanTaskCard.propTypes = {
   index: PropTypes.number,
 }
 
-export default function KanbanTaskCard({ card, index }) {
+function KanbanTaskCard({ card, index }) {
   const { translate } = useLocales()
   const { Job, Candidate = {}, Labels = [] } = card
   const configUserInfo = [
@@ -168,3 +168,5 @@ export default function KanbanTaskCard({ card, index }) {
     </Draggable>
   )
 }
+
+export default memo(KanbanTaskCard)
