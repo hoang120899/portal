@@ -33,6 +33,7 @@ const RoleProvider = ({ children }) => {
         isDirectorRole,
         isLeaderRole,
         isMemberRole,
+        currentRole,
       }}
     >
       {children}
