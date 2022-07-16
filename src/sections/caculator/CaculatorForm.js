@@ -14,7 +14,7 @@ import {
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import * as Yup from 'yup'
 
@@ -27,6 +27,8 @@ import TotalExpenseTable from './TotalExpenseTable'
 import { getSalary } from './salarySlice'
 
 const initialValues = {
+  salary: 0,
+  rate: 17300,
   insuraneMoney: 0,
   pvi: 250000,
   peopleDependent: 0,
@@ -52,7 +54,8 @@ const CaculatorForm = () => {
     resolver: yupResolver(EventSchema),
     defaultValues: initialValues,
   })
-  const { handleSubmit } = methods
+  const { handleSubmit, control, setValue } = methods
+  const rateInput = useWatch({ control, name: 'rate' })
 
   const handleChangeInsurance = () => {
     setSalary(false)
@@ -81,6 +84,14 @@ const CaculatorForm = () => {
       enqueueSnackbar(translate('Get success!'))
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })
+    }
+  }
+
+  const handleChangeSGD = (e) => {
+    const valueInput = e.target.value
+    if (rateInput) {
+      const convertSGDVnd = Number(valueInput * rateInput)
+      setValue('salary', convertSGDVnd)
     }
   }
 
@@ -126,6 +137,7 @@ const CaculatorForm = () => {
                 type='number'
                 name='sgd'
                 sx={{ minWidth: 100, maxWidth: 250 }}
+                onChange={handleChangeSGD}
               />
             </Grid>
           </Grid>
@@ -212,14 +224,14 @@ const CaculatorForm = () => {
             item
             xs={12}
             sm={12}
-            md={10}
+            md={8}
             direction='row'
             alignItems='center'
           >
-            <Grid container item xs={12} sm={2} md={2} sx={{ paddingTop: 1 }}>
+            <Grid container item xs={12} sm={12} md={2} sx={{ paddingTop: 1 }}>
               <Typography>Circumstances:</Typography>
             </Grid>
-            <Grid container item xs={12} sm={4} md={5} sx={{ paddingTop: 1 }}>
+            <Grid container item xs={12} sm={4} md={4} sx={{ paddingTop: 1 }}>
               <RHFTextField
                 type='number'
                 name='peopleDependent'
