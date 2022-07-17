@@ -174,4 +174,5 @@ function KanbanColumn({
     </Paper>
   )
 }
+
 export default React.memo(KanbanColumn)

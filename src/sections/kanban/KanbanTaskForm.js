@@ -1,19 +1,27 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
 // @mui
-import { Box, Button, Grid, Stack } from '@mui/material'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Modal,
+  Stack,
+} from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 // @date-fns
 import { format } from 'date-fns'
+import { useSnackbar } from 'notistack'
 // @prop-types
 import PropTypes from 'prop-types'
 // @react-hooks-form
 import { useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
 import * as Yup from 'yup'
 
-import Assignee from '@/components/Assignee'
 // components
 import Iconify from '@/components/Iconify'
 import {
@@ -28,16 +36,17 @@ import {
 import { useDebounce } from '@/hooks/useDebounce'
 import useLocales from '@/hooks/useLocales'
 import {
-  // useAddAssigneeMutation,
-  // useAddCardMutation,
-  // useGetUserQuery,
-  // useRemoveAssigneeMutation,
+  getBoard,
+  useAddCardMutation,
   useSearchEmailQuery,
-  useSearchPhoneQuery, // useUpdateCardMutation,
-  // useUpdateLaneMutation,
+  useSearchPhoneQuery,
+  useUpdateCardMutation,
+  useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
 
+import KanbanAssignee from './KanbanAssignee'
 import KanbanFileUpload from './KanbanFileUpload'
+import { socialOptions } from './config'
 
 const CheckboxRootStyle = styled('div')(() => ({
   '& .MuiFormGroup-root': {
@@ -50,7 +59,6 @@ KanbanTaskForm.propTypes = {
   isAddTaskNoColumn: PropTypes.bool,
   laneId: PropTypes.string,
   card: PropTypes.object,
-  columnOptions: PropTypes.array,
   activeJobOptions: PropTypes.array,
   onClose: PropTypes.func,
   onCloseUpdate: PropTypes.func,
@@ -62,7 +70,6 @@ function KanbanTaskForm({
   hasAddPermission,
   isAddTaskNoColumn,
   laneId,
-  columnOptions,
   activeJobOptions,
   onClose,
   onCloseUpdate,
@@ -116,10 +123,13 @@ function KanbanTaskForm({
     defaultValues,
   })
   const { translate } = useLocales()
-  const { handleSubmit, watch, reset, setValue } = methods
+  const { handleSubmit, watch, setValue } = methods
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
-
+  const { enqueueSnackbar } = useSnackbar()
+  const dispatch = useDispatch()
+  const listColumnName = useSelector((state) => state.kanban.listColumnName)
+  const columns = useSelector((state) => state.kanban.board.columns)
   const [keyPhoneSearch, setKeyPhoneSearch] = useState('')
   const phoneSearch = useDebounce(keyPhoneSearch, 500)
   const [keyEmailSearch, setKeyEmailSearch] = useState('')
@@ -130,12 +140,9 @@ function KanbanTaskForm({
   const { data: emailData, isFetching: isEmailFetching } = useSearchEmailQuery({
     email: emailSearch,
   })
-  // const { data: contactData } = useGetUserQuery()
-  // const [addCard, { isLoading: isAdding }] = useAddCardMutation()
-  // const [updateCard, { isLoading: isUpdating }] = useUpdateCardMutation()
-  // const [updateLane] = useUpdateLaneMutation()
-  // const [addAssignee] = useAddAssigneeMutation()
-  // const [removeAssignee] = useRemoveAssigneeMutation()
+  const [updateLane] = useUpdateLaneMutation()
+  const [addCard, { isLoading: isAdding }] = useAddCardMutation()
+  const [updateCard, { isLoading: isUpdating }] = useUpdateCardMutation()
 
   const phoneOptions = useMemo(() => {
     if (phoneData && phoneData.data.candidate.length > 0) {
@@ -160,6 +167,14 @@ function KanbanTaskForm({
       }))
     } else return []
   }, [emailData])
+
+  const cardByColumns = useMemo(() => {
+    if (card) {
+      return columns[card.laneId].CandidateJobs.find(
+        (item) => item.id === card.id
+      )
+    }
+  }, [columns, card])
 
   useEffect(() => {
     if (card) {
@@ -194,7 +209,9 @@ function KanbanTaskForm({
       setValue('skype', Candidate.skype || '')
       setValue('phone', Candidate.phone)
       setValue('approachDate', format(new Date(approachDate), 'yyyy-MM-dd'))
-      setValue('expectedDate', expectedDate || new Date())
+      if (expectedDate) {
+        setValue('expectedDate', expectedDate)
+      }
       setValue('position', position || '')
       setValue('linkCv', cv || '')
       setValue('refineCv', refineCv || '')
@@ -211,16 +228,14 @@ function KanbanTaskForm({
     }
   }, [card, watchIdJob, activeJobOptions, setValue])
 
-  const handleCloseAddTaskReset = () => {
+  const handleCloseAddTask = () => {
     onClose()
     setOpenHistory(false)
-    reset()
   }
 
-  const handleCloseUpdateTaskReset = () => {
+  const handleCloseUpdateTask = () => {
     onCloseUpdate()
     setOpenHistory(false)
-    reset()
   }
 
   const hanldeAddTask = async (data) => {
@@ -236,289 +251,280 @@ function KanbanTaskForm({
     reqData.phone = data.phone.label
     delete reqData.social
 
-    // try {
-    //   if (card) {
-    //     if (reqData.laneId) {
-    //       await updateLane({ cardId: card.id, laneId: reqData.laneId })
-    //       delete reqData.laneId
-    //     }
-    //     await updateCard({ reqData, cardId: card.id }).unwrap()
-    //     enqueueSnackbar('Update card successfully!')
-    //     handleCloseUpdateTaskReset()
-    //   } else {
-    //     await addCard(reqData).unwrap()
-    //     enqueueSnackbar('Create card successfully!')
-    //     handleCloseAddTaskReset()
-    //   }
-    //   setKeyEmailSearch('')
-    //   setKeyPhoneSearch('')
-    // } catch (error) {
-    //   if (error.data) {
-    //     enqueueSnackbar(
-    //       error?.data[0].toUpperCase() + error?.data.slice(1) + '!',
-    //       {
-    //         variant: 'error',
-    //       }
-    //     )
-    //   } else {
-    //     enqueueSnackbar('Something went wrong! Please try again', {
-    //       variant: 'error',
-    //     })
-    //   }
-    // }
+    try {
+      if (card) {
+        if (reqData.laneId !== card.laneId) {
+          await updateLane({ cardId: card.id, laneId: reqData.laneId })
+        }
+        delete reqData.laneId
+        await updateCard({ reqData, cardId: card.id }).unwrap()
+        enqueueSnackbar('Update card successfully!')
+        handleCloseUpdateTask()
+      } else {
+        await addCard(reqData).unwrap()
+        enqueueSnackbar('Create card successfully!')
+        handleCloseAddTask()
+      }
+      dispatch(getBoard())
+    } catch (error) {
+      if (error.data) {
+        enqueueSnackbar(error.data, {
+          variant: 'error',
+        })
+      } else {
+        enqueueSnackbar('Something went wrong! Please try again', {
+          variant: 'error',
+        })
+      }
+    }
   }
 
   return (
-    <FormProvider onSubmit={handleSubmit(hanldeAddTask)} methods={methods}>
-      <Box mt={2}>
-        <RHFTextField
-          label={'Name'}
-          name='name'
-          type='text'
-          disabled={!hasAddPermission}
-        />
-      </Box>
+    <>
+      <Modal
+        open={isAdding || isUpdating}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <CircularProgress size={60} />
+      </Modal>
+      <FormProvider onSubmit={handleSubmit(hanldeAddTask)} methods={methods}>
+        <Box mt={2}>
+          <RHFTextField
+            label={'Name'}
+            name='name'
+            type='text'
+            disabled={!hasAddPermission}
+          />
+        </Box>
 
-      {isAddTaskNoColumn && (
+        {isAddTaskNoColumn && (
+          <Box mt={2}>
+            <RHFBasicSelect
+              label={'Column Name'}
+              name='laneId'
+              options={listColumnName}
+              disabled={!hasAddPermission}
+            />
+          </Box>
+        )}
+
         <Box mt={2}>
           <RHFBasicSelect
-            label={'Column Name'}
-            name='laneId'
-            options={columnOptions}
+            label={'Name Job'}
+            name='idJob'
+            options={activeJobOptions}
             disabled={!hasAddPermission}
           />
         </Box>
-      )}
 
-      <Box mt={2}>
-        <RHFBasicSelect
-          label={'Name Job'}
-          name='idJob'
-          options={activeJobOptions}
-          disabled={!hasAddPermission}
-        />
-      </Box>
-
-      <Box mt={2}>
-        <Grid container spacing={1}>
-          <Grid item xs={6}>
-            <RHFTextField
-              label={'Location'}
-              name='location'
-              type='text'
-              disabled
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <RHFTextField
-              label={'Client Name'}
-              name='clientName'
-              type='text'
-              disabled
-            />
-          </Grid>
-        </Grid>
-      </Box>
-
-      <Box mt={2}>
-        {card ? (
-          <RHFTextField
-            label='Email'
-            name='email'
-            disabled={!hasAddPermission}
-          />
-        ) : (
-          <RHFAutocomplete
-            AutocompleteProps={{
-              size: 'small',
-              loading: isEmailFetching,
-              renderOption: (props, option) => (
-                <Box key={option.key} component='li' {...props}>
-                  {option.label}
-                </Box>
-              ),
-              onChange: (field) => (event, newValue) => {
-                field.onChange(newValue)
-                if (newValue) {
-                  setValue('name', newValue.name)
-                  setKeyEmailSearch(newValue.label)
-                  setKeyPhoneSearch(newValue.phone)
-                  const phoneValue = {
-                    ...newValue,
-                    label: newValue.phone,
-                    email: newValue.label,
-                  }
-                  delete phoneValue.phone
-                  setValue('phone', phoneValue)
-                }
-              },
-              onInputChange: (e, newInputValue, reason) => {
-                if (reason === 'reset') return
-                setKeyEmailSearch(newInputValue)
-              },
-              inputValue: keyEmailSearch,
-            }}
-            label='Email'
-            name='email'
-            options={emailOptions}
-            disabled={!hasAddPermission}
-          />
-        )}
-      </Box>
-
-      <Box mt={2}>
-        {!card && (
-          <CheckboxRootStyle>
-            <RHFMultiCheckbox name='social' options={[]} />
-          </CheckboxRootStyle>
-        )}
-        {watchSocial.includes('facebook') && (
-          <Box mt={2}>
-            <RHFTextField
-              label='Facebook'
-              name='facebook'
-              InputProps={{
-                startAdornment: (
-                  <Iconify
-                    icon='ant-design:facebook-filled'
-                    sx={{ width: 24, height: 24 }}
-                  />
-                ),
-              }}
-              disabled={!hasAddPermission}
-            />
-          </Box>
-        )}
-
-        {watchSocial.includes('linkedin') && (
-          <Box mt={2}>
-            <RHFTextField
-              label='Linkedin'
-              name='linkedin'
-              InputProps={{
-                startAdornment: (
-                  <Iconify
-                    icon='ant-design:linkedin-filled'
-                    sx={{ width: 24, height: 24 }}
-                  />
-                ),
-              }}
-              disabled={!hasAddPermission}
-            />
-          </Box>
-        )}
-
-        {watchSocial.includes('skype') && (
-          <Box mt={2}>
-            <RHFTextField
-              label='Skype'
-              name='skype'
-              InputProps={{
-                startAdornment: (
-                  <Iconify
-                    icon='ant-design:skype-filled'
-                    sx={{ width: 24, height: 24 }}
-                  />
-                ),
-              }}
-              disabled={!hasAddPermission}
-            />
-          </Box>
-        )}
-      </Box>
-
-      <Box mt={2}>
-        <Grid container spacing={1}>
-          <Grid item xs={6}>
-            {card ? (
-              <RHFTextField
-                label={'Phone'}
-                name='phone'
-                fullWidth
-                disabled={!hasAddPermission}
-              />
-            ) : (
-              <RHFAutocomplete
-                AutocompleteProps={{
-                  size: 'small',
-                  loading: isPhoneFetching,
-                  renderOption: (props, option) => (
-                    <Box key={option.key} component='li' {...props}>
-                      {option.label}
-                    </Box>
-                  ),
-                  onChange: (field) => (event, newValue) => {
-                    field.onChange(newValue)
-                    if (newValue) {
-                      setValue('name', newValue.name)
-                      setKeyPhoneSearch(newValue.label)
-                      setKeyEmailSearch(newValue.email)
-                      const emailValue = {
-                        ...newValue,
-                        label: newValue.email,
-                        phone: newValue.label,
-                      }
-                      delete emailValue.email
-                      setValue('email', emailValue)
-                    }
-                  },
-                  onInputChange: (e, newInputValue, reason) => {
-                    if (reason === 'reset') return
-                    setKeyPhoneSearch(newInputValue)
-                  },
-                  inputValue: keyPhoneSearch,
-                }}
-                label='Phone'
-                name='phone'
-                options={phoneOptions}
-                disabled={!hasAddPermission}
-              />
-            )}
-          </Grid>
-          <Grid item xs={6}>
-            <RHFDatePicker
-              label={'Approach Date'}
-              name='approachDate'
-              disabled={!hasAddPermission}
-            />
-          </Grid>
-        </Grid>
-      </Box>
-
-      {card && (
         <Box mt={2}>
-          <RHFDateTimePicker
-            label={'Expected Date'}
-            name='expectedDate'
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
+              <RHFTextField
+                label={'Location'}
+                name='location'
+                type='text'
+                disabled
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <RHFTextField
+                label={'Client Name'}
+                name='clientName'
+                type='text'
+                disabled
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box mt={2}>
+          {card ? (
+            <RHFTextField
+              label='Email'
+              name='email'
+              disabled={!hasAddPermission}
+            />
+          ) : (
+            <RHFAutocomplete
+              AutocompleteProps={{
+                size: 'small',
+                loading: isEmailFetching,
+                renderOption: (props, option) => (
+                  <Box key={option.key} component='li' {...props}>
+                    {option.label}
+                  </Box>
+                ),
+                onChange: (field) => (event, newValue) => {
+                  field.onChange(newValue)
+                  if (newValue) {
+                    setValue('name', newValue.name)
+                    setKeyEmailSearch(newValue.label)
+                    setKeyPhoneSearch(newValue.phone)
+                    const phoneValue = {
+                      ...newValue,
+                      label: newValue.phone,
+                      email: newValue.label,
+                    }
+                    delete phoneValue.phone
+                    setValue('phone', phoneValue)
+                  }
+                },
+                onInputChange: (e, newInputValue, reason) => {
+                  if (reason === 'reset') return
+                  setKeyEmailSearch(newInputValue)
+                },
+                inputValue: keyEmailSearch,
+              }}
+              label='Email'
+              name='email'
+              options={emailOptions}
+              disabled={!hasAddPermission}
+            />
+          )}
+        </Box>
+
+        <Box mt={2}>
+          {!card && (
+            <CheckboxRootStyle>
+              <RHFMultiCheckbox name='social' options={socialOptions} />
+            </CheckboxRootStyle>
+          )}
+          {watchSocial.includes('facebook') && (
+            <Box mt={2}>
+              <RHFTextField
+                label='Facebook'
+                name='facebook'
+                InputProps={{
+                  startAdornment: (
+                    <Iconify
+                      icon='ant-design:facebook-filled'
+                      sx={{ width: 24, height: 24 }}
+                    />
+                  ),
+                }}
+                disabled={!hasAddPermission}
+              />
+            </Box>
+          )}
+
+          {watchSocial.includes('linkedin') && (
+            <Box mt={2}>
+              <RHFTextField
+                label='Linkedin'
+                name='linkedin'
+                InputProps={{
+                  startAdornment: (
+                    <Iconify
+                      icon='ant-design:linkedin-filled'
+                      sx={{ width: 24, height: 24 }}
+                    />
+                  ),
+                }}
+                disabled={!hasAddPermission}
+              />
+            </Box>
+          )}
+
+          {watchSocial.includes('skype') && (
+            <Box mt={2}>
+              <RHFTextField
+                label='Skype'
+                name='skype'
+                InputProps={{
+                  startAdornment: (
+                    <Iconify
+                      icon='ant-design:skype-filled'
+                      sx={{ width: 24, height: 24 }}
+                    />
+                  ),
+                }}
+                disabled={!hasAddPermission}
+              />
+            </Box>
+          )}
+        </Box>
+
+        <Box mt={2}>
+          <Grid container spacing={1}>
+            <Grid item xs={6}>
+              {card ? (
+                <RHFTextField
+                  label={'Phone'}
+                  name='phone'
+                  fullWidth
+                  disabled={!hasAddPermission}
+                />
+              ) : (
+                <RHFAutocomplete
+                  AutocompleteProps={{
+                    size: 'small',
+                    loading: isPhoneFetching,
+                    renderOption: (props, option) => (
+                      <Box key={option.key} component='li' {...props}>
+                        {option.label}
+                      </Box>
+                    ),
+                    onChange: (field) => (event, newValue) => {
+                      field.onChange(newValue)
+                      if (newValue) {
+                        setValue('name', newValue.name)
+                        setKeyPhoneSearch(newValue.label)
+                        setKeyEmailSearch(newValue.email)
+                        const emailValue = {
+                          ...newValue,
+                          label: newValue.email,
+                          phone: newValue.label,
+                        }
+                        delete emailValue.email
+                        setValue('email', emailValue)
+                      }
+                    },
+                    onInputChange: (e, newInputValue, reason) => {
+                      if (reason === 'reset') return
+                      setKeyPhoneSearch(newInputValue)
+                    },
+                    inputValue: keyPhoneSearch,
+                  }}
+                  label='Phone'
+                  name='phone'
+                  options={phoneOptions}
+                  disabled={!hasAddPermission}
+                />
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <RHFDatePicker
+                label={'Approach Date'}
+                name='approachDate'
+                disabled={!hasAddPermission}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        {card && (
+          <Box mt={2}>
+            <RHFDateTimePicker
+              label={'Expected Date'}
+              name='expectedDate'
+              disabled={!hasAddPermission}
+            />
+          </Box>
+        )}
+
+        <Box mt={2}>
+          <RHFTextField
+            label={'Position'}
+            name='position'
             disabled={!hasAddPermission}
           />
         </Box>
-      )}
 
-      <Box mt={2}>
-        <RHFTextField
-          label={'Position'}
-          name='position'
-          disabled={!hasAddPermission}
-        />
-      </Box>
-
-      <Box mt={2}>
-        <KanbanFileUpload
-          label={'Link CV'}
-          nameTextField='linkCv'
-          name={watch('name')}
-          nameJob={watch('nameJob')}
-          idJob={watchIdJob}
-          hasAddPermission={hasAddPermission}
-          setValue={setValue}
-        />
-      </Box>
-      {card && (
         <Box mt={2}>
           <KanbanFileUpload
-            label={'Link Refine CV'}
-            nameTextField='refineCv'
+            label={'Link CV'}
+            nameTextField='linkCv'
             name={watch('name')}
             nameJob={watch('nameJob')}
             idJob={watchIdJob}
@@ -526,56 +532,68 @@ function KanbanTaskForm({
             setValue={setValue}
           />
         </Box>
-      )}
-
-      <Box mt={2}>
-        <RHFTextField
-          label={'Approach Point'}
-          name='noteApproach'
-          multiline
-          rows={3}
-        />
-      </Box>
-      <Stack
-        mt={2}
-        direction='row'
-        justifyContent={card ? 'space-between' : 'right'}
-      >
         {card && (
-          <Assignee
-            // onToggleAssignee={onToggleAssignee}
-            // assignee={users}
-            hasAddAssignee={hasAddPermission}
-            // listContacts={contactData?.data?.list}
-          />
+          <Box mt={2}>
+            <KanbanFileUpload
+              label={'Link Refine CV'}
+              nameTextField='refineCv'
+              name={watch('name')}
+              nameJob={watch('nameJob')}
+              idJob={watchIdJob}
+              hasAddPermission={hasAddPermission}
+              setValue={setValue}
+            />
+          </Box>
         )}
-        <Stack direction='row'>
+
+        <Box mt={2}>
+          <RHFTextField
+            label={'Approach Point'}
+            name='noteApproach'
+            multiline
+            rows={3}
+          />
+        </Box>
+        <Stack
+          mt={2}
+          direction='row'
+          justifyContent={card ? 'space-between' : 'right'}
+        >
           {card && (
-            <Button type='button' variant='contained'>
-              {translate('Create Interview')}
-            </Button>
+            <KanbanAssignee
+              Users={cardByColumns?.Users}
+              laneId={cardByColumns?.laneId}
+              cardId={cardByColumns?.id}
+            />
           )}
-          {hasAddPermission && (
+          <Stack direction='row'>
+            {card && (
+              <Button type='button' variant='contained'>
+                {translate('Create Interview')}
+              </Button>
+            )}
+            {hasAddPermission && (
+              <Button
+                type='submit'
+                variant='contained'
+                sx={{ marginLeft: '8px' }}
+              >
+                {card ? translate('Update') : translate('Save')}
+              </Button>
+            )}
             <Button
-              type='submit'
-              variant='contained'
+              type='button'
               sx={{ marginLeft: '8px' }}
+              onClick={() => {
+                card ? handleCloseUpdateTask() : handleCloseAddTask()
+              }}
             >
-              {card ? translate('Update') : translate('Save')}
+              {translate('Cancel')}
             </Button>
-          )}
-          <Button
-            type='button'
-            sx={{ marginLeft: '8px' }}
-            onClick={() => {
-              card ? handleCloseUpdateTaskReset() : handleCloseAddTaskReset()
-            }}
-          >
-            {translate('Cancel')}
-          </Button>
+          </Stack>
         </Stack>
-      </Stack>
-    </FormProvider>
+      </FormProvider>
+    </>
   )
 }
 

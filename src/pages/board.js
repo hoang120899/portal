@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { useRouter } from 'next/router'
+
 // @mui
 import { Box, Button, Container, Stack } from '@mui/material'
 
+import { useSnackbar } from 'notistack'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { useForm } from 'react-hook-form'
 
@@ -27,12 +30,9 @@ import KanbanTaskAdd from '@/sections/kanban/KanbanTaskAdd'
 import {
   getBoard,
   selectBoard,
-  updateCardByDestColumn, // useGetClientQuery,
-  // useGetJobQuery,
-  // useGetLabelQuery,
-  // useGetMemberQuery,
-  // useSearchCardsQuery,
+  updateCardByDestColumn,
   useGetActiveJobsQuery,
+  useGetCardDetailMutation,
   useGetClientQuery,
   useGetJobQuery,
   useGetLabelQuery,
@@ -57,13 +57,15 @@ export default function Board() {
   const formRef = useRef()
   const { themeStretch } = useSettings()
   const { translate } = useLocales()
+  const { enqueueSnackbar } = useSnackbar()
+  const { query } = useRouter()
   const { isLeaderRole, isMemberRole } = useRole()
   const dispatch = useDispatch()
   const [laneId, setLaneId] = useState('')
   const [card, setCard] = useState(null)
   const [open, setOpen] = useState(false)
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
-  const { isLoading } = useSelector((state) => state.kanban)
+  const isLoading = useSelector((state) => state.kanban.isLoading)
   const board = useSelector((state) => selectBoard(state))
 
   const hasAddPermission = isLeaderRole || isMemberRole
@@ -72,16 +74,8 @@ export default function Board() {
   const { data: listClients } = useGetClientQuery()
   const { data: listJobs } = useGetJobQuery()
   const { data: listMembers } = useGetMemberQuery()
-  const { data: activeJobData } = useGetActiveJobsQuery()
-
-  const columnOptions = useMemo(() => {
-    if (board) {
-      return board.columnOrder.map((id) => ({
-        label: board.columns[id].nameColumn,
-        value: id,
-      }))
-    }
-  }, [board])
+  const { data: listActiveJobs } = useGetActiveJobsQuery()
+  const [getCardDetail] = useGetCardDetailMutation()
 
   const labelOptions = useMemo(() => {
     if (!listLabels) return []
@@ -124,17 +118,16 @@ export default function Board() {
   }, [listMembers])
 
   const activeJobOptions = useMemo(() => {
-    if (activeJobData) {
-      const activeJobs = activeJobData.data.arrJob
-      const formatActiveJobs = activeJobs.map((job) => ({
-        label: job.title,
-        value: job.id,
-        location: job.Location ? job.Location.name : '',
-        clientName: job.Client ? job.Client.name : '',
-      }))
-      return formatActiveJobs
-    }
-  }, [activeJobData])
+    if (!listActiveJobs) return []
+
+    const { data: { arrJob = [] } = {} } = listActiveJobs
+    return arrJob.map((job) => ({
+      label: job.title,
+      value: job.id,
+      location: job.Location ? job.Location.name : '',
+      clientName: job.Client ? job.Client.name : '',
+    }))
+  }, [listActiveJobs])
 
   const defaultValues = {
     search: '',
@@ -168,10 +161,10 @@ export default function Board() {
     setLaneId(laneId)
   }, [])
 
-  const handleOpenAddTaskNoColumn = () => {
+  const handleOpenAddTaskNoColumn = useCallback(() => {
     setOpen((prev) => !prev)
     setIsAddTaskNoColumn(true)
-  }
+  }, [])
 
   const handleCloseAddTask = useCallback(() => {
     setOpen(false)
@@ -194,6 +187,24 @@ export default function Board() {
   useEffect(() => {
     dispatch(getBoard())
   }, [dispatch])
+
+  useEffect(() => {
+    async function getCard(cardId) {
+      try {
+        const { data: cardDetail } = await getCardDetail(cardId)
+        if (cardDetail.data.success) {
+          handleOpenUpdateTask(cardDetail.data.card)
+        } else {
+          throw new Error('Card not found!')
+        }
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: 'error' })
+      }
+    }
+    if (query && query.cardId) {
+      getCard(query.cardId)
+    }
+  }, [query, getCardDetail, handleOpenUpdateTask, enqueueSnackbar])
 
   const onDragEnd = (result) => {
     // Reorder card
@@ -293,7 +304,6 @@ export default function Board() {
           card={card}
           laneId={laneId}
           hasAddPermission={hasAddPermission}
-          columnOptions={columnOptions}
           activeJobOptions={activeJobOptions}
           onClose={handleCloseAddTask}
           onCloseUpdate={handleCloseUpdateTask}

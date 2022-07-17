@@ -14,14 +14,14 @@ import {
   API_LIST_COMMENT,
   API_LIST_LABEL,
   API_LIST_MEMBER,
+  API_LIST_UPDATE_HISTORY,
   API_LIST_USER,
   API_REMOVE_ASSIGNMENT,
   API_SEARCH_CARD,
-  API_V1_CARD,
-  API_V1_CARD_LABEL,
-  API_LIST_UPDATE_HISTORY,
   API_SEARCH_EMAIL,
   API_SEARCH_PHONE,
+  API_V1_CARD,
+  API_V1_CARD_LABEL,
 } from '@/routes/api'
 import { _deleteApi, _getApi, _patchApi, _postApi } from '@/utils/axios'
 
@@ -115,6 +115,37 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getCardDetail: builder.mutation({
+      query: (cardId) => ({
+        url: `${API_ADD_CARD}/${cardId}`,
+        method: 'GET',
+      }),
+    }),
+    updateLane: builder.mutation({
+      query: (data) => ({
+        url: `${API_ADD_CARD}/${data.cardId}`,
+        method: 'PATCH',
+        data: { laneId: data.laneId },
+      }),
+    }),
+    addCard: builder.mutation({
+      query: (data) => ({
+        url: `${API_ADD_CARD}`,
+        method: 'POST',
+        data,
+      }),
+      invalidatesTags: ['Kanban'],
+    }),
+    updateCard: builder.mutation({
+      query: (data) => ({
+        url: `${API_ADD_CARD}/${data.cardId}`,
+        method: 'PATCH',
+        data: data.reqData,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Kanban', id: arg.cardId },
+      ],
+    }),
   }),
 })
 
@@ -124,7 +155,6 @@ export const {
   useGetLabelQuery,
   useGetMemberQuery,
   useSearchCardsQuery,
-  useDeleteLabelMutation,
   useGetUserQuery,
   useSearchPhoneQuery,
   useSearchEmailQuery,
@@ -132,7 +162,11 @@ export const {
   useGetListCommentQuery,
   useAddCommentMutation,
   useEditCommentMutation,
-  useGetUpdateHistory,
+  useGetUpdateHistoryQuery,
+  useGetCardDetailMutation,
+  useUpdateLaneMutation,
+  useAddCardMutation,
+  useUpdateCardMutation,
 } = kanbanApiSlice
 
 export const getBoard = createAsyncThunk('kanban/getBoard', async (data) => {
