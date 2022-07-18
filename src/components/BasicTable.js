@@ -48,6 +48,7 @@ export default function BasicTable({
   heightSkeletonRow,
   tableStyle = {},
   TableRowComp,
+  ...other
 }) {
   const isNotFound = !isLoading && !dataSource.length
   const tableData = React.useMemo(
@@ -55,7 +56,7 @@ export default function BasicTable({
     [isLoading, rowsPerPage, dataSource]
   )
   return (
-    <Scrollbar>
+    <Scrollbar {...other}>
       <TableContainerStyle ownerState={tableStyle}>
         <Table>
           <TableHeadCustom headLabel={columns} />

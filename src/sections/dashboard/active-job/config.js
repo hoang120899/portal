@@ -19,6 +19,4 @@ export const TABLE_HEAD = [
   { id: 'team', label: 'Teams', align: 'left' },
   { id: 'candidate', label: 'Candidates', align: 'left' },
   { id: 'status', label: 'Status', align: 'left' },
-  { id: '', label: '', align: 'left' },
 ]
-export const TABLE_FIXED_HEIGHT = 512

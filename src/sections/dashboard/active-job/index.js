@@ -18,7 +18,7 @@ import useTabs from '@/hooks/useTabs'
 
 //
 import ActiveJobTableRow from './ActiveJobTableRow'
-import { STATUS_OPTIONS, TABLE_FIXED_HEIGHT, TABLE_HEAD } from './config'
+import { STATUS_OPTIONS, TABLE_HEAD } from './config'
 // import ActiveJobTableToolbar from './ActiveJobTableToolbar'
 import { useGetJobsQuery } from './jobsApiSlice'
 import ActiveJobMobile from './mobile'
@@ -88,8 +88,9 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
             tableStyle={{
               paddingTop: 4,
               paddingBottom: 4,
-              height: TABLE_FIXED_HEIGHT,
-              overflow: 'hidden',
+            }}
+            style={{
+              height: 'fit-content',
             }}
             TableRowComp={(row, index) => (
               <ActiveJobTableRow key={`${row?.id}-${index}`} row={row} />

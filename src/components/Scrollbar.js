@@ -55,7 +55,7 @@ export default function Scrollbar({ children, sx, ...other }) {
   }
 
   return (
-    <RootStyle>
+    <RootStyle style={{ height: 'fit-content' }}>
       <SimpleBarStyle timeout={500} clickOnTrack={false} sx={sx} {...other}>
         {children}
       </SimpleBarStyle>

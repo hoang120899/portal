@@ -29,10 +29,6 @@ import { getRolesByPage } from '@/utils/role'
 Dashboard.getLayout = function getLayout({ roles = [] }, page) {
   return <Layout roles={roles}>{page}</Layout>
 }
-
-const FIRST_ROW_HEIGHT_TABLE = 640
-const SECOND_ROW_HEIGHT_TABLE = 600
-
 export async function getStaticProps() {
   return {
     props: {
@@ -49,80 +45,25 @@ export default function Dashboard() {
   const dashboardConfigs = [
     {
       render: () => {
-        if (isDirectorRole)
-          return (
-            <Performance
-              title='Performance'
-              sx={{
-                height: {
-                  xs: 'auto',
-                  sm: SECOND_ROW_HEIGHT_TABLE,
-                  lg: FIRST_ROW_HEIGHT_TABLE,
-                },
-              }}
-            />
-          )
-        return (
-          <InterviewSchedule
-            title='Interview Schedule'
-            sx={{
-              height: {
-                xs: 'auto',
-                sm: SECOND_ROW_HEIGHT_TABLE,
-                lg: FIRST_ROW_HEIGHT_TABLE,
-              },
-            }}
-          />
-        )
+        if (isDirectorRole) return <Performance title='Performance' />
+        return <InterviewSchedule title='Interview Schedule' />
       },
     },
     {
-      render: () => (
-        <WeeklyTask
-          title='Weekly Task'
-          sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
-        />
-      ),
+      render: () => <WeeklyTask title='Weekly Task' />,
     },
     {
       render: () => {
-        if (isDirectorRole)
-          return (
-            <Applicants
-              title='New Applicants'
-              sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
-            />
-          )
-        if (isLeaderRole)
-          return (
-            <Performance
-              title='Performance'
-              sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
-            />
-          )
-        return (
-          <RecruitementProgress
-            title='Recruitment progress'
-            sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
-          />
-        )
+        if (isDirectorRole) return <Applicants title='New Applicants' />
+        if (isLeaderRole) return <Performance title='Performance' />
+        return <RecruitementProgress title='Recruitment progress' />
       },
     },
     {
       render: () => {
         if (isDirectorRole)
-          return (
-            <MemberActivities
-              title='Member Activities'
-              sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
-            />
-          )
-        return (
-          <Applicants
-            title='New Applicants'
-            sx={{ height: { xs: 'auto', sm: SECOND_ROW_HEIGHT_TABLE } }}
-          />
-        )
+          return <MemberActivities title='Member Activities' />
+        return <Applicants title='New Applicants' />
       },
     },
   ]
