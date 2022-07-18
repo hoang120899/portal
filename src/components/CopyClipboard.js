@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // @mui
 import { IconButton, InputAdornment, TextField, Tooltip } from '@mui/material'
@@ -33,6 +33,10 @@ export default function CopyClipboard({
     value,
     copied: false,
   })
+
+  useEffect(() => {
+    setState({ value, copied: false })
+  }, [value])
 
   const handleChange = (event) => {
     setState({ value: event.target.value, copied: false })
