@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+
 // @mui
 import { Card, CardHeader } from '@mui/material'
 
@@ -6,9 +8,14 @@ import { useForm } from 'react-hook-form'
 
 // components
 import { FormProvider } from '@/components/hook-form'
+// hooks
+// import useLocales from '@/hooks/useLocales'
+import useTable from '@/hooks/useTable'
 
+// import { API_WEEKLY_TASKS } from '@/routes/api'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
+import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
 WeeklyTask.propTypes = {
   title: PropTypes.string,
@@ -16,6 +23,38 @@ WeeklyTask.propTypes = {
 }
 
 export default function WeeklyTask({ title, subheader, ...other }) {
+  const [list, setList] = useState([])
+  // const { translate } = useLocales()
+  const { page, rowsPerPage, setPage } = useTable()
+
+  useEffect(() => {
+    setPage(0)
+  }, [setPage])
+
+  const test = useRef({
+    queries: {
+      pageSize: rowsPerPage,
+      pageNumber: page + 1,
+    },
+    body: {
+      startDate: '2021-05-31T17:00:00.000Z',
+      endDate: '2022-07-19T16:59:59.999Z',
+    },
+  })
+
+  const [getAllWeeklyTasks, { isLoading }] = useGetAllWeeklyTasksMutation()
+
+  useEffect(() => {
+    const getAllTasks = async (test) => {
+      const res = await getAllWeeklyTasks(test.current).unwrap()
+      const { data } = res
+      setList(data?.tasks)
+    }
+    getAllTasks(test)
+  }, [getAllWeeklyTasks, test])
+
+  // console.log(list)
+
   const methods = useForm({
     defaultValues: {
       startDate: null,
@@ -34,13 +73,6 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       // TODO
     }
   }
-  const list = [...Array(5).keys()].map((value, index) => ({
-    avatar: `https://minimal-assets-api-dev.vercel.app/assets/images/avatars/avatar_${
-      index + 1
-    }.jpg`,
-    name: `Name ${index + 1}`,
-    email: `Email${index}@gmail.com`,
-  }))
 
   return (
     <Card {...other}>
@@ -48,7 +80,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <WeeklyTaskTableToolbar />
       </FormProvider>
-      <WeeklyTaskDetails list={list} />
+      <WeeklyTaskDetails list={list} isLoading={isLoading} />
     </Card>
   )
 }
