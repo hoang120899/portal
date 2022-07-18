@@ -4,14 +4,19 @@ import React, { forwardRef, useMemo, useState } from 'react'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
 
+import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
+import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
 
 import {
+  FormProvider,
   RHFAutocomplete,
   RHFBasicSelect,
   RHFDatePicker,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
+import { getBoard } from '@/sections/kanban/kanbanSlice'
 
 import { useSearchCardsQuery } from './kanbanSlice'
 
@@ -19,7 +24,6 @@ const KanbanTableToolbar = forwardRef(
   (
     {
       onOpenUpdateTask,
-      isSubmitting,
       labelOptions,
       jobOptions,
       clientOptions,
@@ -29,6 +33,8 @@ const KanbanTableToolbar = forwardRef(
   ) => {
     const [keySearch, setKeySearch] = useState('')
     const search = useDebounce(keySearch, 1000)
+    const { enqueueSnackbar } = useSnackbar()
+    const dispatch = useDispatch()
 
     const { data: cardData, isFetching: isCardFetching } = useSearchCardsQuery({
       search,
@@ -46,75 +52,104 @@ const KanbanTableToolbar = forwardRef(
       return []
     }, [cardData])
 
+    const defaultValues = {
+      search: '',
+      label: '',
+      clientId: '',
+      userId: '',
+      jobId: '',
+      startDate: null,
+      endDate: null,
+    }
+
+    const methods = useForm({
+      defaultValues,
+    })
+
+    const {
+      handleSubmit,
+      formState: { isSubmitting },
+    } = methods
+
+    const onSubmit = async (data) => {
+      try {
+        dispatch(getBoard(data))
+      } catch (error) {
+        enqueueSnackbar('Fail to filter cards! Please try again')
+      }
+    }
+
     return (
-      <Box
-        sx={{
-          display: 'grid',
-          pb: 2,
-          gap: 2,
-          gridTemplateColumns: {
-            md: 'repeat(4, 1fr)',
-            sm: 'repeat(3, 1fr)',
-          },
-        }}
-        ref={ref}
-      >
-        <RHFAutocomplete
-          AutocompleteProps={{
-            freeSolo: true,
-            size: 'small',
-            loading: isCardFetching,
-            renderOption: (props, option) => (
-              <Box
-                key={option.key}
-                component='li'
-                {...props}
-                onClick={() => onOpenUpdateTask(option)}
-              >
-                {option.value}
-              </Box>
-            ),
+      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+        <Box
+          sx={{
+            display: 'grid',
+            pb: 2,
+            gap: 2,
+            gridTemplateColumns: {
+              md: 'repeat(4, 1fr)',
+              sm: 'repeat(3, 1fr)',
+            },
           }}
-          name='search'
-          label='search'
-          options={cardOptions}
-          onChange={(e) => setKeySearch(e.target.value)}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose label'
-          name='label'
-          options={labelOptions}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose client'
-          name='clientId'
-          options={clientOptions}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose member'
-          name='userId'
-          options={memberOptions}
-        />
-        <RHFBasicSelect
-          hasBlankOption
-          label='Choose job'
-          name='jobId'
-          options={jobOptions}
-        />
-        <RHFDatePicker name='startDate' />
-        <RHFDatePicker name='endDate' />
-        <LoadingButton
-          fullWidth
-          type='submit'
-          variant='contained'
-          loading={isSubmitting}
+          ref={ref}
         >
-          Search
-        </LoadingButton>
-      </Box>
+          <RHFAutocomplete
+            AutocompleteProps={{
+              freeSolo: true,
+              size: 'small',
+              loading: isCardFetching,
+              renderOption: (props, option) => (
+                <Box
+                  key={option.key}
+                  component='li'
+                  {...props}
+                  onClick={() => onOpenUpdateTask(option)}
+                >
+                  {option.value}
+                </Box>
+              ),
+            }}
+            name='search'
+            label='search'
+            options={cardOptions}
+            onChange={(e) => setKeySearch(e.target.value)}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose label'
+            name='label'
+            options={labelOptions}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose client'
+            name='clientId'
+            options={clientOptions}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose member'
+            name='userId'
+            options={memberOptions}
+          />
+          <RHFBasicSelect
+            hasBlankOption
+            label='Choose job'
+            name='jobId'
+            options={jobOptions}
+          />
+          <RHFDatePicker name='startDate' />
+          <RHFDatePicker name='endDate' />
+          <LoadingButton
+            fullWidth
+            type='submit'
+            variant='contained'
+            loading={isSubmitting}
+          >
+            Search
+          </LoadingButton>
+        </Box>
+      </FormProvider>
     )
   }
 )

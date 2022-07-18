@@ -335,17 +335,21 @@ const kanbanSlice = createSlice({
       const cardIndex = state.board.columns[laneId].CandidateJobs.findIndex(
         (item) => item.id === cardId
       )
-      state.board.columns[laneId].CandidateJobs[cardIndex].Users.push(user)
+      if (cardIndex !== -1) {
+        state.board.columns[laneId].CandidateJobs[cardIndex].Users.push(user)
+      }
     },
     removeCardAssignee(state, action) {
       const { laneId, cardId, ...user } = action.payload
       const cardIndex = state.board.columns[laneId].CandidateJobs.findIndex(
         (item) => item.id === cardId
       )
-      state.board.columns[laneId].CandidateJobs[cardIndex].Users =
-        state.board.columns[laneId].CandidateJobs[cardIndex].Users.filter(
-          (item) => item.id !== user.id
-        )
+      if (cardIndex !== -1) {
+        state.board.columns[laneId].CandidateJobs[cardIndex].Users =
+          state.board.columns[laneId].CandidateJobs[cardIndex].Users.filter(
+            (item) => item.id !== user.id
+          )
+      }
     },
   },
   extraReducers(builder) {
@@ -443,17 +447,21 @@ const kanbanSlice = createSlice({
         const cardIndex = state.board.columns[laneId].CandidateJobs.findIndex(
           (item) => item.id === cardId
         )
-        state.board.columns[laneId].CandidateJobs[cardIndex].Users =
-          state.board.columns[laneId].CandidateJobs[cardIndex].Users.filter(
-            (item) => item.id !== user.id
-          )
+        if (cardIndex !== -1) {
+          state.board.columns[laneId].CandidateJobs[cardIndex].Users =
+            state.board.columns[laneId].CandidateJobs[cardIndex].Users.filter(
+              (item) => item.id !== user.id
+            )
+        }
       })
       .addCase(removeAssignee.rejected, (state, action) => {
         const { laneId, cardId, ...user } = action.payload
         const cardIndex = state.board.columns[laneId].CandidateJobs.findIndex(
           (item) => item.id === cardId
         )
-        state.board.columns[laneId].CandidateJobs[cardIndex].Users.push(user)
+        if (cardIndex !== -1) {
+          state.board.columns[laneId].CandidateJobs[cardIndex].Users.push(user)
+        }
       })
   },
 })

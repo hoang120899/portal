@@ -7,12 +7,10 @@ import { Box, Button, Container, Stack } from '@mui/material'
 
 import { useSnackbar } from 'notistack'
 import { DragDropContext } from 'react-beautiful-dnd'
-import { useForm } from 'react-hook-form'
 
 import Iconify from '@/components/Iconify'
 // components
 import Page from '@/components/Page'
-import { FormProvider } from '@/components/hook-form'
 import { SkeletonKanbanColumn } from '@/components/skeleton'
 // config
 import { PAGES } from '@/config'
@@ -128,33 +126,6 @@ export default function Board() {
       clientName: job.Client ? job.Client.name : '',
     }))
   }, [listActiveJobs])
-
-  const defaultValues = {
-    search: '',
-    label: '',
-    clientId: '',
-    userId: '',
-    jobId: '',
-    startDate: null,
-    endDate: null,
-  }
-
-  const methods = useForm({
-    defaultValues,
-  })
-
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods
-
-  const onSubmit = async (data) => {
-    try {
-      dispatch(getBoard(data))
-    } catch (error) {
-      // TODO
-    }
-  }
 
   const handleOpenAddTask = useCallback((laneId) => {
     setOpen((prev) => !prev)
@@ -287,17 +258,15 @@ export default function Board() {
   return (
     <Page title={translate('nav.board')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <KanbanTableToolbar
-            ref={formRef}
-            onOpenUpdateTask={handleOpenUpdateTask}
-            isSubmitting={isSubmitting}
-            labelOptions={labelOptions}
-            jobOptions={jobOptions}
-            clientOptions={clientOptions}
-            memberOptions={memberOptions}
-          />
-        </FormProvider>
+        <KanbanTableToolbar
+          ref={formRef}
+          onOpenUpdateTask={handleOpenUpdateTask}
+          labelOptions={labelOptions}
+          jobOptions={jobOptions}
+          clientOptions={clientOptions}
+          memberOptions={memberOptions}
+        />
+
         <KanbanTaskAdd
           open={open}
           isAddTaskNoColumn={isAddTaskNoColumn}

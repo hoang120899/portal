@@ -1,5 +1,6 @@
 import { Button, Stack, TextField } from '@mui/material'
 
+import { useSnackbar } from 'notistack'
 // @prop-types
 import PropTypes from 'prop-types'
 
@@ -28,14 +29,19 @@ export default function KanbanFileUpload({
   hasAddPermission,
   setValue,
 }) {
+  const { enqueueSnackbar } = useSnackbar()
   const handleUploadFile = async (e) => {
     if (name === '' || nameJob === '') {
-      // TODO: Load toast message
+      enqueueSnackbar('Please fill in the form before uploading', {
+        variant: 'info',
+      })
       return
     } else {
       const file = e.target.files[0]
       if (file.size > 5145728) {
-        // TODO: Load toast message
+        enqueueSnackbar('File is too big!', {
+          variant: 'info',
+        })
         return
       }
       const formData = new FormData()
@@ -46,7 +52,9 @@ export default function KanbanFileUpload({
         const res = await _postApi(API_UPLOAD_LINK, formData)
         setValue(nameTextField, res.fileName)
       } catch (error) {
-        // TODO: Handle error
+        enqueueSnackbar('Failed to upload! Please try again.', {
+          variant: 'error',
+        })
       }
     }
   }

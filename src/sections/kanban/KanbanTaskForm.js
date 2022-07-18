@@ -35,6 +35,7 @@ import {
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
 import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
 import {
   getBoard,
   useAddCardMutation,
@@ -127,6 +128,7 @@ function KanbanTaskForm({
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
   const { enqueueSnackbar } = useSnackbar()
+  const isSmall = useResponsive('between', null, 'xs', 480)
   const dispatch = useDispatch()
   const listColumnName = useSelector((state) => state.kanban.listColumnName)
   const columns = useSelector((state) => state.kanban.board.columns)
@@ -188,9 +190,7 @@ function KanbanTaskForm({
         cv,
         refineCv = '',
         noteApproach,
-        // Users,
       } = card
-      //   setUsers(Users)
       setValue('name', Candidate?.name || '')
       setValue('laneId', laneId)
       setValue('idJob', Job.id)
@@ -238,7 +238,7 @@ function KanbanTaskForm({
     setOpenHistory(false)
   }
 
-  const hanldeAddTask = async (data) => {
+  const handleSubmitForm = async (data) => {
     const reqData = { ...data }
     reqData.approachDate = format(new Date(reqData.approachDate), 'yyyy-MM-dd')
     if (!reqData.laneId) {
@@ -287,7 +287,7 @@ function KanbanTaskForm({
       >
         <CircularProgress size={60} />
       </Modal>
-      <FormProvider onSubmit={handleSubmit(hanldeAddTask)} methods={methods}>
+      <FormProvider onSubmit={handleSubmit(handleSubmitForm)} methods={methods}>
         <Box mt={2}>
           <RHFTextField
             label={'Name'}
@@ -556,17 +556,25 @@ function KanbanTaskForm({
         </Box>
         <Stack
           mt={2}
-          direction='row'
-          justifyContent={card ? 'space-between' : 'right'}
+          spacing={isSmall && 2}
+          direction={isSmall ? 'column-reverse' : 'row'}
+          justifyContent={cardByColumns || card ? 'space-between' : 'right'}
         >
-          {card && (
+          {cardByColumns ? (
             <KanbanAssignee
               Users={cardByColumns?.Users}
               laneId={cardByColumns?.laneId}
               cardId={cardByColumns?.id}
             />
+          ) : (
+            <KanbanAssignee
+              Users={card?.Users}
+              laneId={card?.laneId}
+              cardId={card?.id}
+              cardNotInCol={true}
+            />
           )}
-          <Stack direction='row'>
+          <Stack direction='row' sx={{ flexShrink: 0, maxHeight: '48px' }}>
             {card && (
               <Button type='button' variant='contained'>
                 {translate('Create Interview')}
