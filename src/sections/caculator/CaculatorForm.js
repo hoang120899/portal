@@ -1,353 +1,310 @@
 import React, { useEffect, useState } from 'react'
 
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  Radio,
-  RadioGroup,
-  Stack,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Box, Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useForm, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 
-import { FormProvider, RHFTextField } from '@/components/hook-form'
+import {
+  FormProvider,
+  RHFRadioGroup,
+  RHFTextField,
+} from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useDispatch, useSelector } from '@/redux/store'
 
 import NetSalaryTable from './NetSalaryTable'
 import TaxrableTable from './TaxrableTable'
 import TotalExpenseTable from './TotalExpenseTable'
 import { getSalary } from './salarySlice'
 
-const initialValues = {
-  salary: 0,
-  rate: 17300,
-  insuraneMoney: 0,
-  pvi: 250000,
-  peopleDependent: 0,
-  type: 0,
+const INSURANCE_OPTIONS = [
+  { label: 'Full wage', value: 'full_wage' },
+  { label: 'Other', value: 'other' },
+]
+
+const defaultInsurance = 'full_wage'
+const SUBMIT_TYPE = {
+  GROSS_TO_NET: 'gross_to_net',
+  NET_TO_GROSS: 'net_to_gross',
 }
 
 const CaculatorForm = () => {
-  const dispatch = useDispatch()
-  const { data: data } = useSelector((state) => state.salary)
-  const [insuranceOther, setInsuranceOther] = useState(false)
-  const [salary, setSalary] = useState(0)
-  const [submit, setSubmit] = useState(false)
+  const initialValues = {
+    salary: 0,
+    sgd: '',
+    rate: 17300,
+    insurance: 'full_wage',
+    insuranceMoney: 0,
+    pvi: 250000,
+    peopleDependent: 0,
+    type: 0,
+  }
 
-  const [isOpen, setIsOpen] = useState(false)
-
-  const EventSchema = Yup.object().shape({
+  const schema = Yup.object().shape({
     salary: Yup.string().max(5000).required('Salary is required'),
   })
 
   const methods = useForm({
-    resolver: yupResolver(EventSchema),
+    resolver: yupResolver(schema),
     defaultValues: initialValues,
   })
-  const { handleSubmit, control, setValue } = methods
-  const rateInput = useWatch({ control, name: 'rate' })
-  const sgdInput = useWatch({ control, name: 'sgd' })
-  const handleChangeInsurance = () => {
-    setSalary(false)
-    setInsuranceOther(!insuranceOther)
-  }
 
-  const handleChangeOther = () => {
-    setInsuranceOther(!insuranceOther)
-    setSalary(true)
-  }
+  const { handleSubmit, watch, setValue } = methods
 
-  const handleChangeOpen = (type) => {
-    setSubmit(type)
-    setIsOpen(true)
-  }
+  const insuranceOption = watch('insurance')
+  const rateInputValue = watch('rate')
+  const sgdInputValue = useDebounce(watch('sgd'), 200)
+  const [isOpen, setIsOpen] = useState(false)
+  const [submitType, setSubmitType] = useState('')
+  const dispatch = useDispatch()
+  const { data = {} } = useSelector((state) => state.salary)
+
+  useEffect(() => {
+    if (!rateInputValue) return
+    try {
+      const inputValue = parseInt(sgdInputValue, 10)
+      if (Number.isNaN(inputValue)) {
+        setValue('salary', 0)
+        return
+      }
+      setValue('salary', inputValue * rateInputValue)
+    } catch (error) {
+      // TODO
+    }
+  }, [sgdInputValue, rateInputValue, setValue])
+
   const onSubmit = async (data) => {
     try {
+      const { salary, insuranceMoney, pvi, peopleDependent } = data || {}
       const dataSending = {
-        salary: data.salary?.replaceAll('.', ''),
-        insuraneMoney: salary
-          ? data.insuraneMoney?.replaceAll('.', '')
-          : data.salary?.replaceAll('.', ''),
-        pvi: data.pvi,
-        peopleDependent: data.peopleDependent,
-        type: submit ? 0 : 1,
+        salary,
+        insuraneMoney: salary ? insuranceMoney : salary,
+        pvi,
+        peopleDependent,
+        type: SUBMIT_TYPE.GROSS_TO_NET === submitType ? 0 : 1,
       }
       await dispatch(getSalary(dataSending))
     } catch (error) {
-      //ToDO
+      // TODO
     }
   }
-  const resultCalcular = useDebounce(sgdInput, 1000)
-  useEffect(() => {
-    const handleChangeSGD = () => {
-      if (rateInput && resultCalcular) {
-        const convertSGDVnd = Number(resultCalcular * rateInput)
-        setValue('salary', convertVND(convertSGDVnd))
-      }
-    }
-    handleChangeSGD()
-  }, [resultCalcular, rateInput, setValue])
-  const convertVND = (number) => {
-    const numberFormat = Number(number)
-    return numberFormat.toLocaleString('it-IT')
-  }
-  const onChangInputSalary = (e) => {
-    const value = e.target.value
-    const checkingNow = value.replaceAll('.', '')
-    if (checkingNow || value === '') {
-      const valueNew = value.replaceAll('.', '')
-      setValue('salary', convertVND(valueNew))
-    }
-  }
-  const onChangInputInsurance = (e) => {
-    const value = e.target.value
-    const checkingNow = value.replaceAll('.', '')
-    if (checkingNow || value === '') {
-      const valueNew = value.replaceAll('.', '')
-      setValue('insuraneMoney', convertVND(valueNew))
-    }
+
+  const handleChangeOpen = (submitType) => {
+    setSubmitType(submitType)
+    setIsOpen(true)
   }
 
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Grid container direction='row' sx={{ p: 3 }}>
-          <Grid
-            container
-            direction='row'
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            alignItems='center'
-          >
-            <Grid item xs={12} sm={2} md={2} sx={{ paddingTop: 1 }}>
+        <Grid container spacing={2} sx={{ p: 3 }}>
+          <Grid item xs={12} md={3} sm={6}>
+            <Stack direction='row' spacing={2} alignItems='center'>
               <Typography>Salary:</Typography>
-            </Grid>
-            <Grid item xs={12} sm={10} md={10} sx={{ paddingTop: 2 }}>
               <RHFTextField
                 name='salary'
-                type='text'
-                sx={{ maxWidth: 250 }}
-                label='VD: 10,000,000'
-                onChange={onChangInputSalary}
+                sx={{
+                  maxWidth: {
+                    lg: 200,
+                    md: 150,
+                    xs: 250,
+                  },
+                }}
+                placement='VD: 10,000,000'
               />
-            </Grid>
+            </Stack>
           </Grid>
-          <Grid
-            container
-            direction='row'
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            alignItems='center'
-          >
-            <Grid item xs={12} sm={2} sx={{ paddingTop: 1 }}>
+
+          <Grid item xs={12} md={3} sm={6}>
+            <Stack direction='row' spacing={2} alignItems='center'>
               <Typography>SGD:</Typography>
-            </Grid>
-            <Grid item xs={12} sm={10} sx={{ paddingTop: 2 }}>
               <RHFTextField
                 type='number'
                 name='sgd'
-                sx={{ minWidth: 100, maxWidth: 250 }}
+                sx={{
+                  maxWidth: {
+                    lg: 200,
+                    md: 150,
+                    xs: 250,
+                  },
+                }}
               />
-            </Grid>
+            </Stack>
           </Grid>
-          <Grid
-            container
-            direction='row'
-            item
-            xs={12}
-            sm={9}
-            md={4}
-            alignItems='center'
-          >
-            <Grid item xs={12} sm={3} md={4} sx={{ paddingTop: 1 }}>
+
+          <Grid item xs={12} md={6} sm={12}>
+            <Stack direction='row' spacing={2} alignItems='center'>
               <Typography>Exchange rate:</Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={8} sx={{ paddingTop: 2 }}>
               <RHFTextField
                 type='number'
                 name='rate'
-                sx={{ minWidth: 100, maxWidth: 250 }}
+                sx={{
+                  maxWidth: {
+                    sm: 200,
+                    xs: 250,
+                  },
+                }}
               />
-            </Grid>
+            </Stack>
           </Grid>
-        </Grid>
 
-        <Grid
-          container
-          direction='row'
-          alignItems='center'
-          sx={{ paddingLeft: 3 }}
-        >
-          <Typography>Insurance:</Typography>
-          <FormControl direction='row' sx={{ paddingLeft: 2 }}>
-            <RadioGroup
-              row
-              name='insurane'
-              aria-labelledby='demo-row-radio-buttons-group-label'
-              alignItems='center'
+          <Grid item xs={12}>
+            <Box
+              display='flex'
+              sx={{
+                flexDirection: {
+                  sm: 'row',
+                  xs: 'column',
+                },
+                alignItems: {
+                  sm: 'center',
+                },
+              }}
             >
-              <FormControlLabel
-                value='234'
-                control={<Radio />}
-                checked={!insuranceOther}
-                name='insuraneMoney'
-                label='Full Wage'
-                onChange={handleChangeInsurance}
-              />
-              <FormControlLabel
-                control={<Radio />}
-                checked={insuranceOther}
-                label='other'
-                onChange={handleChangeOther}
-              />
-              <RHFTextField
-                type='text'
-                name='insuraneMoney'
-                sx={{ maxWidth: 220 }}
-                InputProps={{ disabled: !insuranceOther }}
-                onChange={onChangInputInsurance}
-              />
-              <Typography sx={{ p: 1 }}>(VND)</Typography>
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-
-        <Grid container direction='row' sx={{ p: 3 }}>
-          <Grid
-            item
-            xs={12}
-            sm={4}
-            md={4}
-            container
-            direction='row'
-            alignItems='center'
-          >
-            <Grid container item xs={12} sm={2} md={2} sx={{ paddingTop: 1 }}>
-              <Typography>PVI:</Typography>
-            </Grid>
-            <Grid container item xs={12} sm={10} md={10} sx={{ paddingTop: 1 }}>
-              <RHFTextField type='number' name='pvi' sx={{ maxWidth: 250 }} />
-            </Grid>
+              <Typography>Insurance:</Typography>
+              <Stack
+                direction='row'
+                sx={{
+                  marginLeft: {
+                    sm: '16px',
+                  },
+                }}
+              >
+                <RHFRadioGroup name='insurance' options={INSURANCE_OPTIONS} />
+                <RHFTextField
+                  type='number'
+                  name='insuranceMoney'
+                  disabled={defaultInsurance === insuranceOption}
+                  sx={{
+                    maxWidth: {
+                      md: 200,
+                      sm: 150,
+                      xs: 80,
+                    },
+                  }}
+                />
+                <Typography sx={{ p: 1 }}>(VND)</Typography>
+              </Stack>
+            </Box>
           </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            sm={12}
-            md={8}
-            direction='row'
-            alignItems='center'
-          >
-            <Grid container item xs={12} sm={12} md={2} sx={{ paddingTop: 1 }}>
+
+          <Grid item xs={12} sm={4} lg={3}>
+            <Stack direction='row' alignItems='center' spacing={2}>
+              <Typography>PVI:</Typography>
+              <RHFTextField
+                type='number'
+                name='pvi'
+                sx={{
+                  maxWidth: {
+                    xs: 200,
+                  },
+                }}
+              />
+            </Stack>
+          </Grid>
+
+          <Grid item xs={12} sm={8} lg={9}>
+            <Stack direction='row' alignItems='center' spacing={2}>
               <Typography>Circumstances:</Typography>
-            </Grid>
-            <Grid container item xs={12} sm={4} md={4} sx={{ paddingTop: 1 }}>
               <RHFTextField
                 type='number'
                 name='peopleDependent'
-                sx={{ minWidth: 100, maxWidth: 250 }}
+                sx={{
+                  maxWidth: {
+                    xs: 200,
+                  },
+                }}
               />
-            </Grid>
-            <Grid container item xs={12} sm={3}>
               <Typography>(people)</Typography>
-            </Grid>
+            </Stack>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Stack
+              spacing={1}
+              direction='row'
+              justifyContent='center'
+              alignItems='center'
+              sx={{ p: 3 }}
+            >
+              <Button
+                type='submit'
+                variant='contained'
+                color='secondary'
+                onClick={() => handleChangeOpen(SUBMIT_TYPE.GROSS_TO_NET)}
+              >
+                GROSS → NET
+              </Button>
+              <Button
+                type='submit'
+                variant='contained'
+                onClick={() => handleChangeOpen(SUBMIT_TYPE.NET_TO_GROSS)}
+              >
+                NET → GROSS
+              </Button>
+            </Stack>
           </Grid>
         </Grid>
-        <Stack
-          spacing={1}
-          direction='row'
-          justifyContent='center'
-          alignItems='center'
-          sx={{ p: 3 }}
-        >
-          <Button
-            type='submit'
-            variant='contained'
-            color='secondary'
-            onClick={() => handleChangeOpen(true)}
-          >
-            GROSS → NET
-          </Button>
-          <Button
-            type='submit'
-            variant='contained'
-            onClick={() => handleChangeOpen(false)}
-          >
-            NET → GROSS
-          </Button>
-        </Stack>
       </FormProvider>
-      <Grid>
-        {isOpen ? (
-          <Grid>
-            <Grid container direction='row'>
-              <Grid item xs={12} sm={6}>
-                <Stack
-                  spacing={1}
-                  direction='row'
-                  sx={{ p: 1 }}
-                  alignItems='center'
-                >
-                  <Typography>Description (VND) </Typography>
-                  <Tooltip title='Click to copy' placement='top-start' arrow>
-                    <Button variant='contained' color='secondary'>
-                      Copy to clipboard
-                    </Button>
-                  </Tooltip>
-                </Stack>
-                <NetSalaryTable data={data} rateInput={rateInput} />
-              </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <Stack
-                  spacing={1}
-                  direction='row'
-                  sx={{ p: 1 }}
-                  alignItems='center'
-                >
-                  <Typography>Paid by the employer gross (VND) </Typography>
-                  <Tooltip title='Click to copy' placement='top-start' arrow>
-                    <Button variant='contained' color='secondary'>
-                      Copy to clipboard
-                    </Button>
-                  </Tooltip>
-                </Stack>
-                <TotalExpenseTable data={data} rateInput={rateInput} />
-              </Grid>
-            </Grid>
-
-            <Grid container sx={{ p: 3 }}>
+      {isOpen && (
+        <Grid>
+          <Grid container direction='row'>
+            <Grid item xs={12} sm={6}>
               <Stack
                 spacing={1}
                 direction='row'
                 sx={{ p: 1 }}
                 alignItems='center'
               >
-                <Typography>Personal income tax details (VND) </Typography>
+                <Typography>Description (VND) </Typography>
                 <Tooltip title='Click to copy' placement='top-start' arrow>
                   <Button variant='contained' color='secondary'>
                     Copy to clipboard
                   </Button>
                 </Tooltip>
               </Stack>
-              <TaxrableTable data={data} />
+              <NetSalaryTable data={data} rateInput={rateInputValue} />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Stack
+                spacing={1}
+                direction='row'
+                sx={{ p: 1 }}
+                alignItems='center'
+              >
+                <Typography>Paid by the employer gross (VND) </Typography>
+                <Tooltip title='Click to copy' placement='top-start' arrow>
+                  <Button variant='contained' color='secondary'>
+                    Copy to clipboard
+                  </Button>
+                </Tooltip>
+              </Stack>
+              <TotalExpenseTable data={data} rateInput={rateInputValue} />
             </Grid>
           </Grid>
-        ) : (
-          <Typography />
-        )}
-      </Grid>
+
+          <Grid container sx={{ p: 3 }}>
+            <Stack
+              spacing={1}
+              direction='row'
+              sx={{ p: 1 }}
+              alignItems='center'
+            >
+              <Typography>Personal income tax details (VND) </Typography>
+              <Tooltip title='Click to copy' placement='top-start' arrow>
+                <Button variant='contained' color='secondary'>
+                  Copy to clipboard
+                </Button>
+              </Tooltip>
+            </Stack>
+            <TaxrableTable data={data} />
+          </Grid>
+        </Grid>
+      )}
     </>
   )
 }

@@ -4,17 +4,13 @@ import { API_SALARY } from '@/routes/api'
 import { _postApi } from '@/utils/axios'
 
 export const getSalary = createAsyncThunk('caculator/post', async (data) => {
-  try {
-    const response = await _postApi(API_SALARY, data)
-    return response.data
-  } catch (error) {
-    // console.log(error);
-  }
+  const response = await _postApi(API_SALARY, data)
+  return response.data
 })
 
 export const salarySlice = createSlice({
   name: 'caculator',
-  initialState: { data: '' },
+  initialState: { data: {} },
   reducers: {},
   // extra reducers set get column to state
   extraReducers: {

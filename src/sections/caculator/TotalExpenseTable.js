@@ -10,11 +10,17 @@ import {
   TableRow,
 } from '@mui/material'
 
+import PropTypes from 'prop-types'
+
 const TotalExpenseTable = ({ data, rateInput }) => {
+  const { gross, companyBhxh, companyBhyt, bhtn, pvi, unionTax, total } =
+    data || {}
+
   const convertVNDToSGD = (money) => {
     const convert = Number(money?.replaceAll(',', '')) / rateInput
     return convert.toFixed(0)
   }
+
   return (
     <Paper>
       <TableContainer sx={{ paddingTop: 3 }}>
@@ -23,7 +29,7 @@ const TotalExpenseTable = ({ data, rateInput }) => {
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>GROSS Salary</TableCell>
               <TableCell align='right'>
-                VND: {data.gross}(SGD: {convertVNDToSGD(data.gross)})
+                VND: {gross}(SGD: {convertVNDToSGD(gross)})
               </TableCell>
             </TableRow>
           </TableHead>
@@ -33,8 +39,7 @@ const TotalExpenseTable = ({ data, rateInput }) => {
                 Social insurance (17.5%)
               </TableCell>
               <TableCell align='right'>
-                VND: {data.companyBhxh}(SGD: {convertVNDToSGD(data.companyBhxh)}
-                )
+                VND: {companyBhxh}(SGD: {convertVNDToSGD(companyBhxh)})
               </TableCell>
             </TableRow>
             <TableRow>
@@ -42,8 +47,7 @@ const TotalExpenseTable = ({ data, rateInput }) => {
                 Health Insurance (3%)
               </TableCell>
               <TableCell align='right'>
-                VND: {data.companyBhyt}(SGD: {convertVNDToSGD(data.companyBhyt)}
-                )
+                VND: {companyBhyt}(SGD: {convertVNDToSGD(companyBhyt)})
               </TableCell>
             </TableRow>
             <TableRow>
@@ -51,19 +55,19 @@ const TotalExpenseTable = ({ data, rateInput }) => {
                 UnEmployment Insurance (1 %)
               </TableCell>
               <TableCell align='right'>
-                VND: {data.bhtn}(SGD: {convertVNDToSGD(data.bhtn)})
+                VND: {bhtn}(SGD: {convertVNDToSGD(bhtn)})
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Pvi care</TableCell>
               <TableCell align='right'>
-                VND: {data.pvi}(SGD: {convertVNDToSGD(data.pvi)})
+                VND: {pvi}(SGD: {convertVNDToSGD(pvi)})
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Union tax</TableCell>
               <TableCell align='right'>
-                VND: {data.unionTax}(SGD: {convertVNDToSGD(data.unionTax)})
+                VND: {unionTax}(SGD: {convertVNDToSGD(unionTax)})
               </TableCell>
             </TableRow>
           </TableBody>
@@ -71,7 +75,7 @@ const TotalExpenseTable = ({ data, rateInput }) => {
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Total expense</TableCell>
               <TableCell align='right'>
-                VND: {data.total}(SGD: {convertVNDToSGD(data.total)})
+                VND: {total}(SGD: {convertVNDToSGD(total)})
               </TableCell>
             </TableRow>
           </TableHead>
@@ -79,6 +83,11 @@ const TotalExpenseTable = ({ data, rateInput }) => {
       </TableContainer>
     </Paper>
   )
+}
+
+TotalExpenseTable.propTypes = {
+  rateInput: PropTypes.number,
+  data: PropTypes.object,
 }
 
 export default TotalExpenseTable
