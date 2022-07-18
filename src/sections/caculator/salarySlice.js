@@ -3,10 +3,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { API_SALARY } from '@/routes/api'
 import { _postApi } from '@/utils/axios'
 
-export const getSalary = createAsyncThunk('caculator/post', async (data) => {
-  const response = await _postApi(API_SALARY, data)
-  return response.data
-})
+export const getSalary = createAsyncThunk(
+  'caculator/post',
+  async ({ rateInputValue, ...res }) => {
+    const response = await _postApi(API_SALARY, res)
+    return {
+      data: response.data.result,
+      rateInputValue,
+    }
+  }
+)
 
 export const salarySlice = createSlice({
   name: 'caculator',
@@ -15,7 +21,19 @@ export const salarySlice = createSlice({
   // extra reducers set get column to state
   extraReducers: {
     [getSalary.fulfilled]: (state, action) => {
-      state.data = action.payload.result
+      const { data = {}, rateInputValue } = action.payload
+      const listKeys = Object.keys(data)
+
+      state.data = listKeys.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr]: data[curr],
+          [`${curr}_VNDToSGD`]: (
+            Number(data[curr]?.replaceAll(',', '')) / rateInputValue
+          ).toFixed(0),
+        }),
+        {}
+      )
     },
   },
 })

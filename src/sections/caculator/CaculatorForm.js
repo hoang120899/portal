@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { Box, Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
 
@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 
+import CopyClipboard from '@/components/CopyClipboard'
 import {
   FormProvider,
   RHFRadioGroup,
@@ -58,7 +59,9 @@ const CaculatorForm = () => {
   const sgdInputValue = useDebounce(watch('sgd'), 200)
   const [isOpen, setIsOpen] = useState(false)
   const [submitType, setSubmitType] = useState('')
+  const [netSalaryTableText, setNetSalaryTableText] = useState('')
   const dispatch = useDispatch()
+  const netSalaryTableRef = useRef()
   const { data = {} } = useSelector((state) => state.salary)
 
   useEffect(() => {
@@ -75,6 +78,11 @@ const CaculatorForm = () => {
     }
   }, [sgdInputValue, rateInputValue, setValue])
 
+  useEffect(() => {
+    if (!data || !Object.keys(data).length) return
+    setNetSalaryTableText(netSalaryTableRef.current?.innerText)
+  }, [data])
+
   const onSubmit = async (data) => {
     try {
       const { salary, insuranceMoney, pvi, peopleDependent } = data || {}
@@ -84,6 +92,7 @@ const CaculatorForm = () => {
         pvi,
         peopleDependent,
         type: SUBMIT_TYPE.GROSS_TO_NET === submitType ? 0 : 1,
+        rateInputValue,
       }
       await dispatch(getSalary(dataSending))
     } catch (error) {
@@ -260,13 +269,21 @@ const CaculatorForm = () => {
                 alignItems='center'
               >
                 <Typography>Description (VND) </Typography>
-                <Tooltip title='Click to copy' placement='top-start' arrow>
+                <CopyClipboard
+                  value={netSalaryTableText}
+                  placement='top-start'
+                  arrow
+                >
                   <Button variant='contained' color='secondary'>
                     Copy to clipboard
                   </Button>
-                </Tooltip>
+                </CopyClipboard>
               </Stack>
-              <NetSalaryTable data={data} rateInput={rateInputValue} />
+              <NetSalaryTable
+                data={data}
+                rateInput={rateInputValue}
+                ref={netSalaryTableRef}
+              />
             </Grid>
 
             <Grid item xs={12} sm={6}>

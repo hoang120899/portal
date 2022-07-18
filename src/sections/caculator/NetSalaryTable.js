@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef, useImperativeHandle, useRef } from 'react'
 
 import {
   Paper,
@@ -12,23 +12,35 @@ import {
 
 import PropTypes from 'prop-types'
 
-const NetSalaryTable = ({ data, rateInput }) => {
-  const { gross, bhxh, bhyt, companyBhtn, tnct, tncn, net } = data || {}
+const NetSalaryTable = forwardRef(({ data }, ref) => {
+  const tableRef = useRef()
+  const {
+    gross,
+    gross_VNDToSGD,
+    bhxh,
+    bhxh_VNDToSGD,
+    bhyt,
+    bhyt_VNDToSGD,
+    companyBhtn,
+    companyBhtn_VNDToSGD,
+    tnct,
+    tnct_VNDToSGD,
+    tncn,
+    tncn_VNDToSGD,
+    net,
+    net_VNDToSGD,
+  } = data || {}
 
-  const convertVNDToSGD = (money) => {
-    const convert = Number(money?.replaceAll(',', '')) / rateInput
-    return convert.toFixed(0)
-  }
-
+  useImperativeHandle(ref, () => tableRef.current)
   return (
     <Paper>
       <TableContainer sx={{ paddingTop: 3 }}>
-        <Table>
+        <Table ref={tableRef}>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>GROSS Salary</TableCell>
               <TableCell align='right'>
-                VND: {gross}(SGD:{convertVNDToSGD(gross)} )
+                VND: {gross}(SGD:{gross_VNDToSGD} )
               </TableCell>
             </TableRow>
           </TableHead>
@@ -38,7 +50,7 @@ const NetSalaryTable = ({ data, rateInput }) => {
                 Social insurance (8 %)
               </TableCell>
               <TableCell align='right'>
-                VND: {bhxh}(SGD: {convertVNDToSGD(bhxh)})
+                VND: {bhxh}(SGD: {bhxh_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
@@ -46,7 +58,7 @@ const NetSalaryTable = ({ data, rateInput }) => {
                 Health Insurance (1.5 %)
               </TableCell>
               <TableCell align='right'>
-                VND: {bhyt}(SGD: {convertVNDToSGD(bhyt)})
+                VND: {bhyt}(SGD: {bhyt_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
@@ -54,13 +66,13 @@ const NetSalaryTable = ({ data, rateInput }) => {
                 UnEmployment Insurance (1 %)
               </TableCell>
               <TableCell align='right'>
-                VND: {companyBhtn}(SGD: {convertVNDToSGD(companyBhtn)})
+                VND: {companyBhtn}(SGD: {companyBhtn_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Taxable Income</TableCell>
               <TableCell align='right'>
-                VND: {tnct}(SGD: {convertVNDToSGD(tnct)})
+                VND: {tnct}(SGD: {tnct_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
@@ -68,7 +80,7 @@ const NetSalaryTable = ({ data, rateInput }) => {
                 Personal income tax
               </TableCell>
               <TableCell align='right'>
-                VND: {tncn}(SGD: {convertVNDToSGD(tncn)})
+                VND: {tncn}(SGD: {tncn_VNDToSGD})
               </TableCell>
             </TableRow>
           </TableBody>
@@ -76,7 +88,7 @@ const NetSalaryTable = ({ data, rateInput }) => {
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Net salary</TableCell>
               <TableCell align='right'>
-                VND: {net}(SGD: {convertVNDToSGD(net)})
+                VND: {net}(SGD: {net_VNDToSGD})
               </TableCell>
             </TableRow>
           </TableHead>
@@ -84,7 +96,7 @@ const NetSalaryTable = ({ data, rateInput }) => {
       </TableContainer>
     </Paper>
   )
-}
+})
 
 NetSalaryTable.propTypes = {
   rateInput: PropTypes.number,
