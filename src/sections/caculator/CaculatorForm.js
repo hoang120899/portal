@@ -13,14 +13,12 @@ import {
 } from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useSnackbar } from 'notistack'
 import { useForm, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import * as Yup from 'yup'
 
 import { FormProvider, RHFTextField } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
-import useLocales from '@/hooks/useLocales'
 
 import NetSalaryTable from './NetSalaryTable'
 import TaxrableTable from './TaxrableTable'
@@ -37,7 +35,6 @@ const initialValues = {
 }
 
 const CaculatorForm = () => {
-  const { translate } = useLocales()
   const dispatch = useDispatch()
   const { data: data } = useSelector((state) => state.salary)
   const [insuranceOther, setInsuranceOther] = useState(false)
@@ -46,7 +43,6 @@ const CaculatorForm = () => {
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const { enqueueSnackbar } = useSnackbar()
   const EventSchema = Yup.object().shape({
     salary: Yup.string().max(5000).required('Salary is required'),
   })
@@ -75,28 +71,49 @@ const CaculatorForm = () => {
   const onSubmit = async (data) => {
     try {
       const dataSending = {
-        salary: data.salary,
-        insuraneMoney: salary ? data.insuraneMoney : data.salary,
+        salary: data.salary?.replaceAll('.', ''),
+        insuraneMoney: salary
+          ? data.insuraneMoney?.replaceAll('.', '')
+          : data.salary?.replaceAll('.', ''),
         pvi: data.pvi,
         peopleDependent: data.peopleDependent,
         type: submit ? 0 : 1,
       }
       await dispatch(getSalary(dataSending))
-      enqueueSnackbar(translate('Get success!'))
     } catch (error) {
-      enqueueSnackbar(error.message, { variant: 'error' })
+      //ToDO
     }
   }
   const resultCalcular = useDebounce(sgdInput, 1000)
   useEffect(() => {
     const handleChangeSGD = () => {
-      if (rateInput) {
+      if (rateInput && resultCalcular) {
         const convertSGDVnd = Number(resultCalcular * rateInput)
-        setValue('salary', convertSGDVnd)
+        setValue('salary', convertVND(convertSGDVnd))
       }
     }
     handleChangeSGD()
   }, [resultCalcular, rateInput, setValue])
+  const convertVND = (number) => {
+    const numberFormat = Number(number)
+    return numberFormat.toLocaleString('it-IT')
+  }
+  const onChangInputSalary = (e) => {
+    const value = e.target.value
+    const checkingNow = value.replaceAll('.', '')
+    if (checkingNow || value === '') {
+      const valueNew = value.replaceAll('.', '')
+      setValue('salary', convertVND(valueNew))
+    }
+  }
+  const onChangInputInsurance = (e) => {
+    const value = e.target.value
+    const checkingNow = value.replaceAll('.', '')
+    if (checkingNow || value === '') {
+      const valueNew = value.replaceAll('.', '')
+      setValue('insuraneMoney', convertVND(valueNew))
+    }
+  }
 
   return (
     <>
@@ -116,10 +133,11 @@ const CaculatorForm = () => {
             </Grid>
             <Grid item xs={12} sm={10} md={10} sx={{ paddingTop: 2 }}>
               <RHFTextField
-                type='number'
                 name='salary'
+                type='text'
                 sx={{ maxWidth: 250 }}
                 label='VD: 10,000,000'
+                onChange={onChangInputSalary}
               />
             </Grid>
           </Grid>
@@ -194,10 +212,11 @@ const CaculatorForm = () => {
                 onChange={handleChangeOther}
               />
               <RHFTextField
-                type='number'
+                type='text'
                 name='insuraneMoney'
                 sx={{ maxWidth: 220 }}
                 InputProps={{ disabled: !insuranceOther }}
+                onChange={onChangInputInsurance}
               />
               <Typography sx={{ p: 1 }}>(VND)</Typography>
             </RadioGroup>
