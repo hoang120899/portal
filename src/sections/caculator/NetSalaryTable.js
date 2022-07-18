@@ -10,14 +10,21 @@ import {
   TableRow,
 } from '@mui/material'
 
-const NetSalaryTable = ({ data }) => (
+const NetSalaryTable = ({ data, rateInput }) => {
+  const convertVNDToSGD = (money) => {
+    const convert = money / rateInput
+    return convert
+  }
+  return (
     <Paper>
       <TableContainer sx={{ paddingTop: 3 }}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>GROSS Salary</TableCell>
-              <TableCell align='right'>VND: {data.gross}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.gross}(SGD:{convertVNDToSGD(data.gross)} )
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -25,42 +32,54 @@ const NetSalaryTable = ({ data }) => (
               <TableCell sx={{ fontWeight: 'bold' }}>
                 Social insurance (8 %)
               </TableCell>
-              <TableCell align='right'>VND: {data.bhxh}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.bhxh}(SGD: {convertVNDToSGD(data.bhxh)})
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
                 Health Insurance (1.5 %)
               </TableCell>
-              <TableCell align='right'>VND: {data.bhyt}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.bhyt}(SGD: {convertVNDToSGD(data.bhyt)})
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
                 UnEmployment Insurance (1 %)
               </TableCell>
               <TableCell align='right'>
-                VND: {data.companyBhtn}(SGD: 7)
+                VND: {data.companyBhtn}(SGD: {convertVNDToSGD(data.companyBhtn)}
+                )
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Taxable Income</TableCell>
-              <TableCell align='right'>VND: {data.tnct}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.tnct}(SGD: {convertVNDToSGD(data.tnct)})
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
                 Personal income tax
               </TableCell>
-              <TableCell align='right'>VND: {data.tncn}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.tncn}(SGD: {convertVNDToSGD(data.tncn)})
+              </TableCell>
             </TableRow>
           </TableBody>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Net salary</TableCell>
-              <TableCell align='right'>VND: {data.net}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.net}(SGD: {convertVNDToSGD(data.net)})
+              </TableCell>
             </TableRow>
           </TableHead>
         </Table>
       </TableContainer>
     </Paper>
   )
+}
 
 export default NetSalaryTable

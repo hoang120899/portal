@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   Button,
@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as Yup from 'yup'
 
 import { FormProvider, RHFTextField } from '@/components/hook-form'
+import { useDebounce } from '@/hooks/useDebounce'
 import useLocales from '@/hooks/useLocales'
 
 import NetSalaryTable from './NetSalaryTable'
@@ -56,7 +57,7 @@ const CaculatorForm = () => {
   })
   const { handleSubmit, control, setValue } = methods
   const rateInput = useWatch({ control, name: 'rate' })
-
+  const sgdInput = useWatch({ control, name: 'sgd' })
   const handleChangeInsurance = () => {
     setSalary(false)
     setInsuranceOther(!insuranceOther)
@@ -86,14 +87,16 @@ const CaculatorForm = () => {
       enqueueSnackbar(error.message, { variant: 'error' })
     }
   }
-
-  const handleChangeSGD = (e) => {
-    const valueInput = e.target.value
-    if (rateInput) {
-      const convertSGDVnd = Number(valueInput * rateInput)
-      setValue('salary', convertSGDVnd)
+  const resultCalcular = useDebounce(sgdInput, 500)
+  useEffect(() => {
+    const handleChangeSGD = () => {
+      if (rateInput) {
+        const convertSGDVnd = Number(sgdInput * rateInput)
+        setValue('salary', convertSGDVnd)
+      }
     }
-  }
+    handleChangeSGD()
+  }, [resultCalcular, rateInput, sgdInput, setValue])
 
   return (
     <>
@@ -137,7 +140,6 @@ const CaculatorForm = () => {
                 type='number'
                 name='sgd'
                 sx={{ minWidth: 100, maxWidth: 250 }}
-                onChange={handleChangeSGD}
               />
             </Grid>
           </Grid>
@@ -285,7 +287,7 @@ const CaculatorForm = () => {
                     </Button>
                   </Tooltip>
                 </Stack>
-                <NetSalaryTable data={data} />
+                <NetSalaryTable data={data} rateInput={rateInput} />
               </Grid>
 
               <Grid item xs={12} sm={6}>
@@ -302,7 +304,7 @@ const CaculatorForm = () => {
                     </Button>
                   </Tooltip>
                 </Stack>
-                <TotalExpenseTable data={data} />
+                <TotalExpenseTable data={data} rateInput={rateInput} />
               </Grid>
             </Grid>
 

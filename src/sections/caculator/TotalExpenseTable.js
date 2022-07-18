@@ -10,14 +10,21 @@ import {
   TableRow,
 } from '@mui/material'
 
-const TotalExpenseTable = ({ data }) => (
+const TotalExpenseTable = ({ data, rateInput }) => {
+  const convertVNDToSGD = (money) => {
+    const convert = money / rateInput
+    return convert
+  }
+  return (
     <Paper>
       <TableContainer sx={{ paddingTop: 3 }}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>GROSS Salary</TableCell>
-              <TableCell align='right'>VND: {data.gross}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.gross}(SGD: {convertVNDToSGD(data.gross)})
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -26,7 +33,8 @@ const TotalExpenseTable = ({ data }) => (
                 Social insurance (17.5%)
               </TableCell>
               <TableCell align='right'>
-                VND: {data.companyBhxh}(SGD: 7)
+                VND: {data.companyBhxh}(SGD: {convertVNDToSGD(data.companyBhxh)}
+                )
               </TableCell>
             </TableRow>
             <TableRow>
@@ -34,33 +42,43 @@ const TotalExpenseTable = ({ data }) => (
                 Health Insurance (3%)
               </TableCell>
               <TableCell align='right'>
-                VND: {data.companyBhyt}(SGD: 7)
+                VND: {data.companyBhyt}(SGD: {convertVNDToSGD(data.companyBhyt)}
+                )
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
                 UnEmployment Insurance (1 %)
               </TableCell>
-              <TableCell align='right'>VND: {data.bhtn}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.bhtn}(SGD: {convertVNDToSGD(data.bhtn)})
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Pvi care</TableCell>
-              <TableCell align='right'>VND: {data.pvi}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.pvi}(SGD: {convertVNDToSGD(data.pvi)})
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Union tax</TableCell>
-              <TableCell align='right'>VND: {data.unionTax}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.unionTax}(SGD: {convertVNDToSGD(data.unionTax)})
+              </TableCell>
             </TableRow>
           </TableBody>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Total expense</TableCell>
-              <TableCell align='right'>VND: {data.total}(SGD: 7)</TableCell>
+              <TableCell align='right'>
+                VND: {data.total}(SGD: {convertVNDToSGD(data.total)})
+              </TableCell>
             </TableRow>
           </TableHead>
         </Table>
       </TableContainer>
     </Paper>
   )
+}
 
 export default TotalExpenseTable
