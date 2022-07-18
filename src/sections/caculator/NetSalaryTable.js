@@ -12,8 +12,8 @@ import {
 
 const NetSalaryTable = ({ data, rateInput }) => {
   const convertVNDToSGD = (money) => {
-    const convert = money / rateInput
-    return convert
+    const convert = Number(money?.replaceAll(',', '')) / rateInput
+    return convert.toFixed(0)
   }
   return (
     <Paper>

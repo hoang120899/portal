@@ -87,16 +87,16 @@ const CaculatorForm = () => {
       enqueueSnackbar(error.message, { variant: 'error' })
     }
   }
-  const resultCalcular = useDebounce(sgdInput, 500)
+  const resultCalcular = useDebounce(sgdInput, 1000)
   useEffect(() => {
     const handleChangeSGD = () => {
       if (rateInput) {
-        const convertSGDVnd = Number(sgdInput * rateInput)
+        const convertSGDVnd = Number(resultCalcular * rateInput)
         setValue('salary', convertSGDVnd)
       }
     }
     handleChangeSGD()
-  }, [resultCalcular, rateInput, sgdInput, setValue])
+  }, [resultCalcular, rateInput, setValue])
 
   return (
     <>
