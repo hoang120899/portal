@@ -3,18 +3,20 @@ import { useEffect, useRef, useState } from 'react'
 // @mui
 import { Card, CardHeader } from '@mui/material'
 
+// utils
+import { endOfWeek, startOfWeek } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
 // components
+import EmptyContent from '@/components/EmptyContent'
 import { FormProvider } from '@/components/hook-form'
-// hooks
-// import useLocales from '@/hooks/useLocales'
+import useLocales from '@/hooks/useLocales'
 import useTable from '@/hooks/useTable'
 
-// import { API_WEEKLY_TASKS } from '@/routes/api'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
+// hooks
 import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
 WeeklyTask.propTypes = {
@@ -22,53 +24,64 @@ WeeklyTask.propTypes = {
   subheader: PropTypes.string,
 }
 
+const defaultValues = {
+  startDate: startOfWeek(new Date()).toISOString(),
+  endDate: endOfWeek(new Date()).toISOString(),
+}
+
 export default function WeeklyTask({ title, subheader, ...other }) {
   const [list, setList] = useState([])
-  // const { translate } = useLocales()
+  const { translate } = useLocales()
   const { page, rowsPerPage, setPage } = useTable()
 
   useEffect(() => {
     setPage(0)
   }, [setPage])
 
-  const test = useRef({
+  const payload = useRef({
     queries: {
       pageSize: rowsPerPage,
       pageNumber: page + 1,
     },
-    body: {
-      startDate: '2021-05-31T17:00:00.000Z',
-      endDate: '2022-07-19T16:59:59.999Z',
-    },
+    body: defaultValues,
   })
 
   const [getAllWeeklyTasks, { isLoading }] = useGetAllWeeklyTasksMutation()
 
   useEffect(() => {
-    const getAllTasks = async (test) => {
-      const res = await getAllWeeklyTasks(test.current).unwrap()
+    const getAllTasks = async (payload) => {
+      const res = await getAllWeeklyTasks(payload.current).unwrap()
       const { data } = res
       setList(data?.tasks)
     }
-    getAllTasks(test)
-  }, [getAllWeeklyTasks, test])
-
-  // console.log(list)
+    getAllTasks(payload)
+  }, [getAllWeeklyTasks, payload])
 
   const methods = useForm({
-    defaultValues: {
-      startDate: null,
-      endDate: null,
-    },
+    defaultValues,
   })
+
   const {
     handleSubmit,
     // formState: { errors, isSubmitting },
   } = methods
+
   const onSubmit = async (data) => {
     try {
-      // eslint-disable-next-line no-console
-      console.log('data', data)
+      payload.current = {
+        ...payload.current,
+        body: {
+          startDate: data
+            ? new Date(data?.startDate).toISOString()
+            : defaultValues.startDate,
+          endDate: data
+            ? new Date(data?.endDate).toISOString()
+            : defaultValues.endDate,
+        },
+      }
+      const res = await getAllWeeklyTasks(payload.current).unwrap()
+      const { data: dataTasks } = res
+      setList(dataTasks?.tasks)
     } catch (error) {
       // TODO
     }
@@ -80,7 +93,17 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <WeeklyTaskTableToolbar />
       </FormProvider>
-      <WeeklyTaskDetails list={list} isLoading={isLoading} />
+      {list.length > 0 ? (
+        <WeeklyTaskDetails list={list} isLoading={isLoading} />
+      ) : (
+        <EmptyContent
+          title={translate('No Data')}
+          sx={{
+            height: 'auto',
+            '& span.MuiBox-root': { height: 'auto' },
+          }}
+        />
+      )}
     </Card>
   )
 }
