@@ -12,8 +12,11 @@ import {
 
 import PropTypes from 'prop-types'
 
+import useLocales from '@/hooks/useLocales'
+
 const NetSalaryTable = forwardRef(({ data }, ref) => {
   const tableRef = useRef()
+  const { translate } = useLocales()
   const {
     gross,
     gross_VNDToSGD,
@@ -38,7 +41,9 @@ const NetSalaryTable = forwardRef(({ data }, ref) => {
         <Table ref={tableRef}>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>GROSS Salary</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>
+                {translate('pages.calculator.gross_salary') || 'GROSS Salary'}
+              </TableCell>
               <TableCell align='right'>
                 VND: {gross}(SGD:{gross_VNDToSGD} )
               </TableCell>
@@ -47,7 +52,9 @@ const NetSalaryTable = forwardRef(({ data }, ref) => {
           <TableBody>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                Social insurance (8 %)
+                {translate('pages.calculator.social_insurance') ||
+                  'Social insurance'}{' '}
+                (8 %)
               </TableCell>
               <TableCell align='right'>
                 VND: {bhxh}(SGD: {bhxh_VNDToSGD})
@@ -55,7 +62,9 @@ const NetSalaryTable = forwardRef(({ data }, ref) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                Health Insurance (1.5 %)
+                {translate('pages.calculator.health_insurance') ||
+                  'Health Insurance'}{' '}
+                (1.5 %)
               </TableCell>
               <TableCell align='right'>
                 VND: {bhyt}(SGD: {bhyt_VNDToSGD})
@@ -63,21 +72,27 @@ const NetSalaryTable = forwardRef(({ data }, ref) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                UnEmployment Insurance (1 %)
+                {translate('pages.calculator.unemployment_insurance') ||
+                  'UnEmployment Insurance'}{' '}
+                (1 %)
               </TableCell>
               <TableCell align='right'>
                 VND: {companyBhtn}(SGD: {companyBhtn_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Taxable Income</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>
+                {translate('pages.calculator.taxable_income') ||
+                  'Taxable Income'}
+              </TableCell>
               <TableCell align='right'>
                 VND: {tnct}(SGD: {tnct_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                Personal income tax
+                {translate('pages.calculator.personal_income_tax') ||
+                  'Personal income tax'}
               </TableCell>
               <TableCell align='right'>
                 VND: {tncn}(SGD: {tncn_VNDToSGD})
@@ -86,7 +101,9 @@ const NetSalaryTable = forwardRef(({ data }, ref) => {
           </TableBody>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Net salary</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>
+                {translate('pages.calculator.net_salary') || 'Net salary'}
+              </TableCell>
               <TableCell align='right'>
                 VND: {net}(SGD: {net_VNDToSGD})
               </TableCell>

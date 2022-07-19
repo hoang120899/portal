@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef, useImperativeHandle, useRef } from 'react'
 
 import {
   Paper,
@@ -12,70 +12,97 @@ import {
 
 import PropTypes from 'prop-types'
 
-const TotalExpenseTable = ({ data, rateInput }) => {
-  const { gross, companyBhxh, companyBhyt, bhtn, pvi, unionTax, total } =
-    data || {}
+import useLocales from '@/hooks/useLocales'
 
-  const convertVNDToSGD = (money) => {
-    const convert = Number(money?.replaceAll(',', '')) / rateInput
-    return convert.toFixed(0)
-  }
-
+const TotalExpenseTable = forwardRef(({ data }, ref) => {
+  const { translate } = useLocales()
+  const tableRef = useRef()
+  const {
+    gross,
+    gross_VNDToSGD,
+    companyBhxh,
+    companyBhxh_VNDToSGD,
+    companyBhyt,
+    companyBhyt_VNDToSGD,
+    bhtn,
+    bhtn_VNDToSGD,
+    pvi,
+    pvi_VNDToSGD,
+    unionTax,
+    unionTax_VNDToSGD,
+    total,
+    total_VNDToSGD,
+  } = data || {}
+  useImperativeHandle(ref, () => tableRef.current)
   return (
     <Paper>
       <TableContainer sx={{ paddingTop: 3 }}>
-        <Table>
+        <Table ref={tableRef}>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>GROSS Salary</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>
+                {translate('pages.calculator.gross_salary') || 'GROSS Salary'}
+              </TableCell>
               <TableCell align='right'>
-                VND: {gross}(SGD: {convertVNDToSGD(gross)})
+                VND: {gross}(SGD:{gross_VNDToSGD})
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                Social insurance (17.5%)
+                {translate('pages.calculator.social_insurance') ||
+                  'Social insurance'}{' '}
+                (17.5%)
               </TableCell>
               <TableCell align='right'>
-                VND: {companyBhxh}(SGD: {convertVNDToSGD(companyBhxh)})
+                VND: {companyBhxh}(SGD: {companyBhxh_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                Health Insurance (3%)
+                {translate('pages.calculator.health_insurance') ||
+                  'Health Insurance'}{' '}
+                (3%)
               </TableCell>
               <TableCell align='right'>
-                VND: {companyBhyt}(SGD: {convertVNDToSGD(companyBhyt)})
+                VND: {companyBhyt}(SGD: {companyBhyt_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                UnEmployment Insurance (1 %)
+                {translate('pages.calculator.unemployment_insurance') ||
+                  'UnEmployment Insurance'}{' '}
+                (1 %)
               </TableCell>
               <TableCell align='right'>
-                VND: {bhtn}(SGD: {convertVNDToSGD(bhtn)})
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Pvi care</TableCell>
-              <TableCell align='right'>
-                VND: {pvi}(SGD: {convertVNDToSGD(pvi)})
+                VND: {bhtn}(SGD: {bhtn_VNDToSGD})
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Union tax</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>
+                {translate('pages.calculator.pvi_care') || 'Pvi care'}
+              </TableCell>
               <TableCell align='right'>
-                VND: {unionTax}(SGD: {convertVNDToSGD(unionTax)})
+                VND: {pvi}(SGD: {pvi_VNDToSGD})
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold' }}>
+                {translate('pages.calculator.union_tax') || 'Union tax'}
+              </TableCell>
+              <TableCell align='right'>
+                VND: {unionTax}(SGD: {unionTax_VNDToSGD})
               </TableCell>
             </TableRow>
           </TableBody>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Total expense</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>
+                {translate('pages.calculator.total_expense') || 'Total expense'}
+              </TableCell>
               <TableCell align='right'>
-                VND: {total}(SGD: {convertVNDToSGD(total)})
+                VND: {total}(SGD: {total_VNDToSGD})
               </TableCell>
             </TableRow>
           </TableHead>
@@ -83,7 +110,7 @@ const TotalExpenseTable = ({ data, rateInput }) => {
       </TableContainer>
     </Paper>
   )
-}
+})
 
 TotalExpenseTable.propTypes = {
   rateInput: PropTypes.number,

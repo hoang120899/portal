@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import { Box, Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
+import { Box, Button, Grid, Stack, Typography } from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
@@ -13,6 +13,7 @@ import {
   RHFTextField,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
+import useLocales from '@/hooks/useLocales'
 import { useDispatch, useSelector } from '@/redux/store'
 
 import NetSalaryTable from './NetSalaryTable'
@@ -51,7 +52,7 @@ const CaculatorForm = () => {
     resolver: yupResolver(schema),
     defaultValues: initialValues,
   })
-
+  const { translate } = useLocales()
   const { handleSubmit, watch, setValue } = methods
 
   const insuranceOption = watch('insurance')
@@ -60,19 +61,22 @@ const CaculatorForm = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [submitType, setSubmitType] = useState('')
   const [netSalaryTableText, setNetSalaryTableText] = useState('')
+  const [totalExpenseTableText, setTotalExpenseTableText] = useState('')
+  const [taxrableTableText, setTaxrableTableText] = useState('')
   const dispatch = useDispatch()
   const netSalaryTableRef = useRef()
+  const totalExpenseTableRef = useRef()
+  const taxrableTableRef = useRef()
   const { data = {} } = useSelector((state) => state.salary)
-
   useEffect(() => {
-    if (!rateInputValue) return
+    if (!rateInputValue && sgdInputValue) return
     try {
       const inputValue = parseInt(sgdInputValue, 10)
       if (Number.isNaN(inputValue)) {
         setValue('salary', 0)
         return
       }
-      setValue('salary', inputValue * rateInputValue)
+      setValue('salary', convertVND(Number(inputValue * rateInputValue)))
     } catch (error) {
       // TODO
     }
@@ -81,14 +85,18 @@ const CaculatorForm = () => {
   useEffect(() => {
     if (!data || !Object.keys(data).length) return
     setNetSalaryTableText(netSalaryTableRef.current?.innerText)
+    setTotalExpenseTableText(totalExpenseTableRef.current?.innerText)
+    setTaxrableTableText(taxrableTableRef.current?.innerText)
   }, [data])
 
   const onSubmit = async (data) => {
     try {
       const { salary, insuranceMoney, pvi, peopleDependent } = data || {}
       const dataSending = {
-        salary,
-        insuraneMoney: salary ? insuranceMoney : salary,
+        salary: salary?.replaceAll('.', ''),
+        insuraneMoney: salary
+          ? salary?.replaceAll('.', '')
+          : insuranceMoney?.replaceAll('.', ''),
         pvi,
         peopleDependent,
         type: SUBMIT_TYPE.GROSS_TO_NET === submitType ? 0 : 1,
@@ -104,6 +112,26 @@ const CaculatorForm = () => {
     setSubmitType(submitType)
     setIsOpen(true)
   }
+  const convertVND = (number) => {
+    const numberFormat = Number(number)
+    return numberFormat.toLocaleString('it-IT')
+  }
+  const onChangInputSalary = (e) => {
+    const value = e.target.value
+    const checkingNow = value.replaceAll('.', '')
+    if (checkingNow || value === '') {
+      const valueNew = value.replaceAll('.', '')
+      setValue('salary', convertVND(valueNew))
+    }
+  }
+  const onChangInputInsurance = (e) => {
+    const value = e.target.value
+    const checkingNow = value.replaceAll('.', '')
+    if (checkingNow || value === '') {
+      const valueNew = value.replaceAll('.', '')
+      setValue('insuranceMoney', convertVND(valueNew))
+    }
+  }
 
   return (
     <>
@@ -111,8 +139,11 @@ const CaculatorForm = () => {
         <Grid container spacing={2} sx={{ p: 3 }}>
           <Grid item xs={12} md={3} sm={6}>
             <Stack direction='row' spacing={2} alignItems='center'>
-              <Typography>Salary:</Typography>
+              <Typography>
+                {translate('pages.calculator.salary') || 'Salary'}:
+              </Typography>
               <RHFTextField
+                type='text'
                 name='salary'
                 sx={{
                   maxWidth: {
@@ -122,6 +153,7 @@ const CaculatorForm = () => {
                   },
                 }}
                 placement='VD: 10,000,000'
+                onChange={onChangInputSalary}
               />
             </Stack>
           </Grid>
@@ -145,7 +177,9 @@ const CaculatorForm = () => {
 
           <Grid item xs={12} md={6} sm={12}>
             <Stack direction='row' spacing={2} alignItems='center'>
-              <Typography>Exchange rate:</Typography>
+              <Typography>
+                {translate('pages.calculator.rate') || 'Exchange rate'}:
+              </Typography>
               <RHFTextField
                 type='number'
                 name='rate'
@@ -172,7 +206,9 @@ const CaculatorForm = () => {
                 },
               }}
             >
-              <Typography>Insurance:</Typography>
+              <Typography>
+                {translate('pages.calculator.insurance') || 'Insurance'}:
+              </Typography>
               <Stack
                 direction='row'
                 sx={{
@@ -193,6 +229,7 @@ const CaculatorForm = () => {
                       xs: 80,
                     },
                   }}
+                  onChange={onChangInputInsurance}
                 />
                 <Typography sx={{ p: 1 }}>(VND)</Typography>
               </Stack>
@@ -216,7 +253,10 @@ const CaculatorForm = () => {
 
           <Grid item xs={12} sm={8} lg={9}>
             <Stack direction='row' alignItems='center' spacing={2}>
-              <Typography>Circumstances:</Typography>
+              <Typography>
+                {translate('pages.calculator.circumstances') || 'Circumstances'}
+                :
+              </Typography>
               <RHFTextField
                 type='number'
                 name='peopleDependent'
@@ -226,7 +266,9 @@ const CaculatorForm = () => {
                   },
                 }}
               />
-              <Typography>(people)</Typography>
+              <Typography>
+                {translate('pages.calculator.people') || '(people)'}
+              </Typography>
             </Stack>
           </Grid>
 
@@ -268,14 +310,17 @@ const CaculatorForm = () => {
                 sx={{ p: 1 }}
                 alignItems='center'
               >
-                <Typography>Description (VND) </Typography>
+                <Typography>
+                  {translate('pages.calculator.description') || 'Description'}{' '}
+                  (VND){' '}
+                </Typography>
                 <CopyClipboard
                   value={netSalaryTableText}
                   placement='top-start'
                   arrow
                 >
                   <Button variant='contained' color='secondary'>
-                    Copy to clipboard
+                    {translate('pages.calculator.copy') || 'Copy to clipboard'}
                   </Button>
                 </CopyClipboard>
               </Stack>
@@ -293,14 +338,26 @@ const CaculatorForm = () => {
                 sx={{ p: 1 }}
                 alignItems='center'
               >
-                <Typography>Paid by the employer gross (VND) </Typography>
-                <Tooltip title='Click to copy' placement='top-start' arrow>
+                <Typography>
+                  {translate('pages.calculator.paid_gross') ||
+                    'Paid by the employer gross'}
+                  (VND)
+                </Typography>
+                <CopyClipboard
+                  value={totalExpenseTableText}
+                  placement='top-start'
+                  arrow
+                >
                   <Button variant='contained' color='secondary'>
-                    Copy to clipboard
+                    {translate('pages.calculator.copy') || 'Copy to clipboard'}
                   </Button>
-                </Tooltip>
+                </CopyClipboard>
               </Stack>
-              <TotalExpenseTable data={data} rateInput={rateInputValue} />
+              <TotalExpenseTable
+                data={data}
+                rateInput={rateInputValue}
+                ref={totalExpenseTableRef}
+              />
             </Grid>
           </Grid>
 
@@ -311,14 +368,26 @@ const CaculatorForm = () => {
               sx={{ p: 1 }}
               alignItems='center'
             >
-              <Typography>Personal income tax details (VND) </Typography>
-              <Tooltip title='Click to copy' placement='top-start' arrow>
+              <Typography>
+                {translate('pages.calculator.detail_income_tax') ||
+                  'Personal income tax details '}
+                (VND){' '}
+              </Typography>
+              <CopyClipboard
+                value={taxrableTableText}
+                placement='top-start'
+                arrow
+              >
                 <Button variant='contained' color='secondary'>
-                  Copy to clipboard
+                  {translate('pages.calculator.copy') || 'Copy to clipboard'}
                 </Button>
-              </Tooltip>
+              </CopyClipboard>
             </Stack>
-            <TaxrableTable data={data} />
+            <TaxrableTable
+              data={data}
+              rateInput={rateInputValue}
+              ref={taxrableTableRef}
+            />
           </Grid>
         </Grid>
       )}
