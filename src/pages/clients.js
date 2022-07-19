@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useCallback, useRef } from 'react'
 
-import { Container } from '@mui/material'
+import { Button, Container } from '@mui/material'
 
 // components
 import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
+import Iconify from '@/components/Iconify'
 import Page from '@/components/Page'
 // config
 import { PAGES } from '@/config'
@@ -14,6 +15,8 @@ import useSettings from '@/hooks/useSettings'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
+// sections
+import ClientList from '@/sections/client/list'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -32,6 +35,11 @@ export async function getStaticProps() {
 export default function Clients() {
   const { themeStretch } = useSettings()
   const { translate } = useLocales()
+  const clientListRef = useRef()
+
+  const handleAddNewClient = useCallback(() => {
+    clientListRef.current.handleAddNewClient()
+  }, [])
 
   return (
     <Page title={translate('nav.clients')}>
@@ -45,7 +53,17 @@ export default function Clients() {
             },
             { name: translate('pages.clients.heading') },
           ]}
+          action={
+            <Button
+              variant='contained'
+              startIcon={<Iconify icon={'eva:plus-fill'} />}
+              onClick={handleAddNewClient}
+            >
+              New Client
+            </Button>
+          }
         />
+        <ClientList ref={clientListRef} />
       </Container>
     </Page>
   )
