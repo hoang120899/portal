@@ -294,65 +294,69 @@ const CaculatorForm = () => {
       </FormProvider>
 
       {isOpen && (
-        <Grid>
-          <Grid container direction='row'>
-            <Grid item xs={12} sm={6}>
-              <Stack
-                spacing={1}
-                direction='row'
-                sx={{ p: 1 }}
-                alignItems='center'
+        <Grid
+          container
+          direction='row'
+          sx={{ p: 3 }}
+          rowSpacing={6}
+          columnSpacing={2}
+        >
+          <Grid item xs={12} md={6}>
+            <Stack
+              spacing={1}
+              direction='row'
+              sx={{ p: 1 }}
+              alignItems='center'
+            >
+              <Typography>
+                {translate('pages.calculator.description')} (VND){' '}
+              </Typography>
+              <CopyClipboard
+                value={netSalaryTableText}
+                placement='top-start'
+                arrow
               >
-                <Typography>
-                  {translate('pages.calculator.description')} (VND){' '}
-                </Typography>
-                <CopyClipboard
-                  value={netSalaryTableText}
-                  placement='top-start'
-                  arrow
-                >
-                  <Button variant='contained' color='secondary'>
-                    {translate('pages.calculator.copy')}
-                  </Button>
-                </CopyClipboard>
-              </Stack>
-              <NetSalaryTable
-                data={data}
-                rateInput={rateInputValue}
-                ref={netSalaryTableRef}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Stack
-                spacing={1}
-                direction='row'
-                sx={{ p: 1 }}
-                alignItems='center'
-              >
-                <Typography>
-                  {translate('pages.calculator.paid_gross')}
-                  (VND)
-                </Typography>
-                <CopyClipboard
-                  value={totalExpenseTableText}
-                  placement='top-start'
-                  arrow
-                >
-                  <Button variant='contained' color='secondary'>
-                    {translate('pages.calculator.copy')}
-                  </Button>
-                </CopyClipboard>
-              </Stack>
-              <TotalExpenseTable
-                data={data}
-                rateInput={rateInputValue}
-                ref={totalExpenseTableRef}
-              />
-            </Grid>
+                <Button variant='contained' color='secondary'>
+                  {translate('pages.calculator.copy')}
+                </Button>
+              </CopyClipboard>
+            </Stack>
+            <NetSalaryTable
+              data={data}
+              rateInput={rateInputValue}
+              ref={netSalaryTableRef}
+            />
           </Grid>
 
-          <Grid container sx={{ p: 3 }}>
+          <Grid item xs={12} md={6}>
+            <Stack
+              spacing={2}
+              direction='row'
+              sx={{ p: 1 }}
+              alignItems='center'
+            >
+              <Typography>
+                {translate('pages.calculator.paid_gross')}
+                (VND)
+              </Typography>
+              <CopyClipboard
+                value={totalExpenseTableText}
+                placement='top-start'
+                arrow
+              >
+                <Button variant='contained' color='secondary'>
+                  {translate('pages.calculator.copy')}
+                </Button>
+              </CopyClipboard>
+            </Stack>
+            <TotalExpenseTable
+              data={data}
+              rateInput={rateInputValue}
+              ref={totalExpenseTableRef}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
             <Stack
               spacing={1}
               direction='row'

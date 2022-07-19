@@ -9,10 +9,16 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
 import useLocales from '@/hooks/useLocales'
+
+const TableCellStyle = styled(TableCell)(({ isBoldWeight = false }) => ({
+  fontWeight: isBoldWeight ? 'bold' : 'normal',
+  verticalAlign: 'top',
+}))
 
 const TotalExpenseTable = forwardRef(({ data }, ref) => {
   const { translate } = useLocales()
@@ -40,64 +46,70 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
         <Table ref={tableRef}>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>
+              <TableCellStyle isBoldWeight>
                 {translate('pages.calculator.gross_salary')}
-              </TableCell>
-              <TableCell align='right'>
+              </TableCellStyle>
+              <TableCellStyle align='right'>
                 VND: {gross}(SGD:{gross_VNDToSGD})
-              </TableCell>
+              </TableCellStyle>
             </TableRow>
           </TableHead>
+
           <TableBody>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>
+              <TableCellStyle isBoldWeight>
                 {translate('pages.calculator.social_insurance')} (17.5%)
-              </TableCell>
-              <TableCell align='right'>
+              </TableCellStyle>
+              <TableCellStyle align='right'>
                 VND: {companyBhxh}(SGD: {companyBhxh_VNDToSGD})
-              </TableCell>
+              </TableCellStyle>
             </TableRow>
+
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>
+              <TableCellStyle isBoldWeight>
                 {translate('pages.calculator.health_insurance')} (3%)
-              </TableCell>
-              <TableCell align='right'>
+              </TableCellStyle>
+              <TableCellStyle align='right'>
                 VND: {companyBhyt}(SGD: {companyBhyt_VNDToSGD})
-              </TableCell>
+              </TableCellStyle>
             </TableRow>
+
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>
+              <TableCellStyle isBoldWeight>
                 {translate('pages.calculator.unemployment_insurance')} (1 %)
-              </TableCell>
-              <TableCell align='right'>
+              </TableCellStyle>
+              <TableCellStyle align='right'>
                 VND: {bhtn}(SGD: {bhtn_VNDToSGD})
-              </TableCell>
+              </TableCellStyle>
             </TableRow>
+
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>
+              <TableCellStyle isBoldWeight>
                 {translate('pages.calculator.pvi_care')}
-              </TableCell>
-              <TableCell align='right'>
+              </TableCellStyle>
+              <TableCellStyle align='right'>
                 VND: {pvi}(SGD: {pvi_VNDToSGD})
-              </TableCell>
+              </TableCellStyle>
             </TableRow>
+
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>
+              <TableCellStyle isBoldWeight>
                 {translate('pages.calculator.union_tax')}
-              </TableCell>
-              <TableCell align='right'>
+              </TableCellStyle>
+              <TableCellStyle align='right'>
                 VND: {unionTax}(SGD: {unionTax_VNDToSGD})
-              </TableCell>
+              </TableCellStyle>
             </TableRow>
           </TableBody>
+
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>
+              <TableCellStyle isBoldWeight>
                 {translate('pages.calculator.total_expense')}
-              </TableCell>
-              <TableCell align='right'>
+              </TableCellStyle>
+              <TableCellStyle align='right'>
                 VND: {total}(SGD: {total_VNDToSGD})
-              </TableCell>
+              </TableCellStyle>
             </TableRow>
           </TableHead>
         </Table>
