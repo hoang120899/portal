@@ -37,7 +37,7 @@ const CaculatorForm = () => {
     salary: 0,
     sgd: '',
     rate: 17300,
-    insurance: 'full_wage',
+    insurance: defaultInsurance,
     insuranceMoney: 0,
     pvi: 250000,
     peopleDependent: 0,
@@ -91,12 +91,15 @@ const CaculatorForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const { salary, insuranceMoney, pvi, peopleDependent } = data || {}
+      const { salary, insuranceMoney, pvi, peopleDependent, insurance } =
+        data || {}
       const dataSending = {
         salary: salary?.replaceAll('.', ''),
-        insuraneMoney: salary
-          ? salary?.replaceAll('.', '')
-          : insuranceMoney?.replaceAll('.', ''),
+        insuraneMoney:
+          insurance === defaultInsurance
+            ? salary?.replaceAll('.', '')
+            : insuranceMoney?.replaceAll('.', ''),
+
         pvi,
         peopleDependent,
         type: SUBMIT_TYPE.GROSS_TO_NET === submitType ? 0 : 1,
@@ -119,17 +122,15 @@ const CaculatorForm = () => {
   const onChangInputSalary = (e) => {
     const value = e.target.value
     const checkingNow = value.replaceAll('.', '')
-    if (checkingNow || value === '') {
-      const valueNew = value.replaceAll('.', '')
-      setValue('salary', convertVND(valueNew))
+    if (+checkingNow || value === '') {
+      setValue('salary', convertVND(checkingNow))
     }
   }
   const onChangInputInsurance = (e) => {
     const value = e.target.value
     const checkingNow = value.replaceAll('.', '')
-    if (checkingNow || value === '') {
-      const valueNew = value.replaceAll('.', '')
-      setValue('insuranceMoney', convertVND(valueNew))
+    if (+checkingNow || value === '') {
+      setValue('insuranceMoney', convertVND(checkingNow))
     }
   }
 
