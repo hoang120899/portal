@@ -16,11 +16,25 @@ import { useTheme } from '@emotion/react'
 
 // components
 import Iconify from '@/components/Iconify'
-import Label from '@/components/Label'
 
 export default function JobsMobileRow({ row }) {
   const theme = useTheme()
   const [open, setOpen] = useState(true)
+  const colorStatus = [
+    {
+      status: 'Active',
+      color: '#00b300',
+    },
+    {
+      status: 'Pending',
+      color: '#ffc530',
+    },
+    {
+      status: 'Close',
+      color: '#e62e00',
+    },
+  ]
+  const color = colorStatus.find((obj) => obj.status === row.jobStatus).color
   return (
     <>
       <TableRow sx={{ display: 'flex', marginTop: 2 }}>
@@ -139,15 +153,18 @@ export default function JobsMobileRow({ row }) {
                       </Typography>
                     </TableCell>
                     <TableCell align='left'>
-                      <Label
+                      <Typography
                         variant={
                           theme.palette.mode === 'light' ? 'ghost' : 'filled'
                         }
-                        color={(status === 'banned' && 'error') || 'success'}
-                        sx={{ textTransform: 'capitalize' }}
+                        color={color}
+                        sx={{
+                          fontWeight: 'bold',
+                          textTransform: 'capitalize',
+                        }}
                       >
                         {row.jobStatus}
-                      </Label>
+                      </Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow align='left'>
@@ -185,7 +202,7 @@ export default function JobsMobileRow({ row }) {
                       </Typography>
                     </TableCell>
                     <TableCell align='left'>
-                      <IconButton size='small'>
+                      <IconButton size='small' sx={{ padding: 0 }}>
                         <Iconify icon={'ant-design:eye-twotone'} />
                       </IconButton>
                     </TableCell>

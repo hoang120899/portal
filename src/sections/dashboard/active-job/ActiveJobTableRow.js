@@ -5,7 +5,6 @@ import { useTheme } from '@mui/material/styles'
 import PropTypes from 'prop-types'
 
 // components
-import Label from '@/components/Label'
 
 UserTableRow.propTypes = {
   row: PropTypes.object,
@@ -22,31 +21,68 @@ export default function UserTableRow({ row }) {
     numberCandidate,
     type,
   } = row
+  const colorStatus = [
+    {
+      status: 'Active',
+      color: '#00b300',
+    },
+    {
+      status: 'Pending',
+      color: '#ffc530',
+    },
+    {
+      status: 'Close',
+      color: '#e62e00',
+    },
+  ]
+  const color = colorStatus.find((obj) => obj.status === jobStatus).color
   return (
     <TableRow hover style={{ width: '100%' }}>
-      <TableCell>
-        <Link href='/'>{title}</Link>
-        <Typography variant='subtitle2' noWrap>
+      <TableCell width='40%'>
+        <Link
+          sx={{
+            color: 'inherit',
+            fontWeight: 'bold',
+          }}
+          href='/'
+        >
+          {title}
+        </Link>
+        <Typography
+          variant='subtitle2'
+          noWrap
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 'normal',
+          }}
+        >
           {type}
         </Typography>
       </TableCell>
 
-      <TableCell align='left'>{clientName || ''}</TableCell>
+      <TableCell width='20%' align='left'>
+        {clientName || ''}
+      </TableCell>
 
-      <TableCell align='left' sx={{ textTransform: 'capitalize' }}>
+      <TableCell width='15%' align='left' sx={{ textTransform: 'capitalize' }}>
         {nameTeam}
       </TableCell>
 
-      <TableCell align='left'>{numberCandidate}</TableCell>
+      <TableCell width='15%' align='center'>
+        {numberCandidate}
+      </TableCell>
 
-      <TableCell align='left'>
-        <Label
+      <TableCell width='10%' align='left'>
+        <Typography
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={(status === 'banned' && 'error') || 'success'}
-          sx={{ textTransform: 'capitalize' }}
+          color={color}
+          sx={{
+            fontWeight: 'bold',
+            textTransform: 'capitalize',
+          }}
         >
           {jobStatus}
-        </Label>
+        </Typography>
       </TableCell>
     </TableRow>
   )

@@ -49,35 +49,47 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
 
   return (
     <Card {...other}>
-      <div
-        style={{
-          display: 'flex',
-          alignContent: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <CardHeader
-          title={`${titleJobs} Jobs`}
-          subheader={subheader}
-          sx={{ padding: 2 }}
-        />
-        <Tabs
-          allowScrollButtonsMobile
-          variant='scrollable'
-          scrollButtons='auto'
-          value={filterStatus}
-          onChange={onChangeFilterStatus}
-          sx={{ px: 2 }}
-        >
-          {STATUS_OPTIONS.map(({ label, value }) => (
-            <Tab disableRipple key={value} label={label} value={value} />
-          ))}
-        </Tabs>
-      </div>
       {isDesktop ? (
-        <ActiveJobMobile dataSource={dataJobs} />
+        <>
+          <CardHeader
+            title={`${titleJobs} Jobs`}
+            subheader={subheader}
+            sx={{ padding: 2, textAlign: 'center' }}
+          />
+          <Tabs value={filterStatus} onChange={onChangeFilterStatus} centered>
+            {STATUS_OPTIONS.map(({ label, value }) => (
+              <Tab disableRipple key={value} label={label} value={value} />
+            ))}
+          </Tabs>
+          <ActiveJobMobile dataSource={dataJobs} />
+        </>
       ) : (
         <>
+          <div
+            style={{
+              display: 'flex',
+              alignContent: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <CardHeader
+              title={`${titleJobs} Jobs`}
+              subheader={subheader}
+              sx={{ padding: 2 }}
+            />
+            <Tabs
+              allowScrollButtonsMobile
+              variant='scrollable'
+              scrollButtons='auto'
+              value={filterStatus}
+              onChange={onChangeFilterStatus}
+              sx={{ px: 2 }}
+            >
+              {STATUS_OPTIONS.map(({ label, value }) => (
+                <Tab disableRipple key={value} label={label} value={value} />
+              ))}
+            </Tabs>
+          </div>
           <Divider />
           <BasicTable
             columns={TABLE_HEAD}
