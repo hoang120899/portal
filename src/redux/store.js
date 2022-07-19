@@ -7,14 +7,16 @@ import {
 import { apiSlice } from '@/redux/api/apiSlice'
 import clientReducer from '@/sections/client/clientSlice'
 import kanbanSlice from '@/sections/kanban/kanbanSlice'
-import uploadAvatarSlice from '@/sections/user/account/uploadAvatarSlice'
+import uploadAvatarReducer from '@/sections/user/account/uploadAvatarSlice'
+import salaryReducer from '@/sections/caculator/salarySlice'
 
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
-    avatar: uploadAvatarSlice,
+    avatar: uploadAvatarReducer,
     kanban: kanbanSlice,
     client: clientReducer,
+    salary: salaryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
