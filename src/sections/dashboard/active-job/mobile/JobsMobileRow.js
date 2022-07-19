@@ -24,7 +24,7 @@ export default function JobsMobileRow({ row }) {
   return (
     <>
       <TableRow sx={{ display: 'flex', marginTop: 2 }}>
-        <TableCell>
+        <TableCell align='left'>
           <IconButton
             size='small'
             color={open ? 'primary' : 'default'}
@@ -40,7 +40,7 @@ export default function JobsMobileRow({ row }) {
           </IconButton>
         </TableCell>
 
-        <TableCell>
+        <TableCell align='left'>
           <Typography
             variant='inherit'
             sx={{
@@ -55,7 +55,7 @@ export default function JobsMobileRow({ row }) {
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell sx={{ py: 0 }} colSpan={6}>
+        <TableCell sx={{ py: 0 }} colSpan={6} align='left'>
           <Collapse in={open} timeout='auto' unmountOnExit>
             <Paper
               sx={{
@@ -69,7 +69,7 @@ export default function JobsMobileRow({ row }) {
               <Table size='small' aria-label='purchases'>
                 <TableBody>
                   <TableRow align='left'>
-                    <TableCell>
+                    <TableCell align='left' sx={{ width: '50%' }}>
                       <Typography
                         sx={{
                           marginLeft: 0,
@@ -87,7 +87,7 @@ export default function JobsMobileRow({ row }) {
                     </TableCell>
                   </TableRow>
                   <TableRow align='left'>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography
                         sx={{
                           marginLeft: 0,
@@ -100,14 +100,14 @@ export default function JobsMobileRow({ row }) {
                         Candidate
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography variant='subtitle1'>
                         {row?.numberCandidate}
                       </Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow align='left'>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography
                         sx={{
                           marginLeft: 0,
@@ -120,12 +120,12 @@ export default function JobsMobileRow({ row }) {
                         Type
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography variant='subtitle1'>{row?.type}</Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow align='left'>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography
                         sx={{
                           marginLeft: 0,
@@ -138,7 +138,7 @@ export default function JobsMobileRow({ row }) {
                         Job Status
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Label
                         variant={
                           theme.palette.mode === 'light' ? 'ghost' : 'filled'
@@ -151,7 +151,7 @@ export default function JobsMobileRow({ row }) {
                     </TableCell>
                   </TableRow>
                   <TableRow align='left'>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography
                         sx={{
                           marginLeft: 0,
@@ -164,14 +164,14 @@ export default function JobsMobileRow({ row }) {
                         Follower
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography variant='subtitle1'>
                         {row?.follower}
                       </Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow align='left'>
-                    <TableCell>
+                    <TableCell align='left'>
                       <Typography
                         sx={{
                           marginLeft: 0,
@@ -184,7 +184,7 @@ export default function JobsMobileRow({ row }) {
                         View Detail
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align='left'>
                       <IconButton size='small'>
                         <Iconify icon={'ant-design:eye-twotone'} />
                       </IconButton>
