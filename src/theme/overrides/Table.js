@@ -3,11 +3,15 @@ export default function Table(theme) {
     MuiTableRow: {
       styleOverrides: {
         root: {
+          borderBottom: `solid 1px ${theme.palette.divider}`,
           '&.Mui-selected': {
             backgroundColor: theme.palette.action.selected,
             '&:hover': {
               backgroundColor: theme.palette.action.hover,
             },
+          },
+          '&:last-child': {
+            borderBottom: 'none',
           },
         },
       },
@@ -16,6 +20,8 @@ export default function Table(theme) {
       styleOverrides: {
         root: {
           borderBottom: 'none',
+          paddingTop: theme.spacing(1),
+          paddingBottom: theme.spacing(1),
         },
         head: {
           color: theme.palette.text.secondary,
@@ -53,7 +59,7 @@ export default function Table(theme) {
           borderTop: `solid 1px ${theme.palette.divider}`,
         },
         toolbar: {
-          height: 64,
+          height: 48,
         },
         select: {
           '&:focus': {
