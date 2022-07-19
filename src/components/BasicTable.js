@@ -2,6 +2,7 @@ import React from 'react'
 
 // @mui
 import { Table, TableBody, TableContainer } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
@@ -18,6 +19,12 @@ import { defaultPagination } from '@/config'
 import { emptyRows } from '@/hooks/useTable'
 
 import Scrollbar from './Scrollbar'
+
+const TableContainerStyle = styled(TableContainer)(({ theme, ownerState }) => ({
+  position: 'relative',
+  padding: `0 ${theme.spacing(2)}`,
+  ...ownerState,
+}))
 
 BasicTable.propTypes = {
   columns: PropTypes.array.isRequired,
@@ -50,7 +57,7 @@ export default function BasicTable({
 
   return (
     <Scrollbar>
-      <TableContainer sx={{ position: 'relative', ...tableStyle }}>
+      <TableContainerStyle ownerState={tableStyle}>
         <Table>
           <TableHeadCustom headLabel={columns} />
           <TableBody>
@@ -72,7 +79,7 @@ export default function BasicTable({
             <TableNoData isNotFound={isNotFound} />
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainerStyle>
     </Scrollbar>
   )
 }

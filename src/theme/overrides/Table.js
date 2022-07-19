@@ -3,15 +3,11 @@ export default function Table(theme) {
     MuiTableRow: {
       styleOverrides: {
         root: {
-          borderBottom: `solid 1px ${theme.palette.divider}`,
           '&.Mui-selected': {
             backgroundColor: theme.palette.action.selected,
             '&:hover': {
               backgroundColor: theme.palette.action.hover,
             },
-          },
-          '&:last-child': {
-            borderBottom: 'none',
           },
         },
       },
@@ -30,13 +26,11 @@ export default function Table(theme) {
             paddingLeft: theme.spacing(3),
             borderTopLeftRadius: theme.shape.borderRadius,
             borderBottomLeftRadius: theme.shape.borderRadius,
-            boxShadow: `inset 8px 0 0 ${theme.palette.background.paper}`,
           },
           '&:last-of-type': {
             paddingRight: theme.spacing(3),
             borderTopRightRadius: theme.shape.borderRadius,
             borderBottomRightRadius: theme.shape.borderRadius,
-            boxShadow: `inset -8px 0 0 ${theme.palette.background.paper}`,
           },
         },
         stickyHeader: {

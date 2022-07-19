@@ -23,7 +23,7 @@ export default function Pagination({
   ...other
 }) {
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box px={2} mt={1}>
       <TablePagination
         rowsPerPageOptions={PAGINATION}
         component='div'
