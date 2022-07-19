@@ -13,8 +13,7 @@ const CaculatorSalary = () => {
       <Card sx={{ maxWidth: 1350 }}>
         <Stack sx={{ width: '100%', p: 3 }} spacing={2}>
           <Alert severity='warning'>
-            {translate('pages.calculator.title') ||
-              'Salary calculator tool Gross to Net / Net to Gross standard 2021'}
+            {translate('pages.calculator.title')}
           </Alert>
         </Stack>
         <CaculatorForm />

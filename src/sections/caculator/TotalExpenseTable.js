@@ -41,7 +41,7 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                {translate('pages.calculator.gross_salary') || 'GROSS Salary'}
+                {translate('pages.calculator.gross_salary')}
               </TableCell>
               <TableCell align='right'>
                 VND: {gross}(SGD:{gross_VNDToSGD})
@@ -51,9 +51,7 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
           <TableBody>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                {translate('pages.calculator.social_insurance') ||
-                  'Social insurance'}{' '}
-                (17.5%)
+                {translate('pages.calculator.social_insurance')} (17.5%)
               </TableCell>
               <TableCell align='right'>
                 VND: {companyBhxh}(SGD: {companyBhxh_VNDToSGD})
@@ -61,9 +59,7 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                {translate('pages.calculator.health_insurance') ||
-                  'Health Insurance'}{' '}
-                (3%)
+                {translate('pages.calculator.health_insurance')} (3%)
               </TableCell>
               <TableCell align='right'>
                 VND: {companyBhyt}(SGD: {companyBhyt_VNDToSGD})
@@ -71,9 +67,7 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                {translate('pages.calculator.unemployment_insurance') ||
-                  'UnEmployment Insurance'}{' '}
-                (1 %)
+                {translate('pages.calculator.unemployment_insurance')} (1 %)
               </TableCell>
               <TableCell align='right'>
                 VND: {bhtn}(SGD: {bhtn_VNDToSGD})
@@ -81,7 +75,7 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                {translate('pages.calculator.pvi_care') || 'Pvi care'}
+                {translate('pages.calculator.pvi_care')}
               </TableCell>
               <TableCell align='right'>
                 VND: {pvi}(SGD: {pvi_VNDToSGD})
@@ -89,7 +83,7 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                {translate('pages.calculator.union_tax') || 'Union tax'}
+                {translate('pages.calculator.union_tax')}
               </TableCell>
               <TableCell align='right'>
                 VND: {unionTax}(SGD: {unionTax_VNDToSGD})
@@ -99,7 +93,7 @@ const TotalExpenseTable = forwardRef(({ data }, ref) => {
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>
-                {translate('pages.calculator.total_expense') || 'Total expense'}
+                {translate('pages.calculator.total_expense')}
               </TableCell>
               <TableCell align='right'>
                 VND: {total}(SGD: {total_VNDToSGD})

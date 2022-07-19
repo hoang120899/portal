@@ -139,9 +139,7 @@ const CaculatorForm = () => {
         <Grid container spacing={2} sx={{ p: 3 }}>
           <Grid item xs={12} md={3} sm={6}>
             <Stack direction='row' spacing={2} alignItems='center'>
-              <Typography>
-                {translate('pages.calculator.salary') || 'Salary'}:
-              </Typography>
+              <Typography>{translate('pages.calculator.salary')}:</Typography>
               <RHFTextField
                 type='text'
                 name='salary'
@@ -177,9 +175,7 @@ const CaculatorForm = () => {
 
           <Grid item xs={12} md={6} sm={12}>
             <Stack direction='row' spacing={2} alignItems='center'>
-              <Typography>
-                {translate('pages.calculator.rate') || 'Exchange rate'}:
-              </Typography>
+              <Typography>{translate('pages.calculator.rate')}:</Typography>
               <RHFTextField
                 type='number'
                 name='rate'
@@ -207,7 +203,7 @@ const CaculatorForm = () => {
               }}
             >
               <Typography>
-                {translate('pages.calculator.insurance') || 'Insurance'}:
+                {translate('pages.calculator.insurance')}:
               </Typography>
               <Stack
                 direction='row'
@@ -254,8 +250,7 @@ const CaculatorForm = () => {
           <Grid item xs={12} sm={8} lg={9}>
             <Stack direction='row' alignItems='center' spacing={2}>
               <Typography>
-                {translate('pages.calculator.circumstances') || 'Circumstances'}
-                :
+                {translate('pages.calculator.circumstances')}:
               </Typography>
               <RHFTextField
                 type='number'
@@ -266,9 +261,7 @@ const CaculatorForm = () => {
                   },
                 }}
               />
-              <Typography>
-                {translate('pages.calculator.people') || '(people)'}
-              </Typography>
+              <Typography>({translate('pages.calculator.people')})</Typography>
             </Stack>
           </Grid>
 
@@ -311,8 +304,7 @@ const CaculatorForm = () => {
                 alignItems='center'
               >
                 <Typography>
-                  {translate('pages.calculator.description') || 'Description'}{' '}
-                  (VND){' '}
+                  {translate('pages.calculator.description')} (VND){' '}
                 </Typography>
                 <CopyClipboard
                   value={netSalaryTableText}
@@ -320,7 +312,7 @@ const CaculatorForm = () => {
                   arrow
                 >
                   <Button variant='contained' color='secondary'>
-                    {translate('pages.calculator.copy') || 'Copy to clipboard'}
+                    {translate('pages.calculator.copy')}
                   </Button>
                 </CopyClipboard>
               </Stack>
@@ -339,8 +331,7 @@ const CaculatorForm = () => {
                 alignItems='center'
               >
                 <Typography>
-                  {translate('pages.calculator.paid_gross') ||
-                    'Paid by the employer gross'}
+                  {translate('pages.calculator.paid_gross')}
                   (VND)
                 </Typography>
                 <CopyClipboard
@@ -349,7 +340,7 @@ const CaculatorForm = () => {
                   arrow
                 >
                   <Button variant='contained' color='secondary'>
-                    {translate('pages.calculator.copy') || 'Copy to clipboard'}
+                    {translate('pages.calculator.copy')}
                   </Button>
                 </CopyClipboard>
               </Stack>
@@ -369,8 +360,7 @@ const CaculatorForm = () => {
               alignItems='center'
             >
               <Typography>
-                {translate('pages.calculator.detail_income_tax') ||
-                  'Personal income tax details '}
+                {translate('pages.calculator.detail_income_tax')}
                 (VND){' '}
               </Typography>
               <CopyClipboard
@@ -379,7 +369,7 @@ const CaculatorForm = () => {
                 arrow
               >
                 <Button variant='contained' color='secondary'>
-                  {translate('pages.calculator.copy') || 'Copy to clipboard'}
+                  {translate('pages.calculator.copy')}
                 </Button>
               </CopyClipboard>
             </Stack>

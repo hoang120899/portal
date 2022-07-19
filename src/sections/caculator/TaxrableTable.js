@@ -31,20 +31,15 @@ const TaxrableTable = forwardRef(({ data }, ref) => {
     <TableContainer sx={{ paddingTop: 3 }}>
       <Table ref={tableTaxRef}>
         <TableHead>
-          <TableCell>
-            {translate('pages.calculator.taxable_rate') || 'Taxable rate'}
-          </TableCell>
-          <TableCell>{translate('pages.calculator.tax') || 'Tax'}</TableCell>
-          <TableCell>
-            {translate('pages.calculator.money') || 'Money'}
-          </TableCell>
+          <TableCell>{translate('pages.calculator.taxable_rate')}</TableCell>
+          <TableCell>{translate('pages.calculator.tax')}</TableCell>
+          <TableCell>{translate('pages.calculator.money')}</TableCell>
         </TableHead>
         <TableBody>
           <TableRow>
             <TableCell>
               <Typography>
-                {translate('pages.calculator.detail_taxable_rate1') ||
-                  'Up to 5 million VND'}
+                {translate('pages.calculator.detail_taxable_rate1')}
                 Up to 5 million VND
               </Typography>
             </TableCell>
@@ -58,8 +53,7 @@ const TaxrableTable = forwardRef(({ data }, ref) => {
           <TableRow>
             <TableCell>
               <Typography>
-                {translate('pages.calculator.detail_taxable_rate2') ||
-                  'Over 5 million VND to 10 million VND'}
+                {translate('pages.calculator.detail_taxable_rate2')}
                 Over 5 million VND to 10 million VND
               </Typography>
             </TableCell>
@@ -73,8 +67,7 @@ const TaxrableTable = forwardRef(({ data }, ref) => {
           <TableRow>
             <TableCell>
               <Typography>
-                {translate('pages.calculator.detail_taxable_rate3') ||
-                  'From over 10 million VND to 18 million VND'}
+                {translate('pages.calculator.detail_taxable_rate3')}
                 From over 10 million VND to 18 million VND
               </Typography>
             </TableCell>
@@ -88,8 +81,7 @@ const TaxrableTable = forwardRef(({ data }, ref) => {
           <TableRow>
             <TableCell>
               <Typography>
-                {translate('pages.calculator.detail_taxable_rate4') ||
-                  'From over 18 million VND to 32 million VND'}
+                {translate('pages.calculator.detail_taxable_rate4')}
               </Typography>
             </TableCell>
             <TableCell>
@@ -102,8 +94,7 @@ const TaxrableTable = forwardRef(({ data }, ref) => {
           <TableRow>
             <TableCell>
               <Typography>
-                {translate('pages.calculator.detail_taxable_rate5') ||
-                  'From over 32 million VND to 52 million VND'}
+                {translate('pages.calculator.detail_taxable_rate5')}
               </Typography>
             </TableCell>
             <TableCell>
@@ -116,8 +107,7 @@ const TaxrableTable = forwardRef(({ data }, ref) => {
           <TableRow>
             <TableCell>
               <Typography>
-                {translate('pages.calculator.detail_taxable_rate6') ||
-                  'From over 52 million VND to 80 million VND'}
+                {translate('pages.calculator.detail_taxable_rate6')}
               </Typography>
             </TableCell>
             <TableCell>
@@ -130,8 +120,7 @@ const TaxrableTable = forwardRef(({ data }, ref) => {
           <TableRow>
             <TableCell>
               <Typography>
-                {translate('pages.calculator.detail_taxable_rate7') ||
-                  'Over 80 million VND'}
+                {translate('pages.calculator.detail_taxable_rate7')}
                 Over 80 million VND
               </Typography>
             </TableCell>
