@@ -54,12 +54,11 @@ export default function BasicTable({
     () => (isLoading ? [...Array(rowsPerPage)] : dataSource),
     [isLoading, rowsPerPage, dataSource]
   )
-
   return (
     <Scrollbar>
       <TableContainerStyle ownerState={tableStyle}>
         <Table>
-          <TableHeadCustom headLabel={columns} />
+          {columns.length > 0 && <TableHeadCustom headLabel={columns} />}
           <TableBody>
             {tableData.map((row, index) =>
               row && TableRowComp

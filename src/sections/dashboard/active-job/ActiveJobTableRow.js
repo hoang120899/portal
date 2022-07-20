@@ -1,86 +1,75 @@
-import { useState } from 'react'
-
 // @mui
-import { MenuItem, TableCell, TableRow, Typography } from '@mui/material'
+import { Link, TableCell, TableRow, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
-// components
-import Iconify from '@/components/Iconify'
-import Label from '@/components/Label'
-import { TableMoreMenu } from '@/components/table'
+import { DEFAULT_STATUS_COLOR, STATUS_COLOR } from './config'
 
-UserTableRow.propTypes = {
+ActiveJobTableRow.propTypes = {
   row: PropTypes.object,
 }
 
-export default function UserTableRow({ row }) {
+export default function ActiveJobTableRow({ row }) {
   const theme = useTheme()
 
-  const { name, company, role, status } = row
-
-  const [openMenu, setOpenMenuActions] = useState(null)
-
-  const handleOpenMenu = (event) => {
-    setOpenMenuActions(event.currentTarget)
-  }
-
-  const handleCloseMenu = () => {
-    setOpenMenuActions(null)
-  }
+  const {
+    title,
+    clientName = '',
+    nameTeam: teamName = '',
+    jobStatus,
+    numberCandidate,
+    type,
+  } = row || {}
+  const color = STATUS_COLOR[jobStatus] || DEFAULT_STATUS_COLOR
 
   return (
     <TableRow hover>
-      <TableCell>
-        <Typography variant='subtitle2' noWrap>
-          {name}
+      <TableCell width='40%'>
+        <Link
+          sx={{
+            color: 'inherit',
+            fontWeight: 'bold',
+          }}
+          href='/'
+        >
+          {title}
+        </Link>
+        <Typography
+          variant='subtitle2'
+          noWrap
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 'normal',
+          }}
+        >
+          {type}
         </Typography>
       </TableCell>
 
-      <TableCell align='left'>{company}</TableCell>
-
-      <TableCell align='left' sx={{ textTransform: 'capitalize' }}>
-        {role}
+      <TableCell width='20%' align='left'>
+        {clientName}
       </TableCell>
 
-      <TableCell align='left'>
-        <Label
+      <TableCell width='15%' align='left' sx={{ textTransform: 'capitalize' }}>
+        {teamName}
+      </TableCell>
+
+      <TableCell width='15%' align='center'>
+        {numberCandidate}
+      </TableCell>
+
+      <TableCell width='10%' align='left'>
+        <Typography
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={(status === 'banned' && 'error') || 'success'}
-          sx={{ textTransform: 'capitalize' }}
+          color={color}
+          sx={{
+            fontWeight: 'bold',
+            textTransform: 'capitalize',
+          }}
         >
-          {status}
-        </Label>
-      </TableCell>
-
-      <TableCell align='right'>
-        <TableMoreMenu
-          open={openMenu}
-          onOpen={handleOpenMenu}
-          onClose={handleCloseMenu}
-          actions={
-            <>
-              <MenuItem
-                onClick={() => {
-                  handleCloseMenu()
-                }}
-                sx={{ color: 'error.main' }}
-              >
-                <Iconify icon={'eva:trash-2-outline'} />
-                Delete
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  handleCloseMenu()
-                }}
-              >
-                <Iconify icon={'eva:edit-fill'} />
-                Edit
-              </MenuItem>
-            </>
-          }
-        />
+          {jobStatus}
+        </Typography>
       </TableCell>
     </TableRow>
   )

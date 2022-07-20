@@ -1,30 +1,23 @@
-export const STATUS_OPTIONS = [
-  {
-    label: 'Active',
-    value: 'active',
-  },
-  {
-    label: 'Pending',
-    value: 'pending',
-  },
-  {
-    label: 'Close',
-    value: 'close',
-  },
-]
+export const ACTIVE_STATUS = 'Active'
+export const PENDING_STATUS = 'Pending'
+export const CLOSE_STATUS = 'Close'
+
+export const STATUS_OPTIONS = [ACTIVE_STATUS, PENDING_STATUS, CLOSE_STATUS]
+export const STATUS_COLOR = {
+  [ACTIVE_STATUS]: '#00b300',
+  [PENDING_STATUS]: 'primary',
+  [CLOSE_STATUS]: 'error',
+}
+
+export const DEFAULT_STATUS = ACTIVE_STATUS
+export const DEFAULT_STATUS_COLOR = STATUS_COLOR[PENDING_STATUS]
 
 export const TABLE_HEAD = [
-  { id: 'name', label: 'Name', align: 'left' },
-  { id: 'company', label: 'Company', align: 'left' },
-  { id: 'role', label: 'Role', align: 'left' },
+  { id: 'job', label: 'Jobs', align: 'left' },
+  { id: 'client', label: 'Clients', align: 'left' },
+  { id: 'team', label: 'Teams', align: 'left' },
+  { id: 'candidate', label: 'Candidates', align: 'left' },
   { id: 'status', label: 'Status', align: 'left' },
-  { id: '' },
 ]
 
-export const DATASOURCE = [...Array(24)].map((_, index) => ({
-  id: `e99f09a7-dd88-49d5-b1c8-1daf80c2d7b${index + 1}`,
-  name: `Test - ${index}`,
-  company: `Company-${index}`,
-  status: 'active',
-  role: 'project manager',
-}))
+export const DEFAULT_ROW_PER_PAGE = 5

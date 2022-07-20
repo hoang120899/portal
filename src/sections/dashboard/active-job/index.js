@@ -1,88 +1,132 @@
 // @mui
-import { Card, CardHeader, Divider, Tab, Tabs } from '@mui/material'
+import { useCallback, useEffect, useMemo } from 'react'
+
+import { Box, Card, CardHeader, Divider, Stack, Tab, Tabs } from '@mui/material'
 
 import PropTypes from 'prop-types'
-import { useForm } from 'react-hook-form'
 
 // components
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
-import { FormProvider } from '@/components/hook-form'
-import { PAGINATION } from '@/config'
 // hooks
+import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
+import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 import useTabs from '@/hooks/useTabs'
 
+import ActiveJobCollapsibleTableRow from './ActiveJobCollapsibleTableRow'
 //
 import ActiveJobTableRow from './ActiveJobTableRow'
-import ActiveJobTableToolbar from './ActiveJobTableToolbar'
-import { DATASOURCE, STATUS_OPTIONS, TABLE_HEAD } from './config'
+import { useGetJobsByStatusQuery } from './activeJobSlice'
+import {
+  DEFAULT_ROW_PER_PAGE,
+  DEFAULT_STATUS,
+  STATUS_OPTIONS,
+  TABLE_HEAD,
+} from './config'
 
-const DashboardActiveJob = ({ title, subheader, ...other }) => {
+const DashboardActiveJob = ({ subheader, ...other }) => {
+  const { currentRole } = useRole()
+  const { translate } = useLocales()
+
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
-    useTabs('active')
-  const { page, rowsPerPage, onChangePage, onChangeRowsPerPage } = useTable({
-    defaultRowsPerPage: PAGINATION[0],
+    useTabs(DEFAULT_STATUS)
+
+  const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
+    useTable({
+      defaultRowsPerPage: DEFAULT_ROW_PER_PAGE,
+    })
+
+  const isMobileScreen = useResponsive('down', 'sm')
+
+  useEffect(() => {
+    setPage(0)
+  }, [filterStatus, setPage])
+
+  const { data, isLoading, isFetching } = useGetJobsByStatusQuery({
+    pageSize: rowsPerPage,
+    pageNumber: page + 1,
+    status: filterStatus,
+    currentRole,
   })
-  const methods = useForm({
-    defaultValues: {
-      startDate: null,
-      endDate: null,
-    },
-  })
-  const {
-    handleSubmit,
-    // formState: { errors, isSubmitting },
-  } = methods
-  const onSubmit = async (data) => {
-    try {
-      // eslint-disable-next-line no-console
-      console.log('data', data)
-    } catch (error) {
-      // TODO
+  const { list: dataJobs = [], total: totalRecord = 0 } = data?.data || {}
+
+  const tabContainerStyle = useMemo(() => {
+    if (isMobileScreen)
+      return {
+        alignItems: 'center',
+      }
+    return {
+      direction: 'row',
+      justifyContent: 'space-between',
     }
-  }
+  }, [isMobileScreen])
+
+  const tableRowComp = useCallback(
+    (row, index) => {
+      if (isMobileScreen)
+        return (
+          <ActiveJobCollapsibleTableRow key={`${row?.id}-${index}`} row={row} />
+        )
+      return <ActiveJobTableRow key={`${row?.id}-${index}`} row={row} />
+    },
+    [isMobileScreen]
+  )
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
-      <Tabs
-        allowScrollButtonsMobile
-        variant='scrollable'
-        scrollButtons='auto'
-        value={filterStatus}
-        onChange={onChangeFilterStatus}
-        sx={{ px: 2, bgcolor: 'background.neutral' }}
-      >
-        {STATUS_OPTIONS.map(({ label, value }) => (
-          <Tab disableRipple key={value} label={label} value={value} />
-        ))}
-      </Tabs>
+      <Stack {...tabContainerStyle}>
+        <CardHeader
+          title={`${filterStatus} Jobs`}
+          subheader={subheader}
+          sx={{
+            padding: {
+              sm: 2,
+            },
+            pt: {
+              xs: 2,
+            },
+          }}
+        />
 
-      <Divider />
+        <Tabs
+          value={filterStatus}
+          onChange={onChangeFilterStatus}
+          sx={{ px: 2, alignItems: 'center' }}
+        >
+          {STATUS_OPTIONS.map((value) => (
+            <Tab
+              disableRipple
+              key={value}
+              label={translate(value)}
+              value={value}
+            />
+          ))}
+        </Tabs>
+      </Stack>
 
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <ActiveJobTableToolbar />
-      </FormProvider>
+      <Box sx={{ mb: 2 }}>{!isMobileScreen && <Divider />}</Box>
 
       <BasicTable
-        columns={TABLE_HEAD}
-        dataSource={DATASOURCE.splice(0, 5)}
+        columns={isMobileScreen ? [] : TABLE_HEAD}
+        dataSource={dataJobs}
         page={page}
         rowsPerPage={rowsPerPage}
-        tableStyle={{ height: '395px', overflow: 'hidden' }}
-        TableRowComp={(row, index) => (
-          <ActiveJobTableRow key={row?.id || index} row={row} />
-        )}
+        isLoading={isLoading || isFetching}
+        TableRowComp={tableRowComp}
       />
-      <Pagination
-        totalRecord={DATASOURCE.length}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onChangePage={onChangePage}
-        onChangeRowsPerPage={onChangeRowsPerPage}
-        rowsPerPageOptions={[]}
-      />
+
+      {totalRecord >= DEFAULT_ROW_PER_PAGE && (
+        <Pagination
+          totalRecord={totalRecord}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onChangePage={onChangePage}
+          onChangeRowsPerPage={onChangeRowsPerPage}
+          rowsPerPageOptions={[]}
+        />
+      )}
     </Card>
   )
 }
