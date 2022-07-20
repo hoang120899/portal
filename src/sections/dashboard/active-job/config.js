@@ -1,17 +1,16 @@
-export const STATUS_OPTIONS = [
-  {
-    label: 'Active',
-    value: 'active',
-  },
-  {
-    label: 'Pending',
-    value: 'pending',
-  },
-  {
-    label: 'Close',
-    value: 'close',
-  },
-]
+export const ACTIVE_STATUS = 'Active'
+export const PENDING_STATUS = 'Pending'
+export const CLOSE_STATUS = 'Close'
+
+export const STATUS_OPTIONS = [ACTIVE_STATUS, PENDING_STATUS, CLOSE_STATUS]
+export const STATUS_COLOR = {
+  [ACTIVE_STATUS]: '#00b300',
+  [PENDING_STATUS]: 'primary',
+  [CLOSE_STATUS]: 'error',
+}
+
+export const DEFAULT_STATUS = ACTIVE_STATUS
+export const DEFAULT_STATUS_COLOR = STATUS_COLOR[PENDING_STATUS]
 
 export const TABLE_HEAD = [
   { id: 'job', label: 'Jobs', align: 'left' },

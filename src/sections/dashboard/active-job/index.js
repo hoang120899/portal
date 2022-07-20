@@ -1,113 +1,123 @@
 // @mui
-import { useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
-import { Card, CardHeader, Divider, Tab, Tabs } from '@mui/material'
+import { Box, Card, CardHeader, Divider, Stack, Tab, Tabs } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
 // components
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
-import useResponsive from '@/hooks/useResponsive'
 // hooks
+import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
+import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 import useTabs from '@/hooks/useTabs'
 
+import ActiveJobCollapsibleTableRow from './ActiveJobCollapsibleTableRow'
 //
 import ActiveJobTableRow from './ActiveJobTableRow'
-import { DEFAULT_ROW_PER_PAGE, STATUS_OPTIONS, TABLE_HEAD } from './config'
-import { useGetJobsQuery } from './jobsApiSlice'
-import ActiveJobMobile from './mobile'
+import { useGetJobsByStatusQuery } from './activeJobSlice'
+import {
+  DEFAULT_ROW_PER_PAGE,
+  DEFAULT_STATUS,
+  STATUS_OPTIONS,
+  TABLE_HEAD,
+} from './config'
 
 const DashboardActiveJob = ({ subheader, ...other }) => {
+  const { currentRole } = useRole()
+  const { translate } = useLocales()
+
   const { currentTab: filterStatus, onChangeTab: onChangeFilterStatus } =
-    useTabs('active')
+    useTabs(DEFAULT_STATUS)
+
   const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
     useTable({
       defaultRowsPerPage: DEFAULT_ROW_PER_PAGE,
     })
-  const isDesktop = useResponsive('down', 768, 'sm')
-  useEffect(() => {
-    setPage(0)
-  }, [setPage])
+
+  const isMobileScreen = useResponsive('down', 'sm')
+
   useEffect(() => {
     setPage(0)
   }, [filterStatus, setPage])
-  const titleJobs = STATUS_OPTIONS.find(
-    (obj) => obj.value === filterStatus
-  ).label
-  const { data, isLoading, isFetching } = useGetJobsQuery({
+
+  const { data, isLoading, isFetching } = useGetJobsByStatusQuery({
     pageSize: rowsPerPage,
-    pageNumberJob: page + 1,
-    statusJob: titleJobs,
+    pageNumber: page + 1,
+    status: filterStatus,
+    currentRole,
   })
   const { list: dataJobs = [], total: totalRecord = 0 } = data?.data || {}
 
+  const tabContainerStyle = useMemo(() => {
+    if (isMobileScreen)
+      return {
+        alignItems: 'center',
+      }
+    return {
+      direction: 'row',
+      justifyContent: 'space-between',
+    }
+  }, [isMobileScreen])
+
+  const tableRowComp = useCallback(
+    (row, index) => {
+      if (isMobileScreen)
+        return (
+          <ActiveJobCollapsibleTableRow key={`${row?.id}-${index}`} row={row} />
+        )
+      return <ActiveJobTableRow key={`${row?.id}-${index}`} row={row} />
+    },
+    [isMobileScreen]
+  )
+
   return (
     <Card {...other}>
-      {isDesktop ? (
-        <>
-          <CardHeader
-            title={`${titleJobs} Jobs`}
-            subheader={subheader}
-            sx={{ padding: 2, textAlign: 'center' }}
-          />
-          <Tabs value={filterStatus} onChange={onChangeFilterStatus} centered>
-            {STATUS_OPTIONS.map(({ label, value }) => (
-              <Tab disableRipple key={value} label={label} value={value} />
-            ))}
-          </Tabs>
-          <ActiveJobMobile dataSource={dataJobs} />
-        </>
-      ) : (
-        <>
-          <div
-            style={{
-              display: 'flex',
-              alignContent: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <CardHeader
-              title={`${titleJobs} Jobs`}
-              subheader={subheader}
-              sx={{ padding: 2 }}
-            />
-            <Tabs
-              allowScrollButtonsMobile
-              variant='scrollable'
-              scrollButtons='auto'
-              value={filterStatus}
-              onChange={onChangeFilterStatus}
-              sx={{ px: 2 }}
-            >
-              {STATUS_OPTIONS.map(({ label, value }) => (
-                <Tab disableRipple key={value} label={label} value={value} />
-              ))}
-            </Tabs>
-          </div>
-          <Divider />
-          <BasicTable
-            columns={TABLE_HEAD}
-            dataSource={dataJobs}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            isLoading={isLoading || isFetching}
-            tableStyle={{
-              paddingTop: 4,
-              paddingBottom: 4,
-            }}
-            style={{
-              height: 'fit-content',
-            }}
-            TableRowComp={(row, index) => (
-              <ActiveJobTableRow key={`${row?.id}-${index}`} row={row} />
-            )}
-          />
-        </>
-      )}
+      <Stack {...tabContainerStyle}>
+        <CardHeader
+          title={`${filterStatus} Jobs`}
+          subheader={subheader}
+          sx={{
+            padding: {
+              sm: 2,
+            },
+            pt: {
+              xs: 2,
+            },
+          }}
+        />
 
-      {totalRecord >= 5 ? (
+        <Tabs
+          value={filterStatus}
+          onChange={onChangeFilterStatus}
+          sx={{ px: 2, alignItems: 'center' }}
+        >
+          {STATUS_OPTIONS.map((value) => (
+            <Tab
+              disableRipple
+              key={value}
+              label={translate(value)}
+              value={value}
+            />
+          ))}
+        </Tabs>
+      </Stack>
+
+      <Box sx={{ mb: 2 }}>{!isMobileScreen && <Divider />}</Box>
+
+      <BasicTable
+        columns={isMobileScreen ? [] : TABLE_HEAD}
+        dataSource={dataJobs}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        isLoading={isLoading || isFetching}
+        TableRowComp={tableRowComp}
+      />
+
+      {totalRecord >= DEFAULT_ROW_PER_PAGE && (
         <Pagination
           totalRecord={totalRecord}
           page={page}
@@ -116,7 +126,7 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
           onChangeRowsPerPage={onChangeRowsPerPage}
           rowsPerPageOptions={[]}
         />
-      ) : null}
+      )}
     </Card>
   )
 }

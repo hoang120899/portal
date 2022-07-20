@@ -1,6 +1,6 @@
-// @mui
 import { useState } from 'react'
 
+// @mui
 import {
   Collapse,
   IconButton,
@@ -13,28 +13,24 @@ import {
 } from '@mui/material'
 
 import { useTheme } from '@emotion/react'
+import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
 
-export default function JobsMobileRow({ row }) {
+import { DEFAULT_STATUS_COLOR, STATUS_COLOR } from './config'
+
+ActiveJobCollapsibleTableRow.propTypes = {
+  row: PropTypes.object,
+}
+
+export default function ActiveJobCollapsibleTableRow({ row }) {
   const theme = useTheme()
   const [open, setOpen] = useState(true)
-  const colorStatus = [
-    {
-      status: 'Active',
-      color: '#00b300',
-    },
-    {
-      status: 'Pending',
-      color: '#ffc530',
-    },
-    {
-      status: 'Close',
-      color: '#e62e00',
-    },
-  ]
-  const color = colorStatus.find((obj) => obj.status === row.jobStatus).color
+  const { title, salary, jobStatus, numberCandidate, follower, type } =
+    row || {}
+  const color = STATUS_COLOR[jobStatus] || DEFAULT_STATUS_COLOR
+
   return (
     <>
       <TableRow sx={{ display: 'flex', marginTop: 2 }}>
@@ -64,10 +60,11 @@ export default function JobsMobileRow({ row }) {
               msTextOverflow: 'ellipsis',
             }}
           >
-            {row.title}
+            {title}
           </Typography>
         </TableCell>
       </TableRow>
+
       <TableRow>
         <TableCell sx={{ py: 0 }} colSpan={6} align='left'>
           <Collapse in={open} timeout='auto' unmountOnExit>
@@ -96,10 +93,12 @@ export default function JobsMobileRow({ row }) {
                         Salary
                       </Typography>
                     </TableCell>
+
                     <TableCell>
-                      <Typography variant='subtitle1'>{row?.salary}</Typography>
+                      <Typography variant='subtitle1'>{salary}</Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow align='left'>
                     <TableCell align='left'>
                       <Typography
@@ -114,12 +113,14 @@ export default function JobsMobileRow({ row }) {
                         Candidate
                       </Typography>
                     </TableCell>
+
                     <TableCell align='left'>
                       <Typography variant='subtitle1'>
-                        {row?.numberCandidate}
+                        {numberCandidate}
                       </Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow align='left'>
                     <TableCell align='left'>
                       <Typography
@@ -134,10 +135,12 @@ export default function JobsMobileRow({ row }) {
                         Type
                       </Typography>
                     </TableCell>
+
                     <TableCell align='left'>
-                      <Typography variant='subtitle1'>{row?.type}</Typography>
+                      <Typography variant='subtitle1'>{type}</Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow align='left'>
                     <TableCell align='left'>
                       <Typography
@@ -152,6 +155,7 @@ export default function JobsMobileRow({ row }) {
                         Job Status
                       </Typography>
                     </TableCell>
+
                     <TableCell align='left'>
                       <Typography
                         variant={
@@ -163,10 +167,11 @@ export default function JobsMobileRow({ row }) {
                           textTransform: 'capitalize',
                         }}
                       >
-                        {row.jobStatus}
+                        {jobStatus}
                       </Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow align='left'>
                     <TableCell align='left'>
                       <Typography
@@ -181,12 +186,12 @@ export default function JobsMobileRow({ row }) {
                         Follower
                       </Typography>
                     </TableCell>
+
                     <TableCell align='left'>
-                      <Typography variant='subtitle1'>
-                        {row?.follower}
-                      </Typography>
+                      <Typography variant='subtitle1'>{follower}</Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow align='left'>
                     <TableCell align='left'>
                       <Typography
@@ -201,6 +206,7 @@ export default function JobsMobileRow({ row }) {
                         View Detail
                       </Typography>
                     </TableCell>
+
                     <TableCell align='left'>
                       <IconButton size='small' sx={{ padding: 0 }}>
                         <Iconify icon={'ant-design:eye-twotone'} />

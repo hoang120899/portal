@@ -4,40 +4,27 @@ import { useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
-// components
+import { DEFAULT_STATUS_COLOR, STATUS_COLOR } from './config'
 
-UserTableRow.propTypes = {
+ActiveJobTableRow.propTypes = {
   row: PropTypes.object,
 }
 
-export default function UserTableRow({ row }) {
+export default function ActiveJobTableRow({ row }) {
   const theme = useTheme()
 
   const {
     title,
     clientName = '',
-    nameTeam,
+    nameTeam: teamName = '',
     jobStatus,
     numberCandidate,
     type,
-  } = row
-  const colorStatus = [
-    {
-      status: 'Active',
-      color: '#00b300',
-    },
-    {
-      status: 'Pending',
-      color: '#ffc530',
-    },
-    {
-      status: 'Close',
-      color: '#e62e00',
-    },
-  ]
-  const color = colorStatus.find((obj) => obj.status === jobStatus).color
+  } = row || {}
+  const color = STATUS_COLOR[jobStatus] || DEFAULT_STATUS_COLOR
+
   return (
-    <TableRow hover style={{ width: '100%' }}>
+    <TableRow hover>
       <TableCell width='40%'>
         <Link
           sx={{
@@ -61,11 +48,11 @@ export default function UserTableRow({ row }) {
       </TableCell>
 
       <TableCell width='20%' align='left'>
-        {clientName || ''}
+        {clientName}
       </TableCell>
 
       <TableCell width='15%' align='left' sx={{ textTransform: 'capitalize' }}>
-        {nameTeam}
+        {teamName}
       </TableCell>
 
       <TableCell width='15%' align='center'>
