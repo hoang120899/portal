@@ -4,11 +4,8 @@ import React, { forwardRef, useMemo, useState } from 'react'
 import { LoadingButton } from '@mui/lab'
 import { Box } from '@mui/material'
 
-// @date-fns
-import { format } from 'date-fns'
+import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
-import qs from 'query-string'
-// @react-hooks-form
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 
@@ -19,129 +16,70 @@ import {
   RHFDatePicker,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
-import { API_LIST_CARD } from '@/routes/api'
-// @api
-import { _getApi } from '@/utils/axios'
+import { getBoard } from '@/sections/kanban/kanbanSlice'
 
-import {
-  updateColumns,
-  useGetClientQuery,
-  useGetJobQuery,
-  useGetLabelQuery,
-  useGetMemberQuery,
-  useSearchCardsQuery,
-} from './kanbanSlice'
+import { useSearchCardsQuery } from './kanbanSlice'
 
-const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
-  const defaultValues = {
-    search: '',
-    labelId: '',
-    clientId: '',
-    memberId: '',
-    jobId: '',
-    startDate: null,
-    endDate: null,
-  }
+const KanbanTableToolbar = forwardRef(
+  (
+    {
+      onOpenUpdateTask,
+      labelOptions,
+      jobOptions,
+      clientOptions,
+      memberOptions,
+    },
+    ref
+  ) => {
+    const [keySearch, setKeySearch] = useState('')
+    const search = useDebounce(keySearch, 1000)
+    const { enqueueSnackbar } = useSnackbar()
+    const dispatch = useDispatch()
 
-  const methods = useForm({
-    defaultValues,
-  })
+    const { data: cardData, isFetching: isCardFetching } = useSearchCardsQuery({
+      search,
+    })
 
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods
-
-  const dispatch = useDispatch()
-
-  const filterNonNull = (obj) =>
-    // eslint-disable-next-line no-unused-vars
-    Object.fromEntries(Object.entries(obj).filter(([k, v]) => v))
-  const onSubmit = async (data) => {
-    try {
-      // eslint-disable-next-line no-unused-vars
-      let { search, ...rest } = data
-      if (rest.startDate) {
-        rest.startDate = format(rest.startDate, 'yyyy-MM-dd')
+    const cardOptions = useMemo(() => {
+      if (cardData || cardData?.data?.list.length > 0) {
+        return cardData.data.list.map((card, i) => ({
+          ...card,
+          value: card.Candidate.name,
+          label: `${card.Candidate.name}-${i}`,
+          id: card.id,
+        }))
       }
-      if (rest.endDate) {
-        rest.endDate = format(rest.endDate, 'yyyy-MM-dd')
-      }
-      let url = API_LIST_CARD
-      let params = qs.stringify(filterNonNull(rest))
-      if (params) {
-        url += `?${params}`
-      }
-      const res = await _getApi(url, rest)
-      const action = updateColumns(res.data.list)
-      dispatch(action)
-      // setColumns(res.data.list)
-    } catch (error) {
-      // console.log(error)
-    }
-  }
-  const { data: labelData } = useGetLabelQuery()
-  const { data: clientData } = useGetClientQuery()
-  const { data: jobData } = useGetJobQuery()
-  const { data: memberData } = useGetMemberQuery()
-  const labelOptions = useMemo(() => {
-    if (labelData) {
-      return labelData.data.list.map((label) => ({
-        value: label.title,
-        label: label.title,
-      }))
-    }
-    return []
-  }, [labelData])
-  const clientOptions = useMemo(() => {
-    if (clientData) {
-      return clientData.data.clients.map((client) => ({
-        value: client.id,
-        label: client.name,
-      }))
-    }
-    return []
-  }, [clientData])
-  const jobOptions = useMemo(() => {
-    if (jobData) {
-      return jobData.data.listJob.map((job) => ({
-        value: job.id,
-        label: job.title,
-      }))
-    }
-    return []
-  }, [jobData])
-  const memberOptions = useMemo(() => {
-    if (memberData) {
-      return memberData.data.list.map((member) => ({
-        value: member.id,
-        label: member.name,
-      }))
-    }
-    return []
-  }, [memberData])
-  const [keySearch, setKeySearch] = useState('')
-  const search = useDebounce(keySearch, 1000)
+      return []
+    }, [cardData])
 
-  const { data: cardData, isFetching: isCardFetching } = useSearchCardsQuery({
-    search,
-  })
-  const cardOptions = useMemo(() => {
-    if (cardData || cardData?.data?.list.length > 0) {
-      return cardData.data.list.map((card, i) => ({
-        ...card,
-        value: card.Candidate.name,
-        label: `${card.Candidate.name}-${i}`,
-        id: card.id,
-      }))
+    const defaultValues = {
+      search: '',
+      label: '',
+      clientId: '',
+      userId: '',
+      jobId: '',
+      startDate: null,
+      endDate: null,
     }
-    return []
-  }, [cardData])
-  const handle = (value) => {
-    onOpenUpdateTask(value)
-  }
-  return (
-    <>
+
+    const methods = useForm({
+      defaultValues,
+    })
+
+    const {
+      handleSubmit,
+      formState: { isSubmitting },
+    } = methods
+
+    const onSubmit = async (data) => {
+      try {
+        dispatch(getBoard(data))
+      } catch (error) {
+        enqueueSnackbar('Fail to filter cards! Please try again')
+      }
+    }
+
+    return (
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Box
           sx={{
@@ -165,7 +103,7 @@ const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
                   key={option.key}
                   component='li'
                   {...props}
-                  onClick={() => handle(option)}
+                  onClick={() => onOpenUpdateTask(option)}
                 >
                   {option.value}
                 </Box>
@@ -212,11 +150,17 @@ const KanbanTableToolbar = forwardRef(({ onOpenUpdateTask }, ref) => {
           </LoadingButton>
         </Box>
       </FormProvider>
-    </>
-  )
-})
+    )
+  }
+)
+
 KanbanTableToolbar.propTypes = {
   onOpenUpdateTask: PropTypes.func,
+  isSubmitting: PropTypes.bool,
+  labelOptions: PropTypes.array,
+  jobOptions: PropTypes.array,
+  clientOptions: PropTypes.array,
+  memberOptions: PropTypes.array,
 }
 
-export default KanbanTableToolbar
+export default React.memo(KanbanTableToolbar)

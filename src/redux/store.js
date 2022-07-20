@@ -6,7 +6,7 @@ import {
 
 import { apiSlice } from '@/redux/api/apiSlice'
 import clientReducer from '@/sections/client/clientSlice'
-import kanbanSlice from '@/sections/kanban/kanbanSlice'
+import kanbanReducer from '@/sections/kanban/kanbanSlice'
 import uploadAvatarReducer from '@/sections/user/account/uploadAvatarSlice'
 import salaryReducer from '@/sections/caculator/salarySlice'
 
@@ -14,7 +14,7 @@ const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     avatar: uploadAvatarReducer,
-    kanban: kanbanSlice,
+    kanban: kanbanReducer,
     client: clientReducer,
     salary: salaryReducer,
   },

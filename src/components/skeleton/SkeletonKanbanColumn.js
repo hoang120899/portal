@@ -4,17 +4,18 @@ import { Box, Paper, Skeleton, Stack } from '@mui/material'
 import PropTypes from 'prop-types'
 
 // hooks
-import useOffsetHeightKanban from '@/hooks/useOffsetHeightKanban'
+import useKanban from '@/hooks/useKanban'
+// sections
+import { CARD_WIDTH } from '@/sections/kanban/config'
 
 SkeletonKanbanColumn.propTypes = {
-  formRefProp: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.any }),
-  ]),
+  formRef: PropTypes.any,
 }
 
-export default function SkeletonKanbanColumn({ formRefProp }) {
-  const { lgHeight, xsHeight } = useOffsetHeightKanban(formRefProp)
+export default function SkeletonKanbanColumn({ formRef }) {
+  const { kanbanColumn: { lgHeight = 0, xsHeight = 0 } = {} } = useKanban({
+    formRef,
+  })
 
   return (
     <Box
@@ -22,6 +23,7 @@ export default function SkeletonKanbanColumn({ formRefProp }) {
         display: 'grid',
         gap: 3,
         gridTemplateColumns: 'repeat(5, 1fr)',
+        overflow: 'hidden',
       }}
     >
       {[...Array(5)].map((_, index) => (
@@ -30,7 +32,7 @@ export default function SkeletonKanbanColumn({ formRefProp }) {
           key={index}
           sx={{
             p: 2.5,
-            width: 310,
+            width: CARD_WIDTH,
             height: {
               lg: `calc(100vh - ${lgHeight}px)`,
               xs: `calc(100vh - ${xsHeight}px)`,

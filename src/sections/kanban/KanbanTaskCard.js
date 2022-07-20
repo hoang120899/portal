@@ -1,55 +1,41 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 // @mui
-import { Box, Button, MenuItem, Paper, Stack, Typography } from '@mui/material'
+import { Box, Paper, Stack, Typography } from '@mui/material'
 
-import { compareAsc, format, parseISO } from 'date-fns'
 import PropTypes from 'prop-types'
 import { Draggable } from 'react-beautiful-dnd'
 
-import IconDelete from '@/assets/icon_delete'
-import IconTimer from '@/assets/icon_timer'
-import Assignee from '@/components/Assignee'
-import CustomLabel from '@/components/CustomLabel'
-import { DATETIME_FORMAT, DATE_FORMAT_DAY_MONTH } from '@/config'
-// components
+// hooks
 import useLocales from '@/hooks/useLocales'
-import {
-  useAddAssigneeMutation,
-  useDeleteLabelMutation,
-  useGetUserQuery,
-  useRemoveAssigneeMutation,
-} from '@/sections/kanban/kanbanSlice'
+import { useDispatch } from '@/redux/store'
 
-import KanbanActionCreateLabel from './KanbanActionCreateLabel'
-import KanbanActionMove from './KanbanActionMove'
-import KanbanActionStorage from './KanbanActionStorage'
+import KanbanAssignee from './KanbanAssignee'
+import KanbanBasicInfo from './KanbanBasicInfo'
+import KanbanLabels from './KanbanLabels'
 import KanbanQuickMenu from './KanbanQuickMenu'
+import { deleteLabel } from './kanbanSlice'
 
 KanbanTaskCard.propTypes = {
   card: PropTypes.object,
   index: PropTypes.number,
-  hasAddPermission: PropTypes.bool,
-  onOpenUpdateTask: PropTypes.func,
   laneId: PropTypes.string,
+  onOpenUpdateTask: PropTypes.func,
 }
 
-export default function KanbanTaskCard({
-  card,
-  onOpenUpdateTask,
-  hasAddPermission,
-  index,
-  laneId,
-}) {
-  const { Job, Candidate, id: cardId } = card
+function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
   const { translate } = useLocales()
+  const { Job, Candidate = {}, Labels = [], id: cardId } = card
 
-  const [labels, setLabels] = useState([])
-  const [users, setUsers] = useState([])
-
-  const { data: contactData } = useGetUserQuery()
-  const [addAssignee] = useAddAssigneeMutation()
-  const [removeAssignee] = useRemoveAssigneeMutation()
+  const dispatch = useDispatch()
+  const handleDeleteLabel = async (label) => {
+    try {
+      const data = { ...label, laneId, cardId: cardId }
+      await dispatch(deleteLabel(data))
+    } catch (error) {
+      // TO DO: handle error
+    }
+  }
 
   const configUserInfo = [
     {
@@ -65,114 +51,9 @@ export default function KanbanTaskCard({
       value: card?.position,
     },
   ]
-  const [deleteLabel] = useDeleteLabelMutation()
-  const handleDeleteLabel = async (label) => {
-    try {
-      deleteLabel(label.id)
-      setLabels(labels.filter((item) => item.id !== label.id))
-    } catch (error) {
-      // TO DO: handle error
-    }
-  }
-  const onToggleAssignee = async (checked, userId) => {
-    if (checked) {
-      try {
-        await removeAssignee({ id: card.id, userId })
-        setUsers(users.filter((item) => item.id !== userId))
-      } catch (error) {
-        // TO DO: handle error
-      }
-    } else {
-      try {
-        await addAssignee({ id: card.id, userId })
-        const user = [
-          ...users,
-          contactData.data.list.find((item) => item.id === userId),
-        ]
-        setUsers(user)
-      } catch (error) {
-        // TO DO: handle error
-      }
-    }
-  }
-  const configAction = () => {
-    switch (actions) {
-      case 'move':
-        return (
-          <KanbanActionMove laneId={laneId} sourceId={laneId} cardId={cardId} />
-        )
-      case 'label':
-        return (
-          <KanbanActionCreateLabel
-            cardId={cardId}
-            labels={labels}
-            setOpenMenuActions={setOpenMenuActions}
-            laneId={laneId}
-          />
-        )
-      case 'storage':
-        return <KanbanActionStorage cardId={cardId} laneId={laneId} />
-      default:
-        return (
-          <>
-            <MenuItem
-              onClick={() => {
-                setActions('move')
-              }}
-            >
-              {translate('pages.board.moveCard')}
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setActions('storage')
-              }}
-            >
-              {translate('pages.board.storageCard')}
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setActions('label')
-              }}
-            >
-              {translate('pages.board.createLabel')}
-            </MenuItem>
-          </>
-        )
-    }
-  }
-  const [actions, setActions] = useState('actions')
-
-  const [openMenu, setOpenMenuActions] = useState(null)
-
-  const handleOpenMenu = (event) => {
-    setOpenMenuActions(event.currentTarget)
-    setActions('')
-  }
-
-  const handleCloseMenu = () => {
-    setOpenMenuActions(null)
-  }
-  const handleOnback = () => {
-    if (actions !== 'actions') {
-      setActions('actions')
-    } else {
-      setOpenMenuActions(null)
-    }
-  }
-  const isAfterNow = (date) => compareAsc(parseISO(date), new Date()) === 1
-  useEffect(() => {
-    setLabels(card.Labels)
-  }, [card.Labels])
-  useEffect(() => {
-    setUsers(card.Users)
-  }, [card.Users])
 
   return (
-    <Draggable
-      draggableId={card.id}
-      index={index}
-      isDragDisabled={!hasAddPermission}
-    >
+    <Draggable draggableId={card.id} index={index}>
       {(provided) => (
         <div
           {...provided.draggableProps}
@@ -190,8 +71,8 @@ export default function KanbanTaskCard({
             }}
           >
             <Box
-              onClick={onOpenUpdateTask.bind(null, card)}
               sx={{ cursor: 'pointer' }}
+              onClick={onOpenUpdateTask.bind(null, card)}
             >
               <Box
                 sx={{
@@ -205,104 +86,23 @@ export default function KanbanTaskCard({
                 }}
               >
                 <Stack
-                  spacing={2}
+                  spacing={1}
                   sx={{
                     p: 2,
                     background: 'white',
                     boxShadow: '0 1px 0 rgb(9 30 66 / 25%)',
                   }}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onOpenUpdateTask(card)
-                  }}
                 >
-                  <Box>
-                    <Box display='flex' flexWrap='wrap'>
-                      <CustomLabel
-                        key={index}
-                        color={card?.Job?.Client?.background}
-                        sx={{
-                          margin: '2px',
-                        }}
-                        title={card?.Job?.Client?.name}
-                      >
-                        {card?.Job?.Client?.name}
-                      </CustomLabel>
-                      {labels.map((label, index) => (
-                        <CustomLabel
-                          key={index}
-                          color={label?.background}
-                          title={label?.title}
-                          sx={{
-                            margin: '2px',
-                          }}
-                          endIcon={
-                            <Box width='10px'>
-                              <IconDelete
-                                fill='#fff'
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleDeleteLabel(label)
-                                }}
-                              />
-                            </Box>
-                          }
-                        >
-                          {label?.title}
-                        </CustomLabel>
-                      ))}
-                    </Box>
-                    <Typography variant='h5'>{Candidate?.name}</Typography>
-                    <Stack spacing={1} sx={{ marginY: '8px' }}>
-                      {card.Interviews?.map((interview) => (
-                        <Button
-                          key={interview.id}
-                          variant='contained'
-                          color='secondary'
-                          size='small'
-                          sx={{
-                            paddingX: '0.75rem',
-                            borderRadius: '0.42rem',
-                            width: 'fit-content',
-                            boxShadow: 'none',
-                            svg: {
-                              marginRight: '0.5rem',
-                            },
-                          }}
-                        >
-                          <IconTimer fill='#fff' color='white' />
-                          {format(
-                            new Date(interview.timeInterview),
-                            DATE_FORMAT_DAY_MONTH
-                          )}
-                        </Button>
-                      ))}
-                      {card.expectedDate && (
-                        <Button
-                          variant='contained'
-                          color={`${
-                            isAfterNow(card.expectedDate) ? 'primary' : 'error'
-                          }`}
-                          size='small'
-                          sx={{
-                            width: 'fit-content',
-                            boxShadow: 'none',
-                            paddingX: '0.75rem',
-                            borderRadius: '0.42rem',
-                            svg: {
-                              marginRight: '0.5rem',
-                            },
-                          }}
-                        >
-                          <IconTimer fill='#fff' color='white' />
-                          {format(new Date(card.expectedDate), DATETIME_FORMAT)}
-                        </Button>
-                      )}
-                    </Stack>
-                    <Typography variant='subtitle2' color='#777'>
-                      {Job.title}
-                    </Typography>
-                  </Box>
+                  <KanbanLabels
+                    Job={Job}
+                    Labels={Labels}
+                    handleDeleteLabel={handleDeleteLabel}
+                  />
+                  <KanbanBasicInfo
+                    Candidate={Candidate}
+                    card={card}
+                    Job={Job}
+                  />
                   <Box
                     display={'Grid'}
                     alignItems={'center'}
@@ -328,14 +128,11 @@ export default function KanbanTaskCard({
                       </React.Fragment>
                     ))}
                   </Box>
-                  <Box onClick={(e) => e.stopPropagation()}>
-                    <Assignee
-                      onToggleAssignee={onToggleAssignee}
-                      assignee={users}
-                      hasAddAssignee={hasAddPermission}
-                      listContacts={contactData?.data?.list}
-                    />
-                  </Box>
+                  <KanbanAssignee
+                    Users={card?.Users}
+                    laneId={laneId}
+                    cardId={cardId}
+                  />
                 </Stack>
               </Box>
             </Box>
@@ -347,12 +144,9 @@ export default function KanbanTaskCard({
               }}
             >
               <KanbanQuickMenu
-                open={openMenu}
-                onOpen={handleOpenMenu}
-                onClose={handleCloseMenu}
-                onBack={handleOnback}
-                title={actions}
-                actions={configAction()}
+                laneId={laneId}
+                cardId={cardId}
+                Labels={Labels}
               />
             </Box>
           </Paper>
@@ -361,3 +155,5 @@ export default function KanbanTaskCard({
     </Draggable>
   )
 }
+
+export default React.memo(KanbanTaskCard)

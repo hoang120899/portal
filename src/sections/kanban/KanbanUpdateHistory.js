@@ -42,7 +42,7 @@ export default function KanbanUpdateHistory({ title, cardId, ...other }) {
   }, [historyData])
 
   return (
-    <Card {...other}>
+    <Card sx={{ maxHeight: '25rem', overflowY: 'auto' }} {...other}>
       <CardHeader title={title} sx={{ p: 2, pb: 0 }} />
 
       <Scrollbar>
