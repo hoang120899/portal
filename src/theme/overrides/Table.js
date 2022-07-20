@@ -23,12 +23,12 @@ export default function Table(theme) {
           color: theme.palette.text.secondary,
           backgroundColor: theme.palette.background.neutral,
           '&:first-of-type': {
-            paddingLeft: theme.spacing(3),
+            paddingLeft: theme.spacing(2),
             borderTopLeftRadius: theme.shape.borderRadius,
             borderBottomLeftRadius: theme.shape.borderRadius,
           },
           '&:last-of-type': {
-            paddingRight: theme.spacing(3),
+            paddingRight: theme.spacing(2),
             borderTopRightRadius: theme.shape.borderRadius,
             borderBottomRightRadius: theme.shape.borderRadius,
           },
@@ -39,10 +39,10 @@ export default function Table(theme) {
         },
         body: {
           '&:first-of-type': {
-            paddingLeft: theme.spacing(3),
+            paddingLeft: theme.spacing(2),
           },
           '&:last-of-type': {
-            paddingRight: theme.spacing(3),
+            paddingRight: theme.spacing(2),
           },
         },
       },
@@ -54,16 +54,24 @@ export default function Table(theme) {
         },
         toolbar: {
           height: 48,
+          paddingLeft: 0,
+          paddingRight: 0,
         },
         select: {
           '&:focus': {
             borderRadius: theme.shape.borderRadius,
           },
         },
+        input: {
+          marginRight: theme.spacing(2),
+        },
         selectIcon: {
           width: 20,
           height: 20,
           marginTop: -4,
+        },
+        actions: {
+          marginLeft: theme.spacing(1),
         },
       },
     },
