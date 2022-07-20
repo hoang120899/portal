@@ -20,3 +20,5 @@ export const TABLE_HEAD = [
   { id: 'candidate', label: 'Candidates', align: 'left' },
   { id: 'status', label: 'Status', align: 'left' },
 ]
+
+export const DEFAULT_ROW_PER_PAGE = 5

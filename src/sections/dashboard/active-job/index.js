@@ -5,12 +5,9 @@ import { Card, CardHeader, Divider, Tab, Tabs } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
-// import { useForm } from 'react-hook-form'
 // components
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
-// import { FormProvider } from '@/components/hook-form'
-import { PAGINATION } from '@/config'
 import useResponsive from '@/hooks/useResponsive'
 // hooks
 import useTable from '@/hooks/useTable'
@@ -18,8 +15,7 @@ import useTabs from '@/hooks/useTabs'
 
 //
 import ActiveJobTableRow from './ActiveJobTableRow'
-import { STATUS_OPTIONS, TABLE_HEAD } from './config'
-// import ActiveJobTableToolbar from './ActiveJobTableToolbar'
+import { DEFAULT_ROW_PER_PAGE, STATUS_OPTIONS, TABLE_HEAD } from './config'
 import { useGetJobsQuery } from './jobsApiSlice'
 import ActiveJobMobile from './mobile'
 
@@ -28,7 +24,7 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
     useTabs('active')
   const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
     useTable({
-      defaultRowsPerPage: PAGINATION[0],
+      defaultRowsPerPage: DEFAULT_ROW_PER_PAGE,
     })
   const isDesktop = useResponsive('down', 768, 'sm')
   useEffect(() => {
