@@ -14,6 +14,7 @@ import { FormProvider } from '@/components/hook-form'
 import useLocales from '@/hooks/useLocales'
 import useTable from '@/hooks/useTable'
 
+import WeeklyTaskDetailModal from './WeeklyTaskDetailModal'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
 // hooks
@@ -29,10 +30,30 @@ const defaultValues = {
   endDate: endOfWeek(new Date()).toISOString(),
 }
 
+const HANDLE_TYPE = {
+  DETAIL: 'detail',
+  EDIT: 'edit',
+  ADD: 'add',
+}
+
 export default function WeeklyTask({ title, subheader, ...other }) {
   const [list, setList] = useState([])
   const { translate } = useLocales()
   const { page, rowsPerPage, setPage } = useTable()
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [handleType, setHandleType] = useState('')
+  const [chosenTask, setChosenTask] = useState({})
+
+  const handleGetDetailWeeklyTask = (row) => {
+    setIsOpen(true)
+    setHandleType(HANDLE_TYPE.DETAIL)
+    setChosenTask(row)
+  }
+
+  const handleCloseDetailModal = () => {
+    setIsOpen(false)
+  }
 
   useEffect(() => {
     setPage(0)
@@ -94,7 +115,11 @@ export default function WeeklyTask({ title, subheader, ...other }) {
         <WeeklyTaskTableToolbar />
       </FormProvider>
       {list.length > 0 ? (
-        <WeeklyTaskDetails list={list} isLoading={isLoading} />
+        <WeeklyTaskDetails
+          list={list}
+          isLoading={isLoading}
+          handleGetDetailWeeklyTask={handleGetDetailWeeklyTask}
+        />
       ) : (
         <EmptyContent
           title={translate('No Data')}
@@ -104,6 +129,12 @@ export default function WeeklyTask({ title, subheader, ...other }) {
           }}
         />
       )}
+      <WeeklyTaskDetailModal
+        isOpen={isOpen}
+        handleType={handleType}
+        onClose={handleCloseDetailModal}
+        task={chosenTask}
+      />
     </Card>
   )
 }
