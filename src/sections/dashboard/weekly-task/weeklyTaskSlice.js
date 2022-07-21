@@ -1,7 +1,11 @@
 import qs from 'query-string'
 
 import { apiSlice } from '@/redux/api/apiSlice'
-import { API_UPDATE_TASK, API_WEEKLY_TASKS } from '@/routes/api'
+import {
+  API_UPDATE_TASK,
+  API_WEEKLY_TASKS,
+  API_WEEKLY_TASKS_LIST_USER,
+} from '@/routes/api'
 
 export const weeklyTaskApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,8 +23,17 @@ export const weeklyTaskApiSlice = apiSlice.injectEndpoints({
         data: payload?.body,
       }),
     }),
+    getTaskUserList: builder.query({
+      query: (queries = {}) => ({
+        url: `${API_WEEKLY_TASKS_LIST_USER}?${qs.stringify(queries)}`,
+        method: 'GET',
+      }),
+    }),
   }),
 })
 
-export const { useGetAllWeeklyTasksMutation, useUpdateWeeklyTaskMutation } =
-  weeklyTaskApiSlice
+export const {
+  useGetAllWeeklyTasksMutation,
+  useUpdateWeeklyTaskMutation,
+  useGetTaskUserListQuery,
+} = weeklyTaskApiSlice

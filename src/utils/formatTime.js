@@ -1,4 +1,10 @@
-import { format, formatDistanceToNow, getTime } from 'date-fns'
+import {
+  endOfWeek,
+  format,
+  formatDistanceToNow,
+  getTime,
+  startOfWeek,
+} from 'date-fns'
 
 import { DATE_FORMAT } from '@/config'
 
@@ -22,4 +28,26 @@ export function fToNow(date) {
   return formatDistanceToNow(new Date(date), {
     addSuffix: true,
   })
+}
+
+export function fDateCalendar(date) {
+  try {
+    const mmDate = new Date(date)
+    if (mmDate instanceof Date && !isNaN(mmDate)) return mmDate
+
+    const convertDate = date?.split('/') || []
+    if (convertDate.length < 3) return new Date()
+
+    return new Date(`${convertDate[2]}/${convertDate[1]}/${convertDate[0]}`)
+  } catch (error) {
+    return new Date()
+  }
+}
+
+export function fDateStartOfWeek(date) {
+  return startOfWeek(date)
+}
+
+export function fDateEndOfWeek(date) {
+  return endOfWeek(date)
 }

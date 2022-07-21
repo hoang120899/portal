@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react'
 // @mui
 import { Card, CardHeader } from '@mui/material'
 
-// utils
 import { endOfWeek, startOfWeek } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
@@ -11,6 +10,7 @@ import { useForm } from 'react-hook-form'
 // components
 import EmptyContent from '@/components/EmptyContent'
 import { FormProvider } from '@/components/hook-form'
+// hooks
 import useLocales from '@/hooks/useLocales'
 import useTable from '@/hooks/useTable'
 
@@ -18,8 +18,6 @@ import WeeklyTaskDetailModal from './WeeklyTaskDetailModal'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
 import WeeklyTaskEditModal from './WeeklyTaskEditModal'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
-import { useGetAllUsersQuery } from './userSlice'
-// hooks
 import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
 WeeklyTask.propTypes = {
@@ -28,8 +26,8 @@ WeeklyTask.propTypes = {
 }
 
 const defaultValues = {
-  startDate: startOfWeek(new Date()).toISOString(),
-  endDate: endOfWeek(new Date()).toISOString(),
+  startDate: startOfWeek(new Date()),
+  endDate: endOfWeek(new Date()),
 }
 
 const HANDLE_TYPE = {
@@ -80,8 +78,6 @@ export default function WeeklyTask({ title, subheader, ...other }) {
   })
 
   const [getAllWeeklyTasks, { isLoading }] = useGetAllWeeklyTasksMutation()
-  const { data: userData } = useGetAllUsersQuery()
-  const { list: listUser = [] } = userData?.data || {}
 
   useEffect(() => {
     const getAllTasks = async (payload) => {
@@ -122,8 +118,6 @@ export default function WeeklyTask({ title, subheader, ...other }) {
     }
   }
 
-  const nameOptions = listUser.map((item) => item.name)
-
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
@@ -157,7 +151,6 @@ export default function WeeklyTask({ title, subheader, ...other }) {
           isOpen={isOpenEdit}
           onClose={handleCloseEditModal}
           task={chosenTask}
-          listMember={nameOptions}
         />
       )}
     </Card>
