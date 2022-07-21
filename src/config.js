@@ -117,7 +117,24 @@ export const ROLE_BY_PAGES = [
   //   roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.ADMIN],
   // },
   {
+<<<<<<< HEAD
     pageNames: [PAGES.Users, PAGES.Clients],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER],
+=======
+    pageNames: [PAGES.Jobs, PAGES.Clients],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
+  },
+  {
+    pageNames: [PAGES.Task],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.ADMIN],
+  },
+  {
+    pageNames: [PAGES.Blogs],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.BLOGER],
+>>>>>>> 97c13b8 (fix(dashboard/active-jobs): fix table ActiveJobs, author Member role)
+  },
+  {
+    pageNames: [PAGES.Users],
     roles: [ROLE.DIRECTOR, ROLE.LEADER],
   },
 ]
