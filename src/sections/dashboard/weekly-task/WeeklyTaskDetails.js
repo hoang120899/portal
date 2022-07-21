@@ -1,6 +1,6 @@
 // @mui
 import { Avatar, Box, Skeleton, Stack, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
@@ -23,6 +23,7 @@ export default function WeeklyTaskDetails({
   isLoading,
   handleGetDetailWeeklyTask = {},
 }) {
+  const theme = useTheme()
   return (
     <Scrollbar sx={{ height: { xs: '384px !important' } }}>
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -44,14 +45,21 @@ export default function WeeklyTaskDetails({
           return (
             <Stack direction='row' alignItems='center' key={index}>
               <Avatar
-                src={item?.user?.linkAvatar}
+                src={`${item?.user?.linkAvatar}`}
                 sx={{ width: 48, height: 48 }}
               />
 
-              <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
+              <Box sx={{ flexGrow: 1, ml: 2, mr: 1, minWidth: 100 }}>
                 <Typography
                   variant='subtitle2'
-                  sx={{ mb: 0.5 }}
+                  sx={{
+                    mb: 0.5,
+                    cursor: 'pointer',
+                    transition: 'all 0.3s',
+                    '&:hover': {
+                      color: `${theme.palette.primary.main}`,
+                    },
+                  }}
                   noWrap
                   onClick={() => handleGetDetailWeeklyTask(item)}
                 >

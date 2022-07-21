@@ -8,6 +8,8 @@ import {
   Typography,
 } from '@mui/material'
 
+import useLocales from '@/hooks/useLocales'
+
 export default function WeeklyTaskDetailModal({
   isOpen,
   onClose,
@@ -15,7 +17,7 @@ export default function WeeklyTaskDetailModal({
   task = [],
   handleOpenEdit,
 }) {
-  // console.log(task.content)
+  const { translate } = useLocales()
   return (
     <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={onClose} task={task}>
       <Stack spacing={2} sx={{ p: 2.5 }}>
@@ -60,7 +62,7 @@ export default function WeeklyTaskDetailModal({
 
         <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
           <Button variant='contained' sx={{ mr: 1 }} onClick={handleOpenEdit}>
-            Edit
+            {translate('Edit')}
           </Button>
 
           <Button
@@ -69,7 +71,7 @@ export default function WeeklyTaskDetailModal({
             }}
             onClick={onClose}
           >
-            Cancel
+            {translate('Cancel')}
           </Button>
         </Box>
       </Stack>
