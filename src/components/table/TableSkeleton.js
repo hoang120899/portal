@@ -11,7 +11,7 @@ TableSkeleton.propTypes = {
 export default function TableSkeleton({ columns = [], height = 20, ...other }) {
   return (
     <TableRow {...other}>
-      <TableCell colSpan={5}>
+      <TableCell colSpan={columns.length || 5}>
         <Stack spacing={3} direction='row' alignItems='center'>
           {(columns || []).map(({ width, align }, index) => (
             <Skeleton
