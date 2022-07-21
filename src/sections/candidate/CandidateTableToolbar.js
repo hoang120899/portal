@@ -34,55 +34,55 @@ export default function CandidateTableToolbar() {
     <Grid container spacing={2} sx={{ px: 2, pb: 2 }}>
       <Grid item xs={12} sm={6}>
         <Stack spacing={1}>
-          <Typography>{translate('Email address')}:</Typography>
+          <Typography>{translate('pages.candidates.email')}:</Typography>
           <RHFTextField
             type='text'
             name={SEARCH_FIELD.EMAIL}
-            placement={translate('Enter email')}
+            placeholder={translate('pages.candidates.enterEmail')}
           />
         </Stack>
       </Grid>
 
       <Grid item xs={12} sm={6}>
         <Stack spacing={1}>
-          <Typography>{translate('Phone')}:</Typography>
+          <Typography>{translate('pages.candidates.phone')}:</Typography>
           <RHFTextField
             type='text'
             name={SEARCH_FIELD.PHONE}
-            placement={translate('Enter phone')}
+            placeholder={translate('pages.candidates.enterPhone')}
           />
         </Stack>
       </Grid>
 
       <Grid item xs={12} sm={6}>
         <Stack spacing={1}>
-          <Typography>{translate('Name')}:</Typography>
+          <Typography>{translate('pages.candidates.name')}:</Typography>
           <RHFTextField
             type='text'
             name={SEARCH_FIELD.NAME}
-            placement={translate('Enter name')}
+            placeholder={translate('pages.candidates.enterName')}
           />
         </Stack>
       </Grid>
 
       <Grid item xs={12} sm={6}>
         <Stack spacing={1}>
-          <Typography>{translate('Text')}:</Typography>
+          <Typography>{translate('pages.candidates.text')}:</Typography>
           <RHFTextField
             type='text'
             name='text'
-            placement={translate('Enter text')}
+            placeholder={translate('pages.candidates.enterText')}
           />
         </Stack>
       </Grid>
 
       <Grid item xs={12}>
         <Stack spacing={1}>
-          <Typography>{translate('Job')}:</Typography>
+          <Typography>{translate('pages.candidates.job')}:</Typography>
           <RHFAutocomplete
             name={SEARCH_FIELD.JOB_ID}
             options={listJobs}
-            label={translate('Select job')}
+            label={translate('pages.candidates.selectJob')}
             AutocompleteProps={{
               size: 'small',
               renderOption: (props, option) => {
@@ -104,7 +104,7 @@ export default function CandidateTableToolbar() {
 
       <Grid item xs={12}>
         <Stack spacing={1}>
-          <Typography>{translate('Skill')}:</Typography>
+          <Typography>{translate('pages.candidates.skill')}:</Typography>
           <RHFAutocomplete
             AutocompleteProps={{
               multiple: true,
@@ -120,7 +120,7 @@ export default function CandidateTableToolbar() {
                 )),
             }}
             name={SEARCH_FIELD.SKILL}
-            label={translate('Select skill')}
+            label={translate('pages.candidates.selectKill')}
             options={listSkills}
           />
         </Stack>
@@ -129,7 +129,7 @@ export default function CandidateTableToolbar() {
       <Grid item xs={12}>
         <Stack direction='row' justifyContent='end'>
           <Button variant='contained' type='submit'>
-            {translate('Search')}
+            {translate('pages.candidates.search')}
           </Button>
         </Stack>
       </Grid>

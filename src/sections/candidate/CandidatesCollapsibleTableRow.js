@@ -16,16 +16,30 @@ import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
+import Label from '@/components/Label'
+import TextMaxLine from '@/components/TextMaxLine'
+import useLocales from '@/hooks/useLocales'
 
 CandidatesCollapsibleTableRow.propTypes = {
   row: PropTypes.object,
 }
 
 export default function CandidatesCollapsibleTableRow({ row }) {
-  const { name = '' } = row
+  const { translate } = useLocales()
+  const { name = '', phone = '', date = [], titleJob = [] } = row
 
   const [open, setOpen] = useState(true)
-
+  const renderData = (listData) => (
+      <>
+        {listData?.map((data, id) => (
+          <Typography variant='subtitle2' key={id}>
+            <TextMaxLine line={1} key={id} sx={{ maxWidth: 160 }}>
+              {data}
+            </TextMaxLine>
+          </Typography>
+        ))}
+      </>
+    )
   return (
     <>
       <TableRow>
@@ -61,18 +75,35 @@ export default function CandidatesCollapsibleTableRow({ row }) {
               <Table size='small' aria-label='purchases'>
                 <TableBody>
                   <TableRow>
-                    <TableCell>Job apply</TableCell>
-                    <TableCell>1</TableCell>
+                    <TableCell>
+                      {translate('pages.candidates.jobApply')}
+                    </TableCell>
+                    <TableCell>{renderData(titleJob)}</TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>Time apply</TableCell>
-                    <TableCell>2</TableCell>
+                    <TableCell>
+                      {translate('pages.candidates.timeApply')}
+                    </TableCell>
+                    <TableCell>{renderData(date)}</TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>Phone</TableCell>
-                    <TableCell>3</TableCell>
+                    <TableCell>{translate('pages.candidates.phone')}</TableCell>
+                    <TableCell>
+                      <Label color='warning'>
+                        <Typography
+                          variant='subtitle2'
+                          align='left'
+                          sx={{
+                            borderRadius: 0.6,
+                            px: 1,
+                          }}
+                        >
+                          {phone}
+                        </Typography>
+                      </Label>
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
