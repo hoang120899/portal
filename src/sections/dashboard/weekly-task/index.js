@@ -16,7 +16,9 @@ import useTable from '@/hooks/useTable'
 
 import WeeklyTaskDetailModal from './WeeklyTaskDetailModal'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
+import WeeklyTaskEditModal from './WeeklyTaskEditModal'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
+import { useGetAllUsersQuery } from './userSlice'
 // hooks
 import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
@@ -41,18 +43,28 @@ export default function WeeklyTask({ title, subheader, ...other }) {
   const { translate } = useLocales()
   const { page, rowsPerPage, setPage } = useTable()
 
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenDetail, setIsOpenDetail] = useState(false)
   const [handleType, setHandleType] = useState('')
   const [chosenTask, setChosenTask] = useState({})
+  const [isOpenEdit, setIsOpenEdit] = useState(false)
 
   const handleGetDetailWeeklyTask = (row) => {
-    setIsOpen(true)
+    setIsOpenDetail(true)
     setHandleType(HANDLE_TYPE.DETAIL)
     setChosenTask(row)
   }
 
   const handleCloseDetailModal = () => {
-    setIsOpen(false)
+    setIsOpenDetail(false)
+  }
+
+  const handleOpenEditModal = () => {
+    setIsOpenEdit(true)
+    setIsOpenDetail(false)
+  }
+
+  const handleCloseEditModal = () => {
+    setIsOpenEdit(false)
   }
 
   useEffect(() => {
@@ -68,6 +80,8 @@ export default function WeeklyTask({ title, subheader, ...other }) {
   })
 
   const [getAllWeeklyTasks, { isLoading }] = useGetAllWeeklyTasksMutation()
+  const { data: userData } = useGetAllUsersQuery()
+  const { list: listUser = [] } = userData?.data || {}
 
   useEffect(() => {
     const getAllTasks = async (payload) => {
@@ -108,6 +122,8 @@ export default function WeeklyTask({ title, subheader, ...other }) {
     }
   }
 
+  const nameOptions = listUser.map((item) => item.name)
+
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
@@ -130,11 +146,20 @@ export default function WeeklyTask({ title, subheader, ...other }) {
         />
       )}
       <WeeklyTaskDetailModal
-        isOpen={isOpen}
+        isOpen={isOpenDetail}
         handleType={handleType}
         onClose={handleCloseDetailModal}
         task={chosenTask}
+        handleOpenEdit={handleOpenEditModal}
       />
+      {isOpenEdit && (
+        <WeeklyTaskEditModal
+          isOpen={isOpenEdit}
+          onClose={handleCloseEditModal}
+          task={chosenTask}
+          listMember={nameOptions}
+        />
+      )}
     </Card>
   )
 }

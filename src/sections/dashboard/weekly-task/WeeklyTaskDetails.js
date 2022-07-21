@@ -27,12 +27,6 @@ export default function WeeklyTaskDetails({
     <Scrollbar sx={{ height: { xs: '384px !important' } }}>
       <Stack spacing={3} sx={{ p: 3 }}>
         {list.map((item, index) => {
-          const {
-            user: { linkAvatar, name, nameTeam },
-            startDate,
-            endDate,
-            content,
-          } = item
           if (isLoading) {
             return (
               <Stack
@@ -49,7 +43,10 @@ export default function WeeklyTaskDetails({
           }
           return (
             <Stack direction='row' alignItems='center' key={index}>
-              <Avatar src={linkAvatar} sx={{ width: 48, height: 48 }} />
+              <Avatar
+                src={item?.user?.linkAvatar}
+                sx={{ width: 48, height: 48 }}
+              />
 
               <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
                 <Typography
@@ -58,7 +55,7 @@ export default function WeeklyTaskDetails({
                   noWrap
                   onClick={() => handleGetDetailWeeklyTask(item)}
                 >
-                  {name}
+                  {item?.user?.name}
                 </Typography>
 
                 <Typography
@@ -66,13 +63,13 @@ export default function WeeklyTaskDetails({
                   sx={{ color: 'text.secondary' }}
                   noWrap
                 >
-                  {nameTeam}
+                  {item?.user?.nameTeam}
                 </Typography>
               </Box>
 
               <RootStyle>
                 <Typography variant='subtitle2' sx={{ mb: 0.5 }} noWrap>
-                  {startDate} - {endDate}
+                  {item?.startDate} - {item?.endDate}
                 </Typography>
 
                 <Typography
@@ -80,7 +77,7 @@ export default function WeeklyTaskDetails({
                   sx={{ color: 'text.secondary' }}
                   noWrap
                 >
-                  {content
+                  {item?.content
                     .reduce((acc, cur) => acc + cur.content + ', ', '')
                     .slice(0, -2)}
                 </Typography>
