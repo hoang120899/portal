@@ -30,16 +30,16 @@ export default function CandidatesCollapsibleTableRow({ row }) {
 
   const [open, setOpen] = useState(true)
   const renderData = (listData) => (
-      <>
-        {listData?.map((data, id) => (
-          <Typography variant='subtitle2' key={id}>
-            <TextMaxLine line={1} key={id} sx={{ maxWidth: 160 }}>
-              {data}
-            </TextMaxLine>
-          </Typography>
-        ))}
-      </>
-    )
+    <>
+      {listData?.map((data, id) => (
+        <Typography variant='subtitle2' key={id} sx={{ color: '#637381' }}>
+          <TextMaxLine line={1} key={id} sx={{ maxWidth: 160 }}>
+            {data}
+          </TextMaxLine>
+        </Typography>
+      ))}
+    </>
+  )
   return (
     <>
       <TableRow>

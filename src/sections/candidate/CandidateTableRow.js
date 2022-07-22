@@ -20,42 +20,44 @@ export default function CandidateTableRow({ row = {} }) {
     follower = [],
   } = row
   const renderData = (listData) => (
-      <>
-        {listData?.map((data, id) => (
-          <Typography variant='subtitle2' key={id}>
-            {data}
-          </Typography>
-        ))}
-      </>
-    )
+    <>
+      {listData?.map((data, id) => (
+        <Typography variant='subtitle2' sx={{ color: '#637381' }} key={id}>
+          {data}
+        </Typography>
+      ))}
+    </>
+  )
   const renderDataColumn = (listData) => (
-      <>
-        {listData?.map((data, id) => (
-          <Typography
-            width={100}
-            variant='subtitle2'
-            key={id}
-            sx={{
-              backgroundColor: `${data.background}`,
-              color: '#ffffff',
-              py: 0.5,
-              mb: 0.6,
-              borderRadius: 0.6,
-              cursor: 'pointer',
-            }}
-          >
-            {data.nameColumn}
-          </Typography>
-        ))}
-      </>
-    )
+    <>
+      {listData?.map((data, id) => (
+        <Typography
+          width={100}
+          variant='subtitle2'
+          key={id}
+          sx={{
+            backgroundColor: `${data.background}`,
+            color: '#ffffff',
+            py: 0.5,
+            mb: 0.6,
+            borderRadius: 0.6,
+            cursor: 'pointer',
+          }}
+        >
+          {data.nameColumn}
+        </Typography>
+      ))}
+    </>
+  )
   return (
     <TableRow hover>
       <TableCell align='left'>
-        <Typography variant='subtitle2'>{name}</Typography>
+        <Typography variant='subtitle2' sx={{ color: '#637381' }}>
+          {name}
+        </Typography>
       </TableCell>
 
-      <TableCell align='center'>
+      <TableCell align='left'>
         <Label color='warning'>
           <Typography variant='subtitle2' sx={{ borderRadius: 0.6, px: 1 }}>
             {phone}
