@@ -12,8 +12,9 @@ const axiosBaseQuery =
     } catch (axiosError) {
       return {
         error: {
-          status: axiosError.response?.status,
-          data: axiosError.response?.data || axiosError.message,
+          status: axiosError?.response?.status || axiosError?.code,
+          data:
+            axiosError.response?.data || axiosError?.data || axiosError.message,
         },
       }
     }
