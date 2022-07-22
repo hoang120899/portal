@@ -1,6 +1,7 @@
 // @mui
 import { Card, CardHeader } from '@mui/material'
 
+import { format, subMonths } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
@@ -9,6 +10,7 @@ import { FormProvider } from '@/components/hook-form'
 
 import PerformanceDetails from './PerformanceDetails'
 import PerformanceTableToolbar from './PerformanceTableToolbar'
+import { useGetDataPerformanceQuery } from './performanceSlice'
 
 Performance.propTypes = {
   title: PropTypes.string,
@@ -22,10 +24,14 @@ export default function Performance({ title, subheader, ...other }) {
       endDate: null,
     },
   })
-  const {
-    handleSubmit,
-    // formState: { errors, isSubmitting },
-  } = methods
+  const DEFAULT_DATE_START = format(subMonths(Date.now(), 3), 'yyyy-MM-dd')
+  const DEFAULT_DATE_END = format(Date.now(), 'yyyy-MM-dd')
+
+  const date = JSON.stringify({
+    startDate: DEFAULT_DATE_START,
+    endDate: DEFAULT_DATE_END,
+  })
+  const { handleSubmit } = methods
   const onSubmit = async (data) => {
     try {
       // eslint-disable-next-line no-console
@@ -34,13 +40,8 @@ export default function Performance({ title, subheader, ...other }) {
       // TODO
     }
   }
-  const list = [...Array(5).keys()].map((value, index) => ({
-    avatar: `https://minimal-assets-api-dev.vercel.app/assets/images/avatars/avatar_${
-      index + 1
-    }.jpg`,
-    name: `Name ${index + 1}`,
-    email: `Email${index}@gmail.com`,
-  }))
+  const { data } = useGetDataPerformanceQuery(date)
+  const list = data?.data?.list
 
   return (
     <Card {...other}>
@@ -48,7 +49,7 @@ export default function Performance({ title, subheader, ...other }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <PerformanceTableToolbar />
       </FormProvider>
-      <PerformanceDetails list={list} />
+      {list ? <PerformanceDetails list={list} /> : null}
     </Card>
   )
 }
