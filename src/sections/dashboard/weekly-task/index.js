@@ -86,7 +86,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       setList(data?.tasks)
     }
     getAllTasks(payload)
-  }, [getAllWeeklyTasks, payload])
+  }, [getAllWeeklyTasks, payload, chosenTask])
 
   const methods = useForm({
     defaultValues,
@@ -151,6 +151,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
           isOpen={isOpenEdit}
           onClose={handleCloseEditModal}
           task={chosenTask}
+          setChosenTask={setChosenTask}
         />
       )}
     </Card>

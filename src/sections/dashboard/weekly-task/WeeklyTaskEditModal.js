@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 
+import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
@@ -22,6 +23,7 @@ import {
   RHFDatePicker,
   RHFTextField,
 } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 import {
   fDateCalendar,
@@ -29,27 +31,40 @@ import {
   fDateStartOfWeek,
 } from '@/utils/formatTime'
 
-import { useGetTaskUserListQuery } from './weeklyTaskSlice'
+import {
+  useGetTaskUserListQuery,
+  useUpdateWeeklyTaskMutation,
+} from './weeklyTaskSlice'
 
 WeeklyTaskEditModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   task: PropTypes.object,
+  setChosenTask: PropTypes.func,
 }
 
-export default function WeeklyTaskEditModal({ isOpen, onClose, task = {} }) {
+export default function WeeklyTaskEditModal({
+  isOpen,
+  onClose,
+  task = {},
+  setChosenTask = {},
+}) {
   const { startDate, endDate } = task
   const { currentRole } = useRole()
   const [contentTask, setContentTask] = useState([])
+  const { enqueueSnackbar } = useSnackbar()
+  const { translate } = useLocales()
 
   const { data = {} } = useGetTaskUserListQuery({
     currentRole,
   })
   const { list: listUsers = [] } = data?.data || {}
 
+  const [updateWeeklyTask] = useUpdateWeeklyTaskMutation()
+
   const listUserOptions = useMemo(() => {
     if (!listUsers || !listUsers.length) return []
-    return listUsers.map(({ name }) => name)
+    return listUsers.map(({ name, id }) => ({ value: id, label: name }))
   }, [listUsers])
 
   const startDateFormat = useMemo(() => {
@@ -71,13 +86,25 @@ export default function WeeklyTaskEditModal({ isOpen, onClose, task = {} }) {
       endDate: endDateFormat,
     },
   })
-  const { handleSubmit } = methods
+  const { handleSubmit, reset } = methods
 
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
-      // console.log(data)
+      if (task?.id) {
+        delete data.id
+        delete data.user
+        const payload = {
+          id: String(task?.id),
+          body: data,
+        }
+        setContentTask(data?.content)
+        await updateWeeklyTask(payload)
+        enqueueSnackbar(translate('Update task success!'))
+        onClose()
+        setChosenTask({})
+      }
     } catch (error) {
-      // TODO
+      enqueueSnackbar(error.message, { variant: 'error' })
     }
   }
 
@@ -87,9 +114,16 @@ export default function WeeklyTaskEditModal({ isOpen, onClose, task = {} }) {
 
   const handleRemoveContentTask = (index) => {
     let newContentTask = [...contentTask]
+
     if (newContentTask.length > 1) {
       newContentTask.splice(index, 1)
-      setContentTask(newContentTask)
+      setContentTask([...newContentTask])
+      reset({
+        ...task,
+        content: newContentTask,
+        startDate: startDateFormat,
+        endDate: endDateFormat,
+      })
     } else {
       return
     }
@@ -137,7 +171,7 @@ export default function WeeklyTaskEditModal({ isOpen, onClose, task = {} }) {
               <Grid item xs={9}>
                 <RHFBasicSelect
                   label={'Name'}
-                  name='user.name'
+                  name='userId'
                   options={listUserOptions}
                 />
               </Grid>
