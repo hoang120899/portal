@@ -114,11 +114,26 @@ export default function WeeklyTaskModal({
       endDate: endDateFormat,
     },
   })
-  const { handleSubmit, reset, control } = methods
+  const { handleSubmit, reset, control, watch } = methods
   const { remove } = useFieldArray({
     control,
     name: 'content',
   })
+
+  const calcTotal = (arr, type) => {
+    if (type === 'percent') {
+      const reducer = (accumulator, currentValue) =>
+        accumulator + Number(currentValue.percent)
+      return arr.reduce(reducer, 0)
+    } else {
+      const reducer = (accumulator, currentValue) =>
+        accumulator + Number(currentValue.target)
+      return arr.reduce(reducer, 0)
+    }
+  }
+
+  // console.log(calcTotal(getValues('content'), 'target'))
+  // console.log(getValues('content'))
 
   const onSubmit = async (data) => {
     try {
@@ -291,7 +306,18 @@ export default function WeeklyTaskModal({
               </Grid>
             </Grid>
 
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            {watch('content') && (
+              <Box sx={{ mt: 1.5 }}>
+                <Typography>{`Total target: ${
+                  calcTotal(watch('content'), 'target') || 0
+                }% `}</Typography>
+                <Typography>{`Total achievement: ${
+                  calcTotal(watch('content'), 'percent') || 0
+                }% `}</Typography>
+              </Box>
+            )}
+
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
               <Button type='submit' variant='contained' sx={{ mr: 1 }}>
                 {translate(`${isEditScreen ? 'Update' : 'Save'}`)}
               </Button>
