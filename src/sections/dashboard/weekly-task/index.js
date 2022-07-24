@@ -12,6 +12,7 @@ import EmptyContent from '@/components/EmptyContent'
 import { FormProvider } from '@/components/hook-form'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
 import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 
@@ -20,6 +21,7 @@ import WeeklyTaskDetails from './WeeklyTaskDetails'
 import WeeklyTaskModal from './WeeklyTaskModal'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
 import { HANDLE_TYPE } from './config'
+import WeeklyTaskCollapsibleTable from './mobile/WeeklyTaskCollapsibleTable'
 import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
 WeeklyTask.propTypes = {
@@ -33,6 +35,8 @@ const defaultValues = {
 }
 
 export default function WeeklyTask({ title, subheader, ...other }) {
+  const isMedium = useResponsive('down', 'md')
+  const isLarge = useResponsive('between', '', 'lg', 'xl')
   const [list, setList] = useState([])
   const { translate } = useLocales()
   const { page, rowsPerPage, setPage } = useTable()
@@ -149,11 +153,18 @@ export default function WeeklyTask({ title, subheader, ...other }) {
         <WeeklyTaskTableToolbar />
       </FormProvider>
       {list.length > 0 ? (
-        <WeeklyTaskDetails
-          list={list}
-          isLoading={isLoading}
-          handleGetDetailWeeklyTask={handleGetDetailWeeklyTask}
-        />
+        isMedium || isLarge ? (
+          <WeeklyTaskCollapsibleTable
+            dataSource={list}
+            handleGetDetailWeeklyTask={handleGetDetailWeeklyTask}
+          />
+        ) : (
+          <WeeklyTaskDetails
+            list={list}
+            isLoading={isLoading}
+            handleGetDetailWeeklyTask={handleGetDetailWeeklyTask}
+          />
+        )
       ) : (
         <EmptyContent
           title={translate('No Data')}

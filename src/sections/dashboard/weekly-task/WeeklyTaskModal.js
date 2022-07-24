@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
+import { format } from 'date-fns'
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -108,13 +109,23 @@ export default function WeeklyTaskModal({
     ),
   })
 
+  const defaultValuesEdit = {
+    ...task,
+    startDate: startDateFormat,
+    endDate: endDateFormat,
+  }
+
+  const defaultValuesAdd = {
+    ...task,
+    content: [{ content: '', percent: '', target: '' }],
+    userId: '',
+    startDate: startDateFormat,
+    endDate: endDateFormat,
+  }
+
   const methods = useForm({
     resolver: yupResolver(WeeklyTaskFormSchema),
-    defaultValues: {
-      ...task,
-      startDate: startDateFormat,
-      endDate: endDateFormat,
-    },
+    defaultValues: isEditScreen ? defaultValuesEdit : defaultValuesAdd,
   })
   const { handleSubmit, reset, control, watch } = methods
   const { remove } = useFieldArray({
@@ -139,7 +150,16 @@ export default function WeeklyTaskModal({
 
   const onSubmit = async (data) => {
     try {
-      if (task?.id) {
+      if (isEditScreen) {
+        data.startDate = format(
+          new Date(fDateCalendar(data.startDate)),
+          'yyyy-MM-dd'
+        )
+        data.endDate = format(
+          new Date(fDateCalendar(data.endDate)),
+          'yyyy-MM-dd'
+        )
+
         delete data.id
         delete data.user
         const payload = {
@@ -152,6 +172,14 @@ export default function WeeklyTaskModal({
         onClose()
         setIsReloading(!isReloading)
       } else {
+        data.startDate = format(
+          new Date(fDateCalendar(data.startDate)),
+          'yyyy-MM-dd'
+        )
+        data.endDate = format(
+          new Date(fDateCalendar(data.endDate)),
+          'yyyy-MM-dd'
+        )
         const payload = {
           body: data,
         }
@@ -186,7 +214,9 @@ export default function WeeklyTaskModal({
   }
 
   useEffect(() => {
-    isEditScreen ? setContentTask(task?.content) : setContentTask([{}])
+    isEditScreen
+      ? setContentTask(task?.content)
+      : setContentTask([{ content: '', percent: '', target: '' }])
   }, [task, isEditScreen])
 
   return (
