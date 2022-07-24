@@ -23,6 +23,13 @@ export const weeklyTaskApiSlice = apiSlice.injectEndpoints({
         data: payload?.body,
       }),
     }),
+    createWeeklyTask: builder.mutation({
+      query: (payload) => ({
+        url: `${API_WEEKLY_TASKS_UPDATE}`,
+        method: 'POST',
+        data: payload?.body,
+      }),
+    }),
     getTaskUserList: builder.query({
       query: (queries = {}) => ({
         url: `${API_WEEKLY_TASKS_LIST_USER}?${qs.stringify(queries)}`,
@@ -35,5 +42,6 @@ export const weeklyTaskApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetAllWeeklyTasksMutation,
   useUpdateWeeklyTaskMutation,
+  useCreateWeeklyTaskMutation,
   useGetTaskUserListQuery,
 } = weeklyTaskApiSlice

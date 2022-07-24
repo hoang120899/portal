@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 // @mui
-import { Card, CardHeader } from '@mui/material'
+import { Box, Button, Card, CardHeader, Stack } from '@mui/material'
 
 import { endOfWeek, startOfWeek } from 'date-fns'
 import PropTypes from 'prop-types'
@@ -12,12 +12,14 @@ import EmptyContent from '@/components/EmptyContent'
 import { FormProvider } from '@/components/hook-form'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 
 import WeeklyTaskDetailModal from './WeeklyTaskDetailModal'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
-import WeeklyTaskEditModal from './WeeklyTaskEditModal'
+import WeeklyTaskModal from './WeeklyTaskModal'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
+import { HANDLE_TYPE } from './config'
 import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
 WeeklyTask.propTypes = {
@@ -30,25 +32,19 @@ const defaultValues = {
   endDate: endOfWeek(new Date()),
 }
 
-const HANDLE_TYPE = {
-  DETAIL: 'detail',
-  EDIT: 'edit',
-  ADD: 'add',
-}
-
 export default function WeeklyTask({ title, subheader, ...other }) {
   const [list, setList] = useState([])
   const { translate } = useLocales()
   const { page, rowsPerPage, setPage } = useTable()
+  const { currentRole, isLeaderRole } = useRole()
 
   const [isOpenDetail, setIsOpenDetail] = useState(false)
   const [handleType, setHandleType] = useState('')
   const [chosenTask, setChosenTask] = useState({})
-  const [isOpenEdit, setIsOpenEdit] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   const handleGetDetailWeeklyTask = (row) => {
     setIsOpenDetail(true)
-    setHandleType(HANDLE_TYPE.DETAIL)
     setChosenTask(row)
   }
 
@@ -57,12 +53,19 @@ export default function WeeklyTask({ title, subheader, ...other }) {
   }
 
   const handleOpenEditModal = () => {
-    setIsOpenEdit(true)
+    setIsOpen(true)
+    setHandleType(HANDLE_TYPE.EDIT)
     setIsOpenDetail(false)
   }
 
   const handleCloseEditModal = () => {
-    setIsOpenEdit(false)
+    setIsOpen(false)
+  }
+
+  const handleOpenAddModal = () => {
+    setIsOpen(true)
+    setHandleType(HANDLE_TYPE.ADD)
+    setChosenTask({})
   }
 
   useEffect(() => {
@@ -73,6 +76,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
     queries: {
       pageSize: rowsPerPage,
       pageNumber: page + 1,
+      currentRole,
     },
     body: defaultValues,
   })
@@ -120,7 +124,26 @@ export default function WeeklyTask({ title, subheader, ...other }) {
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
+      <Stack
+        direction='row'
+        alignItems='flex-end'
+        justifyContent='space-between'
+      >
+        <Box>
+          <CardHeader title={title} subheader={subheader} />
+        </Box>
+        {isLeaderRole && (
+          <Box sx={{ pr: 3 }}>
+            <Button
+              type='submit'
+              variant='contained'
+              onClick={handleOpenAddModal}
+            >
+              New Task
+            </Button>
+          </Box>
+        )}
+      </Stack>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <WeeklyTaskTableToolbar />
       </FormProvider>
@@ -141,14 +164,14 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       )}
       <WeeklyTaskDetailModal
         isOpen={isOpenDetail}
-        handleType={handleType}
         onClose={handleCloseDetailModal}
         task={chosenTask}
         handleOpenEdit={handleOpenEditModal}
       />
-      {isOpenEdit && (
-        <WeeklyTaskEditModal
-          isOpen={isOpenEdit}
+      {isOpen && (
+        <WeeklyTaskModal
+          isOpen={isOpen}
+          handleType={handleType}
           onClose={handleCloseEditModal}
           task={chosenTask}
           setChosenTask={setChosenTask}

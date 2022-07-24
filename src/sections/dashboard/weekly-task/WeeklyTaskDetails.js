@@ -16,6 +16,7 @@ const RootStyle = styled(Box)(() => ({
 WeeklyTaskDetails.propTypes = {
   list: PropTypes.array.isRequired,
   isLoading: PropTypes.bool,
+  handleGetDetailWeeklyTask: PropTypes.func,
 }
 
 export default function WeeklyTaskDetails({

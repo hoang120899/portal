@@ -8,21 +8,32 @@ import {
   Typography,
 } from '@mui/material'
 
+import PropTypes from 'prop-types'
+
 import useLocales from '@/hooks/useLocales'
+import useRole from '@/hooks/useRole'
+
+WeeklyTaskDetailModal.propTypes = {
+  isOpen: PropTypes.bool,
+  onClose: PropTypes.func,
+  task: PropTypes.object,
+  handleOpenEdit: PropTypes.func,
+}
 
 export default function WeeklyTaskDetailModal({
   isOpen,
   onClose,
-  // handleType,
   task = [],
   handleOpenEdit,
 }) {
   const { translate } = useLocales()
+  const { isLeaderRole } = useRole()
+
   return (
     <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={onClose} task={task}>
       <Stack spacing={2} sx={{ p: 2.5 }}>
         <Typography
-          variant='h6'
+          variant='body1'
           sx={{ display: 'flex', justifyContent: 'center' }}
         >
           {task?.startDate} - {task?.endDate}
@@ -60,10 +71,20 @@ export default function WeeklyTaskDetailModal({
           }
         })}
 
-        <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
-          <Button variant='contained' sx={{ mr: 1 }} onClick={handleOpenEdit}>
-            {translate('Edit')}
-          </Button>
+        <Box
+          sx={{
+            flexGrow: 1,
+            ml: 2,
+            minWidth: 100,
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          {isLeaderRole && (
+            <Button variant='contained' sx={{ mr: 1 }} onClick={handleOpenEdit}>
+              {translate('Edit')}
+            </Button>
+          )}
 
           <Button
             sx={{
