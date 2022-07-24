@@ -1,7 +1,9 @@
 // @mui
+import { useState } from 'react'
+
 import { Card, CardHeader } from '@mui/material'
 
-import { format, subMonths } from 'date-fns'
+import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
@@ -10,6 +12,7 @@ import { FormProvider } from '@/components/hook-form'
 
 import PerformanceDetails from './PerformanceDetails'
 import PerformanceTableToolbar from './PerformanceTableToolbar'
+import { DEFAULT_DATE_END, DEFAULT_DATE_START } from './config'
 import { useGetDataPerformanceQuery } from './performanceSlice'
 
 Performance.propTypes = {
@@ -18,31 +21,33 @@ Performance.propTypes = {
 }
 
 export default function Performance({ title, subheader, ...other }) {
-  const methods = useForm({
-    defaultValues: {
-      startDate: null,
-      endDate: null,
-    },
-  })
-  const DEFAULT_DATE_START = format(subMonths(Date.now(), 3), 'yyyy-MM-dd')
-  const DEFAULT_DATE_END = format(Date.now(), 'yyyy-MM-dd')
-
-  const date = JSON.stringify({
+  const [date, setDate] = useState({
     startDate: DEFAULT_DATE_START,
     endDate: DEFAULT_DATE_END,
   })
+  const methods = useForm({
+    defaultValues: { ...date },
+  })
+
   const { handleSubmit } = methods
+
   const onSubmit = async (data) => {
     try {
-      // eslint-disable-next-line no-console
-      console.log('data', data)
+      const date = {
+        startDate: format(data.startDate, 'yyyy-MM-dd'),
+        endDate: format(data.endDate, 'yyyy-MM-dd'),
+      }
+      setDate({ ...date })
     } catch (error) {
       // TODO
     }
   }
-  const { data } = useGetDataPerformanceQuery(date)
-  const list = data?.data?.list
 
+  const { data } = useGetDataPerformanceQuery({ ...date })
+
+  const list = data?.data?.list
+  // eslint-disable-next-line no-console
+  // console.log(list);
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />

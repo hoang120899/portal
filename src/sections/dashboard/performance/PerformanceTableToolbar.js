@@ -1,28 +1,28 @@
 // @mui
-import { Box, Button } from '@mui/material'
+import { Box, Button, Stack } from '@mui/material'
 
 // components
 import { RHFDatePicker } from '@/components/hook-form'
 
 export default function PerformanceTableToolbar() {
   return (
-    <Box
-      sx={{
-        py: 2.5,
-        px: 3,
-        display: 'grid',
-        gridTemplateColumns: {
-          md: 'repeat(2, 160px) 110px',
-          sm: 'repeat(2, 1fr)',
-        },
-        gap: 1,
-      }}
-    >
-      <RHFDatePicker name='startDate' />
-      <RHFDatePicker name='endDate' />
-      <Button type='submit' variant='contained'>
+    <Stack direction='column' alignItems='center'>
+      <Box
+        sx={{
+          display: 'grid',
+          width: '100%',
+          gridTemplateColumns: {
+            md: 'repeat(2)',
+            sm: 'repeat(2, 1fr)',
+          },
+        }}
+      >
+        <RHFDatePicker style={{ padding: 10 }} name='startDate' />
+        <RHFDatePicker style={{ padding: 10 }} name='endDate' />
+      </Box>
+      <Button type='submit' variant='contained' sx={{ width: '95%' }}>
         Apply
       </Button>
-    </Box>
+    </Stack>
   )
 }
