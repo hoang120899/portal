@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { Card, CardHeader } from '@mui/material'
 
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
@@ -32,6 +32,12 @@ export default function Performance({ title, subheader, ...other }) {
   const { handleSubmit } = methods
 
   const onSubmit = async (data) => {
+    if (/\d{4}-\d{2}-\d{2}/.test(data.startDate)) {
+      data.startDate = parseISO(data.startDate)
+    }
+    if (/\d{4}-\d{2}-\d{2}/.test(data.endDate)) {
+      data.endDate = parseISO(data.endDate)
+    }
     try {
       const date = {
         startDate: format(data.startDate, 'yyyy-MM-dd'),
@@ -39,15 +45,15 @@ export default function Performance({ title, subheader, ...other }) {
       }
       setDate({ ...date })
     } catch (error) {
-      // TODO
+      // eslint-disable-next-line no-console
+      console.log('catch ', data)
     }
   }
 
   const { data } = useGetDataPerformanceQuery({ ...date })
 
   const list = data?.data?.list
-  // eslint-disable-next-line no-console
-  // console.log(list);
+
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
