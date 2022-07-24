@@ -156,6 +156,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
         isMedium || isLarge ? (
           <WeeklyTaskCollapsibleTable
             dataSource={list}
+            isLoading={isLoading}
             handleGetDetailWeeklyTask={handleGetDetailWeeklyTask}
           />
         ) : (
