@@ -46,8 +46,9 @@ WeeklyTaskModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   task: PropTypes.object,
-  setChosenTask: PropTypes.func,
   handleType: PropTypes.string,
+  setIsReloading: PropTypes.func,
+  isReloading: PropTypes.bool,
 }
 
 const styleAsterisk = {
@@ -59,7 +60,8 @@ export default function WeeklyTaskModal({
   onClose,
   handleType,
   task = {},
-  setChosenTask = {},
+  setIsReloading = {},
+  isReloading = false,
 }) {
   const { startDate, endDate } = task
   const { currentRole } = useRole()
@@ -148,7 +150,7 @@ export default function WeeklyTaskModal({
         await updateWeeklyTask(payload)
         enqueueSnackbar(translate('Update task success!'))
         onClose()
-        setChosenTask({})
+        setIsReloading(!isReloading)
       } else {
         const payload = {
           body: data,
@@ -157,7 +159,7 @@ export default function WeeklyTaskModal({
         await createWeeklyTask(payload)
         enqueueSnackbar(translate('Create task success!'))
         onClose()
-        setChosenTask({})
+        setIsReloading(!isReloading)
       }
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })

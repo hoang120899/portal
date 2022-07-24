@@ -42,6 +42,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
   const [handleType, setHandleType] = useState('')
   const [chosenTask, setChosenTask] = useState({})
   const [isOpen, setIsOpen] = useState(false)
+  const [isReloading, setIsReloading] = useState(false)
 
   const handleGetDetailWeeklyTask = (row) => {
     setIsOpenDetail(true)
@@ -90,7 +91,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       setList(data?.tasks)
     }
     getAllTasks(payload)
-  }, [getAllWeeklyTasks, payload, chosenTask])
+  }, [getAllWeeklyTasks, payload, isReloading])
 
   const methods = useForm({
     defaultValues,
@@ -174,7 +175,8 @@ export default function WeeklyTask({ title, subheader, ...other }) {
           handleType={handleType}
           onClose={handleCloseEditModal}
           task={chosenTask}
-          setChosenTask={setChosenTask}
+          setIsReloading={setIsReloading}
+          isReloading={isReloading}
         />
       )}
     </Card>
