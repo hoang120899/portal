@@ -6,7 +6,13 @@ import { RHFDatePicker } from '@/components/hook-form'
 
 export default function PerformanceTableToolbar() {
   return (
-    <Stack direction='column' alignItems='center'>
+    <Stack
+      direction='column'
+      alignItems='center'
+      sx={{
+        mb: 2,
+      }}
+    >
       <Box
         sx={{
           display: 'grid',

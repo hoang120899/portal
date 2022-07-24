@@ -11,7 +11,6 @@ PerformanceDetails.propTypes = {
 
 export default function PerformanceDetails({ list = [] }) {
   // eslint-disable-next-line no-console
-  console.log(list)
   return (
     <Scrollbar sx={{ height: { xs: '510px !important', sm: 'auto' } }}>
       <Stack spacing={1} sx={{ p: 3 }}>
