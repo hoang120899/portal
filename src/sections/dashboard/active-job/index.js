@@ -22,7 +22,6 @@ import { useGetJobsByStatusQuery } from './activeJobSlice'
 import {
   DEFAULT_ROW_PER_PAGE,
   DEFAULT_STATUS,
-  HEIGHT_TABLE_JOBS,
   STATUS_OPTIONS,
   TABLE_HEAD,
 } from './config'
@@ -116,9 +115,6 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
         rowsPerPage={rowsPerPage}
         isLoading={isLoading || isFetching}
         TableRowComp={tableRowComp}
-        tableStyle={{
-          height: { HEIGHT_TABLE_JOBS },
-        }}
       />
 
       {totalRecord >= DEFAULT_ROW_PER_PAGE && (

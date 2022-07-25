@@ -21,4 +21,3 @@ export const TABLE_HEAD = [
 ]
 
 export const DEFAULT_ROW_PER_PAGE = 5
-export const HEIGHT_TABLE_JOBS = 395

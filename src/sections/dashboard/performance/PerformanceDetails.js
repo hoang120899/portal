@@ -12,7 +12,7 @@ PerformanceDetails.propTypes = {
 export default function PerformanceDetails({ list = [] }) {
   // eslint-disable-next-line no-console
   return (
-    <Scrollbar sx={{ height: { xs: '510px !important', sm: 'auto' } }}>
+    <Scrollbar sx={{ height: { xs: '310px !important', lg: 'auto' } }}>
       <Stack spacing={1} sx={{ p: 3 }}>
         {list.map(({ idTeam, memberTeam, name, total }) => (
           <Stack alignItems='left' key={idTeam}>
