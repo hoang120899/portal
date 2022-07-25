@@ -13,9 +13,14 @@ import { PATH_DASHBOARD } from '@/routes/paths'
 MemberActivitiesDetails.propTypes = {
   list: PropTypes.array.isRequired,
   isLoading: PropTypes.bool,
+  height: PropTypes.number,
 }
 
-export default function MemberActivitiesDetails({ list = [], isLoading }) {
+export default function MemberActivitiesDetails({
+  list = [],
+  isLoading,
+  height = 0,
+}) {
   const theme = useTheme()
   const { translate } = useLocales()
   const router = useRouter()
@@ -25,7 +30,7 @@ export default function MemberActivitiesDetails({ list = [], isLoading }) {
   }
 
   return (
-    <Scrollbar sx={{ height: { xs: '510px !important', sm: 'auto' } }}>
+    <Scrollbar sx={{ height: { xs: '600px', sm: `${height}px` } }}>
       <Stack spacing={3} sx={{ p: 3 }}>
         {isLoading ? (
           <>
