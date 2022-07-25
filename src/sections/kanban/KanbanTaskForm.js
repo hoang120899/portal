@@ -556,17 +556,19 @@ function KanbanTaskForm({
         </Box>
         <Stack
           mt={2}
-          spacing={isSmall && 2}
+          spacing={isSmall ? 2 : 0}
           direction={isSmall ? 'column-reverse' : 'row'}
           justifyContent={cardByColumns || card ? 'space-between' : 'right'}
         >
-          {cardByColumns ? (
+          {cardByColumns && (
             <KanbanAssignee
               Users={cardByColumns?.Users}
               laneId={cardByColumns?.laneId}
               cardId={cardByColumns?.id}
             />
-          ) : (
+          )}
+
+          {card && !cardByColumns && (
             <KanbanAssignee
               Users={card?.Users}
               laneId={card?.laneId}
