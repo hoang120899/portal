@@ -37,7 +37,7 @@ const ROLES = getListRoles()
 const sidebarConfig = [
   // GENERAL
   {
-    // subheader: 'general v3.4.0',
+    subheader: 'general',
     items: [
       {
         title: 'nav.dashboard',
@@ -99,12 +99,12 @@ const sidebarConfig = [
         icon: ICONS.calculator,
         roles: ROLES[PAGES.Calculator],
       },
-      {
-        title: 'nav.recruiter',
-        path: '/recruiter',
-        icon: ICONS.recruiter,
-        roles: ROLES[PAGES.Recruiter],
-      },
+      // {
+      //   title: 'nav.recruiter',
+      //   path: '/recruiter',
+      //   icon: ICONS.recruiter,
+      //   roles: ROLES[PAGES.Recruiter],
+      // },
       // {
       //   title: 'nav.blogs',
       //   path: '/blogs',

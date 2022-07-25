@@ -7,6 +7,8 @@ import { PATH_DASHBOARD } from '@/routes/paths'
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = PATH_DASHBOARD.dashboard
 
+export const DASHBOARD_TABLE_HEIGHT = 500
+
 // LAYOUT
 export const HEADER = {
   MOBILE_HEIGHT: 64,
@@ -17,7 +19,7 @@ export const HEADER = {
 
 export const NAVBAR = {
   BASE_WIDTH: 260,
-  DASHBOARD_WIDTH: 280,
+  DASHBOARD_WIDTH: 220,
   DASHBOARD_COLLAPSE_WIDTH: 88,
   //
   DASHBOARD_ITEM_ROOT_HEIGHT: 48,

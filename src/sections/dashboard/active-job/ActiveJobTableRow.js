@@ -4,6 +4,8 @@ import { useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
+import TextMaxLine from '@/components/TextMaxLine'
+
 import { DEFAULT_STATUS_COLOR, STATUS_COLOR } from './config'
 
 ActiveJobTableRow.propTypes = {
@@ -26,15 +28,18 @@ export default function ActiveJobTableRow({ row }) {
   return (
     <TableRow hover>
       <TableCell width='40%'>
-        <Link
-          sx={{
-            color: 'inherit',
-            fontWeight: 'bold',
-          }}
-          href='/'
-        >
-          {title}
-        </Link>
+        <TextMaxLine line={1}>
+          <Link
+            sx={{
+              color: 'inherit',
+              fontWeight: 'bold',
+            }}
+            href='/'
+          >
+            {title}
+          </Link>
+        </TextMaxLine>
+
         <Typography
           variant='subtitle2'
           noWrap

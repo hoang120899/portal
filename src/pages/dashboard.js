@@ -8,7 +8,7 @@ import '@fullcalendar/react/dist/vdom'
 import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
 import Page from '@/components/Page'
 // config
-import { PAGES } from '@/config'
+import { DASHBOARD_TABLE_HEIGHT, PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
@@ -72,12 +72,24 @@ export default function Dashboard() {
     <Page title={translate('nav.dashboard')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs heading={translate('nav.dashboard')} />
-        <Grid container spacing={2}>
-          <Grid item xs={12} lg={8}>
+        <Grid container rowGap={2} columnSpacing={2}>
+          <Grid
+            item
+            xs={12}
+            lg={8}
+            sx={{ height: { sm: DASHBOARD_TABLE_HEIGHT } }}
+          >
             <DashboardActiveJob title='Active Jobs' />
           </Grid>
           {dashboardConfigs.map((config, key) => (
-            <Grid item xs={12} sm={6} lg={4} key={key}>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={4}
+              key={key}
+              sx={{ height: { sm: DASHBOARD_TABLE_HEIGHT } }}
+            >
               {config.render()}
             </Grid>
           ))}
