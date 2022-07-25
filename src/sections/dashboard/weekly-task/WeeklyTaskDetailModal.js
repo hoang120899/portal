@@ -7,6 +7,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
@@ -28,6 +29,7 @@ export default function WeeklyTaskDetailModal({
 }) {
   const { translate } = useLocales()
   const { isLeaderRole } = useRole()
+  const theme = useTheme()
 
   return (
     <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={onClose} task={task}>
@@ -87,8 +89,14 @@ export default function WeeklyTaskDetailModal({
           )}
 
           <Button
+            variant='outlined'
             sx={{
-              bgcolor: 'background.neutral',
+              color: 'inherit',
+              borderColor: `${theme.palette.grey[400]}`,
+              '&:hover': {
+                borderColor: `${theme.palette.grey[400]}`,
+                bgcolor: 'background.neutral',
+              },
             }}
             onClick={onClose}
           >

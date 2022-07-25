@@ -10,6 +10,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { format } from 'date-fns'
@@ -69,6 +70,7 @@ export default function WeeklyTaskModal({
   const [contentTask, setContentTask] = useState([])
   const { enqueueSnackbar } = useSnackbar()
   const { translate } = useLocales()
+  const theme = useTheme()
   const isEditScreen = HANDLE_TYPE.EDIT === handleType
 
   const { data = {} } = useGetTaskUserListQuery({
@@ -355,8 +357,14 @@ export default function WeeklyTaskModal({
               </Button>
               <Button
                 onClick={onClose}
+                variant='outlined'
                 sx={{
-                  bgcolor: 'background.neutral',
+                  color: 'inherit',
+                  borderColor: `${theme.palette.grey[400]}`,
+                  '&:hover': {
+                    borderColor: `${theme.palette.grey[400]}`,
+                    bgcolor: 'background.neutral',
+                  },
                 }}
               >
                 {translate('Cancel')}
