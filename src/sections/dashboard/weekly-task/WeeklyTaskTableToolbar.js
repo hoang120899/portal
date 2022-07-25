@@ -1,14 +1,17 @@
 // @mui
+import React from 'react'
+
 import { Box, Button } from '@mui/material'
 
 // components
 import { RHFDatePicker } from '@/components/hook-form'
 import useLocales from '@/hooks/useLocales'
 
-export default function WeeklyTaskTableToolbar() {
+function WeeklyTaskTableToolbar(props, ref) {
   const { translate } = useLocales()
   return (
     <Box
+      ref={ref}
       sx={{
         py: 2.5,
         px: 3,
@@ -17,7 +20,7 @@ export default function WeeklyTaskTableToolbar() {
           xl: 'repeat(3, 1fr)',
           lg: 'repeat(1, 1fr)',
           md: 'repeat(2, 1fr)',
-          sm: 'repeat(1, 1fr)',
+          sm: 'repeat(3, 1fr)',
         },
         gap: 1,
       }}
@@ -30,3 +33,7 @@ export default function WeeklyTaskTableToolbar() {
     </Box>
   )
 }
+
+const forwardRefToolbar = React.forwardRef(WeeklyTaskTableToolbar)
+
+export default forwardRefToolbar

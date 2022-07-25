@@ -16,15 +16,17 @@ WeeklyTaskCollapsibleTable.propTypes = {
   dataSource: PropTypes.array,
   handleGetDetailWeeklyTask: PropTypes.func,
   isLoading: PropTypes.bool,
+  height: PropTypes.number,
 }
 
 export default function WeeklyTaskCollapsibleTable({
   dataSource = [],
   handleGetDetailWeeklyTask = {},
   isLoading = false,
+  height = 0,
 }) {
   return (
-    <Scrollbar sx={{ maxHeight: { lg: '400px', sm: '420px', xs: '500px' } }}>
+    <Scrollbar sx={{ maxHeight: { sm: `${height}px`, xs: 600 } }}>
       {isLoading ? (
         <Stack
           direction='column'

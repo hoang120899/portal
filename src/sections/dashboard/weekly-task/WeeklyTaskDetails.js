@@ -17,16 +17,18 @@ WeeklyTaskDetails.propTypes = {
   list: PropTypes.array.isRequired,
   isLoading: PropTypes.bool,
   handleGetDetailWeeklyTask: PropTypes.func,
+  height: PropTypes.number,
 }
 
 export default function WeeklyTaskDetails({
   list = [],
   isLoading,
   handleGetDetailWeeklyTask = {},
+  height = 0,
 }) {
   const theme = useTheme()
   return (
-    <Scrollbar sx={{ height: { xs: '384px !important' } }}>
+    <Scrollbar sx={{ maxHeight: { sm: `${height}px`, xs: 600 } }}>
       <Stack spacing={3} sx={{ p: 3 }}>
         {list.map((item, index) => {
           if (isLoading) {
