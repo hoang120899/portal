@@ -30,6 +30,7 @@ import ThemeSettings from '@/components/settings'
 // contexts
 import { CollapseDrawerProvider } from '@/contexts/CollapseDrawerContext'
 import { AuthProvider } from '@/contexts/JWTContext'
+import { NotificationProvider } from '@/contexts/NotificationContext'
 import { RoleProvider } from '@/contexts/RoleContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 import { SocketProvider } from '@/contexts/SocketContext'
@@ -70,8 +71,13 @@ export default function MyApp(props) {
                       <ThemeSettings>
                         <NotistackProvider>
                           <SocketProvider>
-                            <ProgressBar />
-                            {getLayout(pageProps, <Component {...pageProps} />)}
+                            <NotificationProvider>
+                              <ProgressBar />
+                              {getLayout(
+                                pageProps,
+                                <Component {...pageProps} />
+                              )}
+                            </NotificationProvider>
                           </SocketProvider>
                         </NotistackProvider>
                       </ThemeSettings>

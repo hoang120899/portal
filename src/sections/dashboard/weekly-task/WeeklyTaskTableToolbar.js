@@ -3,8 +3,10 @@ import { Box, Button } from '@mui/material'
 
 // components
 import { RHFDatePicker } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
 
 export default function WeeklyTaskTableToolbar() {
+  const { translate } = useLocales()
   return (
     <Box
       sx={{
@@ -12,8 +14,10 @@ export default function WeeklyTaskTableToolbar() {
         px: 3,
         display: 'grid',
         gridTemplateColumns: {
-          md: 'repeat(2, 160px) 110px',
-          sm: 'repeat(2, 1fr)',
+          xl: 'repeat(3, 1fr)',
+          lg: 'repeat(1, 1fr)',
+          md: 'repeat(2, 1fr)',
+          sm: 'repeat(1, 1fr)',
         },
         gap: 1,
       }}
@@ -21,7 +25,7 @@ export default function WeeklyTaskTableToolbar() {
       <RHFDatePicker name='startDate' />
       <RHFDatePicker name='endDate' />
       <Button type='submit' variant='contained'>
-        Apply
+        {translate('Apply')}
       </Button>
     </Box>
   )

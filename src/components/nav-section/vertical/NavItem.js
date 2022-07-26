@@ -2,7 +2,14 @@
 import NextLink from 'next/link'
 
 // @mui
-import { Box, Link, ListItemText, Tooltip, Typography } from '@mui/material'
+import {
+  Badge,
+  Box,
+  Link,
+  ListItemText,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 
 import PropTypes from 'prop-types'
 
@@ -10,6 +17,7 @@ import PropTypes from 'prop-types'
 import Iconify from '@/components/Iconify'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import useNotification from '@/hooks/useNotification'
 
 import { isExternalLink } from '..'
 import {
@@ -45,9 +53,18 @@ export function NavItemRoot({
   const { translate } = useLocales()
   const { title, path, icon, info, children, disabled, caption, roles } = item
 
+  const { totalUnreadNoti } = useNotification()
+
   const renderContent = (
     <>
-      {icon && <ListItemIconStyle>{icon}</ListItemIconStyle>}
+      {icon &&
+        (title.includes('notification') ? (
+          <Badge badgeContent={totalUnreadNoti} color='error' sx={{ mr: 2.25 }}>
+            <Iconify icon='eva:bell-fill' width={20} height={20} />
+          </Badge>
+        ) : (
+          <ListItemIconStyle>{icon}</ListItemIconStyle>
+        ))}
       <ListItemTextStyle
         disableTypography
         primary={translate(title)}

@@ -30,8 +30,9 @@ import MenuPopover from '@/components/MenuPopover'
 import NotifySnackbar from '@/components/NotifySnackbar'
 import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
-import useAuth from '@/hooks/useAuth'
 // hooks
+import useAuth from '@/hooks/useAuth'
+import useNotification from '@/hooks/useNotification'
 import useRole from '@/hooks/useRole'
 import useSocket from '@/hooks/useSocket'
 import { PATH_DASHBOARD, PATH_PAGE } from '@/routes/paths'
@@ -61,6 +62,7 @@ export default function NotificationsPopover() {
   const { socket } = useSocket()
   const router = useRouter()
   const { user } = useAuth()
+  const { setTotalUnreadNoti } = useNotification()
 
   const userId = user?.userId
   const listNotifications = data?.data?.list
@@ -70,6 +72,10 @@ export default function NotificationsPopover() {
   ).length
 
   const [open, setOpen] = useState(null)
+
+  useEffect(() => {
+    setTotalUnreadNoti(totalUnRead)
+  }, [totalUnRead, setTotalUnreadNoti])
 
   useEffect(() => {
     setNotifications(listNotifications ? listNotifications : [])
@@ -296,7 +302,9 @@ NotificationItem.propTypes = {
     description: PropTypes.string,
     type: PropTypes.string,
     avatar: PropTypes.any,
+    content: PropTypes.object,
   }),
+  handleForwardNotification: PropTypes.func,
 }
 
 function NotificationItem({ notification, handleForwardNotification }) {
@@ -357,14 +365,7 @@ function renderContent(notification) {
   )
 
   return {
-    avatar: notification.User?.linkAvatar ? (
-      <img
-        alt={notification.content.title}
-        src={notification.User?.linkAvatar}
-      />
-    ) : (
-      <Iconify icon={'bxs:bell'} />
-    ),
+    avatar: <Iconify icon={'bxs:bell'} />,
     title,
   }
 }
