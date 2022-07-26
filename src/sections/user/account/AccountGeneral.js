@@ -4,7 +4,14 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 
 // @mui
-import { Box, Card, Grid, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Card,
+  CircularProgress,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -34,7 +41,7 @@ export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
   const { user } = useAuth()
-  const { data } = useGetUserProfileQuery({
+  const { data, isLoading, isFetching } = useGetUserProfileQuery({
     userId: router?.query?.id,
   })
   const { user: newUser = {} } = data?.data || {}
@@ -55,7 +62,9 @@ export default function AccountGeneral() {
     setValue('team', isNewUserProfile ? newUser?.Team?.name : user?.team)
     setValue(
       'photoURL',
-      isNewUserProfile ? newUser?.linkAvatar : user?.photoURL
+      isNewUserProfile
+        ? `${process.env.NEXT_PUBLIC_HOST_API_KEY}/${newUser?.linkAvatar}`
+        : user?.photoURL
     )
   }, [setValue, newUser, user, isNewUserProfile])
 
@@ -111,6 +120,8 @@ export default function AccountGeneral() {
               accept='image/*'
               maxSize={3145728}
               onDrop={handleDrop}
+              disabled={isNewUserProfile}
+              file={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${newUser?.linkAvatar}`}
               helperText={
                 <Typography
                   variant='caption'
@@ -130,60 +141,76 @@ export default function AccountGeneral() {
           </Card>
         </Grid>
         <Grid item xs={12} md={8} height={350}>
-          <Card sx={{ py: 15, marginTop: 0, px: 3, textAlign: 'center' }}>
-            <Box
-              sx={{
-                display: 'grid',
-                rowGap: 3,
-                columnGap: 2,
-                gridTemplateColumns: {
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
-                },
-              }}
-            >
-              <Stack display={'flex'} alignItems={'flex-start'}>
-                <Typography
-                  variant='body2'
-                  sx={{ pl: 1, color: 'text.secondary' }}
-                >
-                  Name
-                </Typography>
-                <RHFTextField name='displayName' disabled />
-              </Stack>
+          <Card
+            sx={{
+              py: 15,
+              marginTop: 0,
+              px: 3,
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {isLoading || isFetching ? (
+              <Box sx={{ width: '100%' }}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'grid',
+                  rowGap: 3,
+                  columnGap: 2,
+                  gridTemplateColumns: {
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                  },
+                }}
+              >
+                <Stack display={'flex'} alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Name
+                  </Typography>
+                  <RHFTextField name='displayName' disabled />
+                </Stack>
 
-              <Stack display={'flex'} alignItems={'flex-start'}>
-                <Typography
-                  variant='body2'
-                  sx={{ pl: 1, color: 'text.secondary' }}
-                >
-                  Email Address
-                </Typography>
-                <RHFTextField name='email' disabled />
-              </Stack>
+                <Stack display={'flex'} alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Email Address
+                  </Typography>
+                  <RHFTextField name='email' disabled />
+                </Stack>
 
-              <Stack display={'flex'} alignItems={'flex-start'}>
-                <Typography
-                  variant='body2'
-                  sx={{ pl: 1, color: 'text.secondary' }}
-                >
-                  Role
-                </Typography>
+                <Stack display={'flex'} alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Role
+                  </Typography>
 
-                <RHFTextField name='role' disabled />
-              </Stack>
+                  <RHFTextField name='role' disabled />
+                </Stack>
 
-              <Stack display={'flex'} alignItems={'flex-start'}>
-                <Typography
-                  variant='body2'
-                  sx={{ pl: 1, color: 'text.secondary' }}
-                >
-                  Team
-                </Typography>
+                <Stack display={'flex'} alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Team
+                  </Typography>
 
-                <RHFTextField name='team' disabled />
-              </Stack>
-            </Box>
+                  <RHFTextField name='team' disabled />
+                </Stack>
+              </Box>
+            )}
           </Card>
         </Grid>
       </Grid>
