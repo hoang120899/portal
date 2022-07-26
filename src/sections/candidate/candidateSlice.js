@@ -1,7 +1,13 @@
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import qs from 'query-string'
 
 import { apiSlice } from '@/redux/api/apiSlice'
-import { API_ADMIN_SEARCH_CANDIDATE } from '@/routes/api'
+import {
+  API_ADMIN_DETAIL_CANDIDATE,
+  API_ADMIN_DOWNLOAD_CV_PDF,
+  API_ADMIN_SEARCH_CANDIDATE,
+} from '@/routes/api'
+import { _postApi } from '@/utils/axios'
 
 import { SEARCH_FIELD } from './config'
 
@@ -33,7 +39,35 @@ export const candidateApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    getAdminCandidateDetail: builder.query({
+      query: (candidateId) => ({
+        url: `${API_ADMIN_DETAIL_CANDIDATE}/${candidateId}`,
+        method: 'GET',
+      }),
+    }),
   }),
 })
-
-export const { useGetAdminSearchCandidateQuery } = candidateApiSlice
+export const convertDriverToBase64 = createAsyncThunk(
+  'convertBase64/download',
+  async (data) => {
+    const response = await _postApi(API_ADMIN_DOWNLOAD_CV_PDF, data)
+    return response.data.base64
+  }
+)
+export const candidateSlice = createSlice({
+  name: 'candidates',
+  initialState: {
+    base64: '',
+  },
+  reducers: {},
+  extraReducers: {
+    [convertDriverToBase64.fulfilled]: (state, action) => {
+      state.base64 = action.payload
+    },
+  },
+})
+export const {
+  useGetAdminSearchCandidateQuery,
+  useGetAdminCandidateDetailQuery,
+} = candidateApiSlice
+export default candidateSlice.reducer

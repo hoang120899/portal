@@ -5,10 +5,11 @@ import {
 } from 'react-redux'
 
 import { apiSlice } from '@/redux/api/apiSlice'
+import salaryReducer from '@/sections/caculator/salarySlice'
+import candidateReducer from '@/sections/candidate/candidateSlice'
 import clientReducer from '@/sections/client/clientSlice'
 import kanbanReducer from '@/sections/kanban/kanbanSlice'
 import uploadAvatarReducer from '@/sections/user/account/uploadAvatarSlice'
-import salaryReducer from '@/sections/caculator/salarySlice'
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     kanban: kanbanReducer,
     client: clientReducer,
     salary: salaryReducer,
+    candidate: candidateReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

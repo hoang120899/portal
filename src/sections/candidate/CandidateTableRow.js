@@ -7,9 +7,13 @@ import Label from '@/components/Label'
 
 CandidateTableRow.propTypes = {
   row: PropTypes.object,
+  handleGetCandidateDetail: PropTypes.func,
 }
 
-export default function CandidateTableRow({ row = {} }) {
+export default function CandidateTableRow({
+  row = {},
+  handleGetCandidateDetail,
+}) {
   const {
     name = '',
     phone = '',
@@ -52,7 +56,17 @@ export default function CandidateTableRow({ row = {} }) {
   return (
     <TableRow hover>
       <TableCell align='left'>
-        <Typography variant='subtitle2' sx={{ color: '#637381' }}>
+        <Typography
+          onClick={handleGetCandidateDetail}
+          variant='subtitle2'
+          sx={{
+            color: '#637381',
+            cursor: 'pointer',
+            '&:hover': {
+              color: '#ffe16a',
+            },
+          }}
+        >
           {name}
         </Typography>
       </TableCell>

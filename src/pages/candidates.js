@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer } from 'react'
+import React, { useCallback, useEffect, useReducer, useState } from 'react'
 
 import { Card, Container } from '@mui/material'
 
@@ -22,6 +22,7 @@ import useTable from '@/hooks/useTable'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
+import CandidateModalDetail from '@/sections/candidate/CandidateModalDetail'
 import CandidateTableRow from '@/sections/candidate/CandidateTableRow'
 // sections
 import CandidateTableToolbar from '@/sections/candidate/CandidateTableToolbar'
@@ -74,7 +75,8 @@ export default function Candidates() {
   const { translate } = useLocales()
   const { currentRole } = useRole()
   const isMobileScreen = useResponsive('down', 'md')
-
+  const [isOpen, setIsOpen] = useState(false)
+  const [detailCandidate, setDetailCandidate] = useState({})
   const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
     useTable()
   const [searchFormValues, dispatch] = useReducer(reducer, defaultValues)
@@ -104,20 +106,35 @@ export default function Candidates() {
       payload: data,
     })
   }
-
+  const handleGetCandidateDetail = useCallback(
+    (row) => () => {
+      setIsOpen(true)
+      setDetailCandidate(row)
+    },
+    []
+  )
+  const handleCloseCandidateDetail = () => {
+    setIsOpen(false)
+  }
   const tableRowComp = useCallback(
     (row, index) => {
       if (isMobileScreen)
         return (
           <CandidatesCollapsibleTableRow key={row?.id || index} row={row} />
         )
-      return <CandidateTableRow key={row?.id || index} row={row} />
+      return (
+        <CandidateTableRow
+          key={row?.id || index}
+          row={row}
+          handleGetCandidateDetail={handleGetCandidateDetail(row)}
+        />
+      )
     },
-    [isMobileScreen]
+    [isMobileScreen, handleGetCandidateDetail]
   )
 
   return (
-    <Page title={translate('nav.candidates')}>
+    <Page title={translate('pages.candidates.heading')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <HeaderBreadcrumbs
           heading={translate('pages.candidates.heading')}
@@ -150,6 +167,12 @@ export default function Candidates() {
             rowsPerPage={rowsPerPage}
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
+          />
+          <CandidateModalDetail
+            isOpen={isOpen}
+            onClose={handleCloseCandidateDetail}
+            disabled={isOpen}
+            detailCandidate={detailCandidate}
           />
         </Card>
       </Container>

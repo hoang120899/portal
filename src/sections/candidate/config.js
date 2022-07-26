@@ -6,7 +6,18 @@ export const SEARCH_FIELD = {
   JOB_ID: 'jobId',
   SKILL: 'skill',
 }
-
+export const DETAIL_FIELD = {
+  NAME: 'name',
+  JOB_NAME: 'jobId',
+  LOCATION: 'location',
+  CLIENT_ID: 'clientId',
+  EMAIl: 'email',
+  PHONE: 'phone',
+  APPROACH_DATE: 'approachDate',
+  LINK_CV: 'linkCV',
+  POSITION: 'position',
+  NOT_APPROACH: 'notApproach',
+}
 export const TABLE_DESKTOP_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
   { id: 'phone', label: 'Phone', align: 'left' },
