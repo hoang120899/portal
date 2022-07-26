@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 
+import { useRouter } from 'next/router'
+
 // @mui
 import { Card, CardHeader, Typography } from '@mui/material'
 
@@ -20,11 +22,15 @@ export default function JobList({ subheader, ...other }) {
   useEffect(() => {
     setPage(0)
   }, [setPage])
+
+  const router = useRouter()
   const { user } = useAuth()
+  const isGetNewUserProfileId = router.query.id !== user.userId
+
   const { data, isLoading, isFetching } = useGetListJobQuery({
     pageSize: rowsPerPage,
     pageNumber: page + 1,
-    idUser: user.userId,
+    idUser: isGetNewUserProfileId ? router?.query?.id : user.userId,
   })
   const isDesktop = useResponsive('down', 768, 'sm')
   const { jobs: listJob = [], total: totalRecord = 0 } = data?.data || {}

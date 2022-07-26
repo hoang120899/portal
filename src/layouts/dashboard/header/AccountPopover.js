@@ -39,7 +39,7 @@ export default function AccountPopover() {
     },
     {
       label: 'setting',
-      linkTo: PATH_DASHBOARD.profile + user.userId,
+      linkTo: PATH_DASHBOARD.profile.root + user.userId,
     },
   ]
   const isMountedRef = useIsMountedRef()

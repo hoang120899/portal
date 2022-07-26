@@ -1,7 +1,10 @@
 import { useCallback } from 'react'
+import { useEffect } from 'react'
+
+import { useRouter } from 'next/router'
 
 // @mui
-import { Box, Card, Grid, Typography } from '@mui/material'
+import { Box, Card, Grid, Stack, Typography } from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -23,36 +26,42 @@ import { useDispatch } from '@/redux/store'
 // utils
 import { fData } from '@/utils/formatNumber'
 
+import { useGetUserProfileQuery } from './jobSlice'
 import JobList from './profile'
 import { fetchUploadAPI } from './uploadAvatarSlice'
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar()
-
+  const router = useRouter()
   const { user } = useAuth()
+  const { data } = useGetUserProfileQuery({
+    userId: router?.query?.id,
+  })
+  const { user: newUser = {} } = data?.data || {}
+
+  const isNewUserProfile = router.query.id !== user.userId
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),
   })
 
-  const defaultValues = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    team: user?.team || '',
-    role: user?.role || '',
-    photoURL: user?.photoURL || '',
-    phoneNumber: user?.phoneNumber || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
-  }
+  useEffect(() => {
+    setValue(
+      'displayName',
+      isNewUserProfile ? newUser?.name : user?.displayName
+    )
+    setValue('email', isNewUserProfile ? newUser?.email : user?.email)
+    setValue('role', isNewUserProfile ? newUser?.Role?.name : user?.role)
+    setValue('team', isNewUserProfile ? newUser?.Team?.name : user?.team)
+    setValue(
+      'photoURL',
+      isNewUserProfile ? newUser?.linkAvatar : user?.photoURL
+    )
+  }, [setValue, newUser, user, isNewUserProfile])
+
   const dispatch = useDispatch()
   const methods = useForm({
     resolver: yupResolver(UpdateUserSchema),
-    defaultValues,
   })
 
   const { setValue, handleSubmit } = methods
@@ -125,7 +134,7 @@ export default function AccountGeneral() {
             <Box
               sx={{
                 display: 'grid',
-                rowGap: 5,
+                rowGap: 3,
                 columnGap: 2,
                 gridTemplateColumns: {
                   xs: 'repeat(1, 1fr)',
@@ -133,11 +142,47 @@ export default function AccountGeneral() {
                 },
               }}
             >
-              <RHFTextField name='displayName' label='Name' disabled />
-              <RHFTextField name='email' label='Email Address' disabled />
+              <Stack display={'flex'} alignItems={'flex-start'}>
+                <Typography
+                  variant='body2'
+                  sx={{ pl: 1, color: 'text.secondary' }}
+                >
+                  Name
+                </Typography>
+                <RHFTextField name='displayName' disabled />
+              </Stack>
 
-              <RHFTextField name='role' label='Role' disabled />
-              <RHFTextField name='team' label='Team' disabled />
+              <Stack display={'flex'} alignItems={'flex-start'}>
+                <Typography
+                  variant='body2'
+                  sx={{ pl: 1, color: 'text.secondary' }}
+                >
+                  Email Address
+                </Typography>
+                <RHFTextField name='email' disabled />
+              </Stack>
+
+              <Stack display={'flex'} alignItems={'flex-start'}>
+                <Typography
+                  variant='body2'
+                  sx={{ pl: 1, color: 'text.secondary' }}
+                >
+                  Role
+                </Typography>
+
+                <RHFTextField name='role' disabled />
+              </Stack>
+
+              <Stack display={'flex'} alignItems={'flex-start'}>
+                <Typography
+                  variant='body2'
+                  sx={{ pl: 1, color: 'text.secondary' }}
+                >
+                  Team
+                </Typography>
+
+                <RHFTextField name='team' disabled />
+              </Stack>
             </Box>
           </Card>
         </Grid>
