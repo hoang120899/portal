@@ -65,9 +65,11 @@ export const defaultPagination = PAGINATION[0] // 10
 // DATETIME FORMAT
 export const DATE_FORMAT = 'dd/MM/yyyy'
 export const DATE_YEAR_MONTH_DAY_FORMAT = 'yyyy-MM-dd'
-export const DATETIME_FORMAT = 'dd/MM/yyyy hh:mm'
+export const DATETIME_FORMAT = 'dd/MM/yyyy HH:mm'
 export const DATETIME_FORMAT_AMPM = 'dd/MM/yyyy hh:mm a'
 export const DATE_FORMAT_DAY_MONTH = 'do MMM'
+export const CALANDER_DATE_FORMAT = 'MM/dd/yyyy'
+export const TIMEZONE = 'Asia/Ho_Chi_Minh'
 
 // User setting
 export const PAGES = {

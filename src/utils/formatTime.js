@@ -5,12 +5,23 @@ import {
   getTime,
   startOfWeek,
   subMonths,
+  endOfMonth,
+  startOfMonth,
 } from 'date-fns'
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
-import { DATE_FORMAT } from '@/config'
+import { DATE_FORMAT, TIMEZONE } from '@/config'
 
 export function fDate(date, dateFormat = DATE_FORMAT) {
   return format(new Date(date), dateFormat)
+}
+
+export function fUtcToDateTime(date, timeZone = TIMEZONE) {
+  return utcToZonedTime(new Date(date), timeZone)
+}
+
+export function fDateTimeToUtc(date, timeZone = TIMEZONE) {
+  return zonedTimeToUtc(date, timeZone)
 }
 
 export function fDateTime(date) {
@@ -52,4 +63,12 @@ export function fDateEndOfWeek(date) {
 
 export function fDateSubMonths(date, months) {
   return subMonths(date, months)
+}
+
+export function fStartOfMonth(date) {
+  return startOfMonth(date)
+}
+
+export function fEndOfMonth(date) {
+  return endOfMonth(date)
 }
