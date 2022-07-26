@@ -12,7 +12,11 @@ import { FormProvider } from '@/components/hook-form'
 
 import PerformanceDetails from './PerformanceDetails'
 import PerformanceTableToolbar from './PerformanceTableToolbar'
-import { DEFAULT_DATE_END, DEFAULT_DATE_START } from './config'
+import {
+  DEFAULT_DATE_END,
+  DEFAULT_DATE_START,
+  ISO_DATE_CONDITION,
+} from './config'
 import { useGetDataPerformanceQuery } from './performanceSlice'
 
 Performance.propTypes = {
@@ -32,10 +36,10 @@ export default function Performance({ title, subheader, ...other }) {
   const { handleSubmit } = methods
 
   const onSubmit = async (data) => {
-    if (/\d{4}-\d{2}-\d{2}/.test(data.startDate)) {
+    if (ISO_DATE_CONDITION.test(data.startDate)) {
       data.startDate = parseISO(data.startDate)
     }
-    if (/\d{4}-\d{2}-\d{2}/.test(data.endDate)) {
+    if (ISO_DATE_CONDITION.test(data.endDate)) {
       data.endDate = parseISO(data.endDate)
     }
     try {
@@ -45,8 +49,7 @@ export default function Performance({ title, subheader, ...other }) {
       }
       setDate({ ...date })
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('catch ', data)
+      //
     }
   }
 

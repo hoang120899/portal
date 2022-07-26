@@ -1,34 +1,33 @@
 // @mui
-import { Box, Button, Stack } from '@mui/material'
+import { Box, Button } from '@mui/material'
 
 // components
 import { RHFDatePicker } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
 
 export default function PerformanceTableToolbar() {
+  const { translate } = useLocales()
+
   return (
-    <Stack
-      direction='column'
-      alignItems='center'
+    <Box
       sx={{
-        mb: 2,
+        py: 2.5,
+        px: 3,
+        display: 'grid',
+        gridTemplateColumns: {
+          xl: 'repeat(3, 1fr)',
+          lg: 'repeat(1, 1fr)',
+          md: 'repeat(3, 1fr)',
+          sm: 'repeat(1, 1fr)',
+        },
+        gap: 1,
       }}
     >
-      <Box
-        sx={{
-          display: 'grid',
-          width: '100%',
-          gridTemplateColumns: {
-            md: 'repeat(2)',
-            sm: 'repeat(2, 1fr)',
-          },
-        }}
-      >
-        <RHFDatePicker style={{ padding: 10 }} name='startDate' />
-        <RHFDatePicker style={{ padding: 10 }} name='endDate' />
-      </Box>
-      <Button type='submit' variant='contained' sx={{ width: '95%' }}>
-        Apply
+      <RHFDatePicker name='startDate' />
+      <RHFDatePicker name='endDate' />
+      <Button type='submit' variant='contained'>
+        {translate('Apply')}
       </Button>
-    </Stack>
+    </Box>
   )
 }

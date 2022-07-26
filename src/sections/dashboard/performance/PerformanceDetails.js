@@ -4,69 +4,79 @@ import { Avatar, Box, Stack, Typography } from '@mui/material'
 import PropTypes from 'prop-types'
 
 import Scrollbar from '@/components/Scrollbar'
+import useLocales from '@/hooks/useLocales'
 
 PerformanceDetails.propTypes = {
   list: PropTypes.array.isRequired,
 }
 
 export default function PerformanceDetails({ list = [] }) {
-  // eslint-disable-next-line no-console
+  const { translate } = useLocales()
   return (
-    <Scrollbar sx={{ height: { xs: '310px !important', lg: 'auto' } }}>
+    <Scrollbar sx={{ height: { xs: '345px !important' } }}>
       <Stack spacing={1} sx={{ p: 3 }}>
-        {list.map(({ idTeam, memberTeam, name, total }) => (
-          <Stack alignItems='left' key={idTeam}>
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant='subtitle2' sx={{ mb: 0.5 }} noWrap>
-                {name}
-              </Typography>
-              <Typography
-                variant='body2'
-                sx={{ color: 'text.secondary' }}
-                noWrap
-              >
-                {`${total} CV`}
-              </Typography>
-            </Box>
-            <Stack direction='column' className='hihi'>
-              {memberTeam.map(
-                ({ linkAvatar = '', name = '', totalCv = 0 }, index) => (
-                  <Stack direction='row' key={index} spacing={2} sx={{ p: 1 }}>
-                    <Avatar src={linkAvatar} sx={{ width: 48, height: 48 }} />
-                    <Box>
-                      <Typography
-                        variant='subtitle2'
-                        sx={{ mb: 0.5, overflow: 'hidden' }}
-                        noWrap
-                      >
-                        {name}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        flexGrow: 1,
-                        textAlign: 'right',
-                        overflow: 'hidden',
-                        justifyContent: 'flex-end',
-                      }}
+        {list.map(({ idTeam, memberTeam, name, total }) => {
+          if (total == 0) return
+
+          return (
+            <Stack alignItems='left' key={idTeam}>
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant='subtitle2' sx={{ mb: 0.5 }} noWrap>
+                  {name}
+                </Typography>
+                <Typography
+                  variant='body2'
+                  sx={{ color: 'text.secondary' }}
+                  noWrap
+                >
+                  {`${total} CV`}
+                </Typography>
+              </Box>
+              <Stack direction='column'>
+                {memberTeam.map(
+                  ({ linkAvatar = '', name = '', totalCv = 0 }, index) => (
+                    <Stack
+                      direction='row'
+                      key={index}
+                      spacing={2}
+                      sx={{ p: 1 }}
                     >
-                      <Typography variant='subtitle2' sx={{ mb: 0.5 }} noWrap>
-                        CV
-                      </Typography>
-                      <Typography
-                        variant='body2'
-                        sx={{ color: 'text.secondary' }}
-                        noWrap
+                      <Avatar src={linkAvatar} sx={{ width: 48, height: 48 }} />
+                      <Box>
+                        <Typography
+                          variant='subtitle2'
+                          sx={{ mb: 0.5, overflow: 'hidden' }}
+                          noWrap
+                        >
+                          {name}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          flexGrow: 1,
+                          textAlign: 'right',
+                          overflow: 'hidden',
+                          justifyContent: 'flex-end',
+                        }}
                       >
-                        {totalCv}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                )
-              )}
+                        <Typography variant='subtitle2' sx={{ mb: 0.5 }} noWrap>
+                          {translate('CV')}
+                        </Typography>
+                        <Typography
+                          variant='body2'
+                          sx={{ color: 'text.secondary' }}
+                          noWrap
+                        >
+                          {totalCv}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  )
+                )}
+              </Stack>
             </Stack>
-          </Stack>
-        ))}
+          )
+        })}
       </Stack>
     </Scrollbar>
   )
