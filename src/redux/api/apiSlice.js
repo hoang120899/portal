@@ -1,4 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
+import qs from 'query-string'
 
 import { API_ADMIN_USER_LIST } from '@/routes/api'
 import axiosInstance from '@/utils/axios'
@@ -25,7 +26,10 @@ export const apiSlice = createApi({
   baseQuery: axiosBaseQuery(),
   endpoints: (builder) => ({
     getAdminUserList: builder.query({
-      query: () => ({ url: API_ADMIN_USER_LIST, method: 'POST' }),
+      query: (queries = {}) => ({
+        url: `${API_ADMIN_USER_LIST}?${qs.stringify(queries)}`,
+        method: 'POST',
+      }),
     }),
   }),
 })

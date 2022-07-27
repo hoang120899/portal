@@ -7,14 +7,16 @@ import { Box } from '@mui/material'
 import { RHFBasicSelect, RHFDatePicker } from '@/components/hook-form'
 // config
 import { ROLE } from '@/config'
+import useRole from '@/hooks/useRole'
 // redux
 import { useGetAdminUserListQuery } from '@/redux/api/apiSlice'
 
 import { NOTIFICATION_TYPE } from './config'
 
 export default function NotificationTableToolbar() {
+  const { currentRole } = useRole()
   const { data: { data: { user: adminUserList = [] } = {} } = {} } =
-    useGetAdminUserListQuery()
+    useGetAdminUserListQuery({ currentRole })
 
   const users = useMemo(
     () =>
