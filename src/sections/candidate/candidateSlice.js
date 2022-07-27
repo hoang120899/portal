@@ -5,9 +5,10 @@ import { apiSlice } from '@/redux/api/apiSlice'
 import {
   API_ADMIN_DETAIL_CANDIDATE,
   API_ADMIN_DOWNLOAD_CV_PDF,
+  API_ADMIN_PREVIEW_PDF_CANDIDATEJOB,
   API_ADMIN_SEARCH_CANDIDATE,
 } from '@/routes/api'
-import { _postApi } from '@/utils/axios'
+import { _getApi, _postApi } from '@/utils/axios'
 
 import { SEARCH_FIELD } from './config'
 
@@ -40,7 +41,7 @@ export const candidateApiSlice = apiSlice.injectEndpoints({
       },
     }),
     getAdminCandidateDetail: builder.query({
-      query: (candidateId) => ({
+      query: ({ candidateId }) => ({
         url: `${API_ADMIN_DETAIL_CANDIDATE}/${candidateId}`,
         method: 'GET',
       }),
@@ -54,16 +55,30 @@ export const convertDriverToBase64 = createAsyncThunk(
     return response.data.base64
   }
 )
+export const previewPDF = createAsyncThunk(
+  'previewPDF/PDF',
+  async (idCandidateJob) => {
+    const response = await _getApi(
+      `${API_ADMIN_PREVIEW_PDF_CANDIDATEJOB}/${idCandidateJob}`
+    )
+    return response.data.base64
+  }
+)
 export const candidateSlice = createSlice({
   name: 'candidates',
   initialState: {
     base64: '',
+    isLoadingPDF: true,
   },
   reducers: {},
-  extraReducers: {
-    [convertDriverToBase64.fulfilled]: (state, action) => {
-      state.base64 = action.payload
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(convertDriverToBase64.fulfilled, (state, action) => {
+        state.base64 = action.payload
+      })
+      .addCase(previewPDF.fulfilled, (state, action) => {
+        state.base64 = action.payload
+      })
   },
 })
 export const {

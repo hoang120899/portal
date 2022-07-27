@@ -120,7 +120,11 @@ export default function Candidates() {
     (row, index) => {
       if (isMobileScreen)
         return (
-          <CandidatesCollapsibleTableRow key={row?.id || index} row={row} />
+          <CandidatesCollapsibleTableRow
+            key={row?.id || index}
+            row={row}
+            handleGetCandidateDetail={handleGetCandidateDetail(row)}
+          />
         )
       return (
         <CandidateTableRow

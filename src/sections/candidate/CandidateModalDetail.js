@@ -49,12 +49,15 @@ export default function CandidateModalDetail({
     defaultValues: {},
   })
   const { currentRole } = useRole()
+
   const { setValue, watch } = methods
   const { id } = detailCandidate
   const jobCandidate = watch(DETAIL_FIELD.JOB_NAME)
-  const { data, isFetching } = useGetAdminCandidateDetailQuery(id, {
+  const { data, isFetching } = useGetAdminCandidateDetailQuery({
+    candidateId: id,
     currentRole,
   })
+
   const { name, email, jobs, phone, date } = data?.data?.data || {}
   const listJobs = jobs?.map(
     ({ label, value, location, cv, candidateJob, candidateJobId }) => ({
@@ -66,17 +69,26 @@ export default function CandidateModalDetail({
       id: candidateJobId,
     })
   )
-  const base64 = useSelector((state) => state.candidate.base64)
+  let base64 = useSelector((state) => state.candidates.base64)
   const dispatch = useDispatch()
+  useEffect(() => {
+    if (watch(DETAIL_FIELD.LINK_CV)) {
+      const data = {
+        linkDrive: watch(DETAIL_FIELD.LINK_CV),
+      }
+      dispatch(convertDriverToBase64(data))
+    }
+  }, [watch, base64, dispatch])
   useEffect(() => {
     setValue(DETAIL_FIELD.NAME, name)
     setValue(DETAIL_FIELD.EMAIl, email)
     setValue(DETAIL_FIELD.APPROACH_DATE, date)
     setValue(DETAIL_FIELD.PHONE, phone)
-  }, [data, setValue, name, email, phone, date])
+    setValue(DETAIL_FIELD.JOB_NAME, listJobs?.[0])
+  }, [setValue, name, email, phone, date, listJobs])
   useEffect(() => {
     if (jobCandidate) {
-      const job = jobs.find((item) => item.candidateJobId === jobCandidate?.id)
+      const job = jobs?.find((item) => item.candidateJobId === jobCandidate?.id)
       setValue(DETAIL_FIELD.LOCATION, job?.location || '')
       setValue(DETAIL_FIELD.CLIENT_ID, job?.value || '')
       setValue(DETAIL_FIELD.LINK_CV, job?.cv || '')
@@ -121,19 +133,14 @@ export default function CandidateModalDetail({
                     size: 'small',
                     loading: isFetching,
                     renderOption: (props, option) => (
-                        <Box key={option.key} component='li' {...props}>
-                          {option.label}
-                        </Box>
-                      ),
+                      <Box key={option.key} component='li' {...props}>
+                        {option.label}
+                      </Box>
+                    ),
                     onChange: (field) => (event, newValue) => {
                       field.onChange(newValue)
-                      if (newValue) {
-                        const data = {
-                          linkDrive: watch(DETAIL_FIELD.LINK_CV),
-                        }
-                        dispatch(convertDriverToBase64(data))
-                      }
                     },
+                    value: '',
                   }}
                   options={listJobs}
                 />

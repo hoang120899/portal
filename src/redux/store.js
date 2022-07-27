@@ -18,7 +18,7 @@ const store = configureStore({
     kanban: kanbanReducer,
     client: clientReducer,
     salary: salaryReducer,
-    candidate: candidateReducer,
+    candidates: candidateReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
