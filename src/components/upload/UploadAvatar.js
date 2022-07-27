@@ -8,6 +8,7 @@ import { useDropzone } from 'react-dropzone'
 // components
 import Iconify from '@/components/Iconify'
 import Image from '@/components/Image'
+import { DOMAIN_SERVER_API } from '@/config'
 import useAuth from '@/hooks/useAuth'
 
 import RejectionFiles from './RejectionFiles'
@@ -108,7 +109,7 @@ export default function UploadAvatar({
           ) : (
             <Image
               alt='avatar'
-              src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${user.linkAvatar}`}
+              src={`${DOMAIN_SERVER_API}/${user.linkAvatar}`}
               sx={{ zIndex: 8 }}
             />
           )}

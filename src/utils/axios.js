@@ -1,9 +1,11 @@
 import axios from 'axios'
 
+import { DOMAIN_SERVER_API } from '@/config'
+
 import { handleRefreshToken } from './jwt'
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_HOST_API_KEY || '',
+  baseURL: DOMAIN_SERVER_API,
   timeout: 10000,
   withCredentials: true,
   headers: {

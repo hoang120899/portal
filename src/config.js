@@ -4,6 +4,8 @@ import { enUS, viVN } from '@mui/material/locale'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
 
+export const DOMAIN_SERVER_API = process.env.NEXT_PUBLIC_HOST_API_KEY || ''
+
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = PATH_DASHBOARD.dashboard
 

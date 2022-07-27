@@ -20,6 +20,7 @@ import { useSnackbar } from 'notistack'
 // components
 import MenuPopover from '@/components/MenuPopover'
 import { IconButtonAnimate } from '@/components/animate'
+import { DOMAIN_SERVER_API } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
 import useIsMountedRef from '@/hooks/useIsMountedRef'
@@ -86,12 +87,12 @@ export default function AccountPopover() {
       >
         {Object.keys(avatar.avatar).length === 0 ? (
           <Avatar
-            src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${user.linkAvatar}`}
+            src={`${DOMAIN_SERVER_API}/${user.linkAvatar}`}
             alt={user.displayName}
           />
         ) : (
           <Avatar
-            src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${avatar.avatar}`}
+            src={`${DOMAIN_SERVER_API}/${avatar.avatar}`}
             alt={user.displayName}
           />
         )}
