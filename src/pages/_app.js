@@ -9,6 +9,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 // fullcalendar
 import '@fullcalendar/common/main.min.css'
 import '@fullcalendar/daygrid/main.min.css'
+// Import the styles provided by the react-pdf-viewer packages
+import '@react-pdf-viewer/core/lib/styles/index.css'
+import '@react-pdf-viewer/toolbar/lib/styles/index.css'
 import cookie from 'cookie'
 import PropTypes from 'prop-types'
 // lazy image
