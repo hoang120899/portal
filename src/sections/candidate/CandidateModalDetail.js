@@ -1,8 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { LoadingButton } from '@mui/lab'
 import {
-  Box,
   Button,
   DialogActions,
   Divider,
@@ -22,7 +21,7 @@ import Iconify from '@/components/Iconify'
 import PreviewPdf from '@/components/PreviewPdf'
 import {
   FormProvider,
-  RHFAutocomplete,
+  RHFBasicSelect,
   RHFDateTimePicker,
   RHFTextField,
 } from '@/components/hook-form'
@@ -54,49 +53,37 @@ export default function CandidateModalDetail({
 
   const { setValue, watch } = methods
   const { id } = detailCandidate
-  const jobCandidate = watch(DETAIL_FIELD.JOB_NAME)
-  const { data, isFetching } = useGetAdminCandidateDetailQuery({
+  const { data } = useGetAdminCandidateDetailQuery({
     candidateId: id,
     currentRole,
   })
-
+  const [isOpenPDF, setIsOpenPDF] = useState(false)
   const { name, email, jobs, phone, date } = data?.data?.data || {}
-  const listJobs = jobs?.map(
-    ({ label, value, location, cv, candidateJob, candidateJobId }) => ({
-      label,
-      value,
-      location,
-      cv,
-      candidateJob,
-      id: candidateJobId,
-    })
-  )
-  let base64 = useSelector((state) => state.candidates.base64)
+  const listJobs = jobs?.map(({ label, candidateJobId }) => ({
+    label,
+    value: candidateJobId,
+  }))
+  const cv = watch(DETAIL_FIELD.LINK_CV)
+  const { base64, isLoadingPDF } = useSelector((state) => state.candidates)
   const dispatch = useDispatch()
   useEffect(() => {
-    if (watch(DETAIL_FIELD.LINK_CV)) {
-      const data = {
-        linkDrive: watch(DETAIL_FIELD.LINK_CV),
-      }
-      dispatch(convertDriverToBase64(data))
+    if (!cv) return
+    const data = {
+      linkDrive: cv,
     }
-  }, [watch, dispatch])
+    dispatch(convertDriverToBase64(data))
+  }, [cv, dispatch])
   useEffect(() => {
     setValue(DETAIL_FIELD.NAME, name)
     setValue(DETAIL_FIELD.EMAIl, email)
     setValue(DETAIL_FIELD.APPROACH_DATE, date)
     setValue(DETAIL_FIELD.PHONE, phone)
-  }, [setValue, name, email, phone, date])
-  useEffect(() => {
-    if (jobCandidate) {
-      const job = jobs?.find((item) => item.candidateJobId === jobCandidate?.id)
-      setValue(DETAIL_FIELD.LOCATION, job?.location || '')
-      setValue(DETAIL_FIELD.CLIENT_ID, job?.value || '')
-      setValue(DETAIL_FIELD.LINK_CV, job?.cv || '')
-      setValue(DETAIL_FIELD.POSITION, job?.candidateJob.position || '')
-      setValue(DETAIL_FIELD.NOT_APPROACH, job?.candidateJob.noteApproach || '')
-    }
-  }, [jobCandidate, setValue, jobs])
+    setValue(DETAIL_FIELD.LINK_CV, jobs?.[0]?.cv)
+  }, [setValue, name, email, phone, date, jobs])
+
+  const handleOpenPDF = () => {
+    setIsOpenPDF(true)
+  }
   return (
     <Drawer
       open={isOpen}
@@ -127,19 +114,13 @@ export default function CandidateModalDetail({
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <Typography>Job Name</Typography>
-                <RHFAutocomplete
+                <RHFBasicSelect
                   name={DETAIL_FIELD.JOB_NAME}
                   label={'Job Name'}
-                  AutocompleteProps={{
-                    size: 'small',
-                    loading: isFetching,
-                    renderOption: (props, option) => (
-                      <Box key={option.key} component='li' {...props}>
-                        {option.label}
-                      </Box>
-                    ),
-                  }}
                   options={listJobs}
+                  defaultValue={{
+                    label: listJobs?.ơ,
+                  }}
                 />
               </Stack>
             </Grid>
@@ -251,9 +232,17 @@ export default function CandidateModalDetail({
             </Grid>
           </Grid>
           <Grid item xs={12} mt={3}>
-            {watch(DETAIL_FIELD.LINK_CV) ? (
+            {cv ? (
               <DialogActions>
-                <LoadingButton variant='contained'>Raw CV</LoadingButton>
+                <LoadingButton
+                  variant='contained'
+                  loading={isLoadingPDF}
+                  onClick={() => {
+                    handleOpenPDF()
+                  }}
+                >
+                  Raw CV
+                </LoadingButton>
                 <Button variant='outlined' color='inherit' onClick={onClose}>
                   Cancel
                 </Button>
@@ -267,7 +256,15 @@ export default function CandidateModalDetail({
             )}
           </Grid>
         </FormProvider>
-        {base64 ? <PreviewPdf isOpen='true' base64={base64} /> : ''}
+        {base64 && cv ? (
+          <PreviewPdf
+            isOpen={isOpenPDF}
+            onClose={() => setIsOpenPDF(false)}
+            base64={base64}
+          />
+        ) : (
+          ''
+        )}
       </Stack>
     </Drawer>
   )

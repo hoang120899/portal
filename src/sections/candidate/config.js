@@ -8,7 +8,7 @@ export const SEARCH_FIELD = {
 }
 export const DETAIL_FIELD = {
   NAME: 'name',
-  JOB_NAME: 'jobId',
+  JOB_NAME: 'jobName',
   LOCATION: 'location',
   CLIENT_ID: 'clientId',
   EMAIl: 'email',

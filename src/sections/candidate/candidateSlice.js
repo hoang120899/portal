@@ -75,9 +75,11 @@ export const candidateSlice = createSlice({
     builder
       .addCase(convertDriverToBase64.fulfilled, (state, action) => {
         state.base64 = action.payload
+        state.isLoadingPDF = false
       })
       .addCase(previewPDF.fulfilled, (state, action) => {
         state.base64 = action.payload
+        state.isLoadingPDF = false
       })
   },
 })
