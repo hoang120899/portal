@@ -13,18 +13,27 @@ import {
 } from '@mui/material'
 
 import { useTheme } from '@emotion/react'
+import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
-import Label from '@/components/Label'
+import {
+  DEFAULT_STATUS_COLOR,
+  STATUS_COLOR,
+} from '@/sections/dashboard/active-job/config'
+
+JobTaskTableRowMobile.propTypes = {
+  row: PropTypes.object,
+}
 
 export default function JobTaskTableRowMobile({ row }) {
   const theme = useTheme()
+  const color = STATUS_COLOR[row?.jobStatus] || DEFAULT_STATUS_COLOR
   const [open, setOpen] = useState(true)
   return (
     <>
       <TableRow>
-        <TableRow sx={{ display: 'flex', marginTop: 2 }}>
+        <TableCell sx={{ display: 'flex', marginTop: 2, px: 2 }}>
           <IconButton
             size='small'
             color={open ? 'primary' : 'default'}
@@ -38,20 +47,19 @@ export default function JobTaskTableRowMobile({ row }) {
               }
             />
           </IconButton>
-          <TableRow>
-            <Typography
-              variant='inherit'
-              sx={{
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                overflow: 'hidden',
-                msTextOverflow: 'ellipsis',
-              }}
-            >
-              {row.title}
-            </Typography>
-          </TableRow>
-        </TableRow>
+
+          <Typography
+            variant='inherit'
+            sx={{
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              overflow: 'hidden',
+              msTextOverflow: 'ellipsis',
+            }}
+          >
+            {row.title}
+          </Typography>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell sx={{ py: 0 }} colSpan={6}>
@@ -138,15 +146,15 @@ export default function JobTaskTableRowMobile({ row }) {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Label
+                      <Typography
                         variant={
                           theme.palette.mode === 'light' ? 'ghost' : 'filled'
                         }
-                        color={(status === 'banned' && 'error') || 'success'}
+                        color={color}
                         sx={{ textTransform: 'capitalize' }}
                       >
                         {row.jobStatus}
-                      </Label>
+                      </Typography>
                     </TableCell>
                   </TableRow>
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 
 // @mui
 import { Card, CardHeader } from '@mui/material'
@@ -21,7 +21,6 @@ MemberActivities.propTypes = {
 export default function MemberActivities({ title, subheader, ...other }) {
   const { currentRole } = useRole()
   const { translate } = useLocales()
-  const [listLastLogin, setListLastLogin] = useState([])
   const headerRef = useRef(null)
   const {
     data = {},
@@ -31,14 +30,10 @@ export default function MemberActivities({ title, subheader, ...other }) {
     currentRole,
   })
 
-  const { list: listMembers = [] } = data?.data || {}
+  const { list: listLastLogin = [] } = data?.data || {}
 
   const listMemberHeight =
     DASHBOARD_TABLE_HEIGHT - headerRef.current?.offsetHeight - 20
-
-  useEffect(() => {
-    setListLastLogin(listMembers)
-  }, [setListLastLogin, listMembers])
 
   return (
     <Card {...other}>

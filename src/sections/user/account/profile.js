@@ -39,12 +39,12 @@ export default function JobList({ subheader, ...other }) {
       {isDesktop ? (
         <>
           <CardHeader
-            sx={{ px: 1, paddingLeft: 0.5 }}
+            sx={{ px: 1, paddingLeft: 3 }}
             title='List Jobs'
             subheader={subheader}
           />
           <Typography
-            sx={{ px: 1, paddingLeft: 0.5, color: '#b5b5c3', fontSize: 13 }}
+            sx={{ pb: 1, paddingLeft: 3, color: '#b5b5c3', fontSize: 13 }}
           >
             You are following {totalRecord} jobs
           </Typography>
@@ -63,6 +63,7 @@ export default function JobList({ subheader, ...other }) {
             You are following {totalRecord} jobs
           </Typography>
           <BasicTable
+            columns={[]}
             page={page}
             rowsPerPage={rowsPerPage}
             dataSource={listJob}

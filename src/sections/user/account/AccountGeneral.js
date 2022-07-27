@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 
 // @mui
 import {
+  Avatar,
   Box,
   Card,
   CircularProgress,
@@ -55,16 +56,23 @@ export default function AccountGeneral() {
   useEffect(() => {
     setValue(
       'displayName',
-      isNewUserProfile ? newUser?.name : user?.displayName
+      isNewUserProfile ? newUser?.name || '' : user?.displayName || ''
     )
-    setValue('email', isNewUserProfile ? newUser?.email : user?.email)
-    setValue('role', isNewUserProfile ? newUser?.Role?.name : user?.role)
-    setValue('team', isNewUserProfile ? newUser?.Team?.name : user?.team)
+    setValue(
+      'email',
+      isNewUserProfile ? newUser?.email || '' : user?.email || ''
+    )
+    setValue(
+      'role',
+      isNewUserProfile ? newUser?.Role?.name || '' : user?.role || ''
+    )
+    setValue(
+      'team',
+      isNewUserProfile ? newUser?.Team?.name || '' : user?.team || ''
+    )
     setValue(
       'photoURL',
-      isNewUserProfile
-        ? `${process.env.NEXT_PUBLIC_HOST_API_KEY}/${newUser?.linkAvatar}`
-        : user?.photoURL
+      isNewUserProfile ? newUser?.linkAvatar || '' : user?.photoURL || ''
     )
   }, [setValue, newUser, user, isNewUserProfile])
 
@@ -113,34 +121,60 @@ export default function AccountGeneral() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ py: 10, px: 3, textAlign: 'center' }} height={350}>
-            <RHFUploadAvatar
-              name='photoURL'
-              accept='image/*'
-              maxSize={3145728}
-              onDrop={handleDrop}
-              disabled={isNewUserProfile}
-              file={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${newUser?.linkAvatar}`}
-              helperText={
-                <Typography
-                  variant='caption'
-                  sx={{
-                    mt: 2,
-                    mx: 'auto',
-                    display: 'block',
-                    textAlign: 'center',
-                    color: 'text.secondary',
-                  }}
-                >
-                  Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
-                </Typography>
-              }
-            />
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{ maxHeight: { sm: '300px', xs: '420px' } }}
+        >
+          <Card
+            sx={{
+              py: 10,
+              px: 3,
+              textAlign: 'center',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            height={350}
+          >
+            {isNewUserProfile ? (
+              <Avatar
+                src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${newUser?.linkAvatar}`}
+                sx={{ width: '120px', height: '120px' }}
+              />
+            ) : (
+              <RHFUploadAvatar
+                name='photoURL'
+                accept='image/*'
+                maxSize={3145728}
+                onDrop={handleDrop}
+                disabled={isNewUserProfile}
+                helperText={
+                  <Typography
+                    variant='caption'
+                    sx={{
+                      mt: 2,
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Allowed *.jpeg, *.jpg, *.png, *.gif
+                    <br /> max size of {fData(3145728)}
+                  </Typography>
+                }
+              />
+            )}
           </Card>
         </Grid>
-        <Grid item xs={12} md={8} height={350}>
+        <Grid
+          item
+          xs={12}
+          md={8}
+          sx={{ maxHeight: { sm: '300px', xs: '420px' } }}
+        >
           <Card
             sx={{
               py: 15,
@@ -215,7 +249,7 @@ export default function AccountGeneral() {
         </Grid>
       </Grid>
       {isMobile ? (
-        <Grid item xs={10} sx={{ mx: 0, marginTop: 25 }}>
+        <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
           <JobList />
         </Grid>
       ) : (

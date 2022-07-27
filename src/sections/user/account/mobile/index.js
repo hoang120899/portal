@@ -14,7 +14,7 @@ import JobTaskTableMobileRow from './jobTaskTableMobileRow'
 
 export default function JobTableIsMobile({ dataSource }) {
   return (
-    <TableContainer sx={{ mx: 0.5 }}>
+    <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
