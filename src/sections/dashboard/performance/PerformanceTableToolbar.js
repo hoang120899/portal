@@ -14,12 +14,7 @@ export default function PerformanceTableToolbar() {
         py: 2.5,
         px: 3,
         display: 'grid',
-        gridTemplateColumns: {
-          xl: 'repeat(3, 1fr)',
-          lg: 'repeat(1, 1fr)',
-          md: 'repeat(3, 1fr)',
-          sm: 'repeat(1, 1fr)',
-        },
+        gridTemplateColumns: '5fr 5fr 2fr',
         gap: 1,
       }}
     >

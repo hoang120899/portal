@@ -4,6 +4,7 @@ import { Avatar, Box, Stack, Typography } from '@mui/material'
 import PropTypes from 'prop-types'
 
 import Scrollbar from '@/components/Scrollbar'
+import { DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
 
 PerformanceDetails.propTypes = {
@@ -41,7 +42,10 @@ export default function PerformanceDetails({ list = [] }) {
                       spacing={2}
                       sx={{ p: 1 }}
                     >
-                      <Avatar src={linkAvatar} sx={{ width: 48, height: 48 }} />
+                      <Avatar
+                        src={`${DOMAIN_SERVER_API}/${linkAvatar}`}
+                        sx={{ width: 48, height: 48 }}
+                      />
                       <Box>
                         <Typography
                           variant='subtitle2'
