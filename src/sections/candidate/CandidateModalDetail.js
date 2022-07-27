@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { LoadingButton } from '@mui/lab'
 import {
   Box,
   Button,
@@ -18,6 +19,7 @@ import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 
 import Iconify from '@/components/Iconify'
+import PreviewPdf from '@/components/PreviewPdf'
 import {
   FormProvider,
   RHFAutocomplete,
@@ -78,14 +80,13 @@ export default function CandidateModalDetail({
       }
       dispatch(convertDriverToBase64(data))
     }
-  }, [watch, base64, dispatch])
+  }, [watch, dispatch])
   useEffect(() => {
     setValue(DETAIL_FIELD.NAME, name)
     setValue(DETAIL_FIELD.EMAIl, email)
     setValue(DETAIL_FIELD.APPROACH_DATE, date)
     setValue(DETAIL_FIELD.PHONE, phone)
-    setValue(DETAIL_FIELD.JOB_NAME, listJobs?.[0])
-  }, [setValue, name, email, phone, date, listJobs])
+  }, [setValue, name, email, phone, date])
   useEffect(() => {
     if (jobCandidate) {
       const job = jobs?.find((item) => item.candidateJobId === jobCandidate?.id)
@@ -95,7 +96,7 @@ export default function CandidateModalDetail({
       setValue(DETAIL_FIELD.POSITION, job?.candidateJob.position || '')
       setValue(DETAIL_FIELD.NOT_APPROACH, job?.candidateJob.noteApproach || '')
     }
-  }, [jobCandidate, jobs, setValue])
+  }, [jobCandidate, setValue, jobs])
   return (
     <Drawer
       open={isOpen}
@@ -137,10 +138,6 @@ export default function CandidateModalDetail({
                         {option.label}
                       </Box>
                     ),
-                    onChange: (field) => (event, newValue) => {
-                      field.onChange(newValue)
-                    },
-                    value: '',
                   }}
                   options={listJobs}
                 />
@@ -254,13 +251,23 @@ export default function CandidateModalDetail({
             </Grid>
           </Grid>
           <Grid item xs={12} mt={3}>
-            <DialogActions>
-              <Button variant='outlined' color='inherit' onClick={onClose}>
-                Cancel
-              </Button>
-            </DialogActions>
+            {watch(DETAIL_FIELD.LINK_CV) ? (
+              <DialogActions>
+                <LoadingButton variant='contained'>Raw CV</LoadingButton>
+                <Button variant='outlined' color='inherit' onClick={onClose}>
+                  Cancel
+                </Button>
+              </DialogActions>
+            ) : (
+              <DialogActions>
+                <Button variant='outlined' color='inherit' onClick={onClose}>
+                  Cancel
+                </Button>
+              </DialogActions>
+            )}
           </Grid>
         </FormProvider>
+        {base64 ? <PreviewPdf isOpen='true' base64={base64} /> : ''}
       </Stack>
     </Drawer>
   )
