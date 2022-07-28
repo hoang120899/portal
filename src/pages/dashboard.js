@@ -44,6 +44,7 @@ export default function Dashboard() {
 
   const dashboardConfigs = [
     {
+      isInterViewSchedule: !isDirectorRole,
       render: () => {
         if (isDirectorRole) return <Performance title='Performance' />
         return <InterviewSchedule title='Interview Schedule' />
@@ -81,18 +82,16 @@ export default function Dashboard() {
           >
             <DashboardActiveJob title='Active Jobs' />
           </Grid>
-          {dashboardConfigs.map((config, key) => (
-            <Grid
-              item
-              xs={12}
-              md={6}
-              lg={4}
-              key={key}
-              sx={{ height: { sm: DASHBOARD_TABLE_HEIGHT } }}
-            >
-              {config.render()}
-            </Grid>
-          ))}
+          {dashboardConfigs.map((config, key) => {
+            let sx = { height: { sm: DASHBOARD_TABLE_HEIGHT } }
+            if (config.isInterViewSchedule)
+              sx = { height: DASHBOARD_TABLE_HEIGHT }
+            return (
+              <Grid item xs={12} md={6} lg={4} key={key} sx={sx}>
+                {config.render()}
+              </Grid>
+            )
+          })}
         </Grid>
       </Container>
     </Page>
