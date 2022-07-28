@@ -2,17 +2,17 @@ import { TableCell, TableRow, Typography, useTheme } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
+import useLocales from '@/hooks/useLocales'
 import {
   DEFAULT_STATUS_COLOR,
   STATUS_COLOR,
 } from '@/sections/dashboard/active-job/config'
 
-// components
-
-JobTaskTableRow.propTypes = {
+JobTableRow.propTypes = {
   row: PropTypes.object,
 }
-export default function JobTaskTableRow({ row }) {
+export default function JobTableRow({ row }) {
+  const { translate } = useLocales()
   const theme = useTheme()
   const color = STATUS_COLOR[row?.jobStatus] || DEFAULT_STATUS_COLOR
 
@@ -33,7 +33,7 @@ export default function JobTaskTableRow({ row }) {
           variant='subtitle2'
           sx={{ px: 1, paddingLeft: 0, color: '#b5b5c3', fontSize: 13 }}
         >
-          Salary
+          {translate('Salary')}
         </Typography>
       </TableCell>
       <TableCell align='left' width={160}>

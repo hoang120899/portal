@@ -18,23 +18,27 @@ import PropTypes from 'prop-types'
 // components
 import Iconify from '@/components/Iconify'
 import TextMaxLine from '@/components/TextMaxLine'
+import useLocales from '@/hooks/useLocales'
 import {
   DEFAULT_STATUS_COLOR,
   STATUS_COLOR,
 } from '@/sections/dashboard/active-job/config'
 
-JobTaskTableRowMobile.propTypes = {
+JobTaskCollapsibleTableRow.propTypes = {
   row: PropTypes.object,
 }
 
-export default function JobTaskTableRowMobile({ row }) {
+export default function JobTaskCollapsibleTableRow({ row }) {
   const theme = useTheme()
+  const { translate } = useLocales()
   const color = STATUS_COLOR[row?.jobStatus] || DEFAULT_STATUS_COLOR
   const [open, setOpen] = useState(true)
   return (
     <>
       <TableRow>
-        <TableCell sx={{ display: 'flex', marginTop: 2, px: 2 }}>
+        <TableCell
+          sx={{ display: 'flex', marginTop: 2, px: 2, alignItems: 'center' }}
+        >
           <IconButton
             size='small'
             color={open ? 'primary' : 'default'}
@@ -79,7 +83,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Salary
+                        {translate('Salary')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -97,7 +101,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Candidate
+                        {translate('Candidate')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -117,7 +121,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Type
+                        {translate('Type')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -135,7 +139,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Job Status
+                        {translate('Job Status')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -162,7 +166,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        View Detail
+                        {translate('View Detail')}
                       </Typography>
                     </TableCell>
                     <TableCell>

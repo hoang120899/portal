@@ -29,13 +29,12 @@ import {
 import { DOMAIN_SERVER_API, MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
-import useResponsive from '@/hooks/useResponsive'
 import { useDispatch } from '@/redux/store'
 // utils
 import { fData } from '@/utils/formatNumber'
 
 import { useGetUserProfileQuery } from './jobSlice'
-import JobList from './profile'
+import JobList from './list'
 import { fetchUploadAPI } from './uploadAvatarSlice'
 
 export default function AccountGeneral() {
@@ -46,6 +45,7 @@ export default function AccountGeneral() {
     userId: router?.query?.id,
   })
   const { user: newUser = {} } = data?.data || {}
+  const { name: userName, email, Role, Team, linkAvatar } = newUser || {}
 
   const isNewUserProfile = router.query.id !== user.userId
 
@@ -54,27 +54,12 @@ export default function AccountGeneral() {
   })
 
   useEffect(() => {
-    setValue(
-      'displayName',
-      isNewUserProfile ? newUser?.name || '' : user?.displayName || ''
-    )
-    setValue(
-      'email',
-      isNewUserProfile ? newUser?.email || '' : user?.email || ''
-    )
-    setValue(
-      'role',
-      isNewUserProfile ? newUser?.Role?.name || '' : user?.role || ''
-    )
-    setValue(
-      'team',
-      isNewUserProfile ? newUser?.Team?.name || '' : user?.team || ''
-    )
-    setValue(
-      'photoURL',
-      isNewUserProfile ? newUser?.linkAvatar || '' : user?.photoURL || ''
-    )
-  }, [setValue, newUser, user, isNewUserProfile])
+    setValue('displayName', userName || '')
+    setValue('email', email || '')
+    setValue('role', Role?.name || '')
+    setValue('team', Team?.name || '')
+    setValue('photoURL', linkAvatar || '')
+  }, [setValue, userName, email, Role, Team, linkAvatar])
 
   const dispatch = useDispatch()
   const methods = useForm({
@@ -91,7 +76,6 @@ export default function AccountGeneral() {
       // TODO
     }
   }
-  const isMobile = useResponsive('down', 600, 'md')
   const handleDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0]
@@ -140,7 +124,7 @@ export default function AccountGeneral() {
           >
             {isNewUserProfile ? (
               <Avatar
-                src={`${DOMAIN_SERVER_API}/${newUser?.linkAvatar}`}
+                src={`${DOMAIN_SERVER_API}/${linkAvatar}`}
                 sx={{ width: '120px', height: '120px' }}
               />
             ) : (
@@ -248,15 +232,9 @@ export default function AccountGeneral() {
           </Card>
         </Grid>
       </Grid>
-      {isMobile ? (
-        <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
-          <JobList />
-        </Grid>
-      ) : (
-        <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
-          <JobList />
-        </Grid>
-      )}
+      <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
+        <JobList />
+      </Grid>
     </FormProvider>
   )
 }
