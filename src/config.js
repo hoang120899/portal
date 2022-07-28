@@ -108,7 +108,7 @@ export const ROLE_BY_PAGES = [
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
   },
   {
-    pageNames: [PAGES.Jobs, PAGES.Clients, PAGES.Users],
+    pageNames: [PAGES.Jobs, PAGES.Clients],
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
   },
   {
@@ -118,6 +118,10 @@ export const ROLE_BY_PAGES = [
   {
     pageNames: [PAGES.Blogs],
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.BLOGER],
+  },
+  {
+    pageNames: [PAGES.Users],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER],
   },
 ]
 
