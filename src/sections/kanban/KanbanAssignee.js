@@ -14,9 +14,16 @@ KanbanAssignee.propTypes = {
   cardId: PropTypes.string,
   laneId: PropTypes.string,
   cardNotInCol: PropTypes.bool,
+  hasAddPermission: PropTypes.bool,
 }
 
-function KanbanAssignee({ Users, cardId, laneId, cardNotInCol = false }) {
+function KanbanAssignee({
+  Users,
+  cardId,
+  laneId,
+  cardNotInCol = false,
+  hasAddPermission,
+}) {
   const { data: contactData } = useGetUserQuery()
   const [users, setUsers] = useState(Users)
   const dispatch = useDispatch()
@@ -47,7 +54,7 @@ function KanbanAssignee({ Users, cardId, laneId, cardNotInCol = false }) {
       <Assignee
         onToggleAssignee={onToggleAssignee}
         assignee={cardNotInCol ? users : Users}
-        hasAddAssignee
+        hasAddAssignee={hasAddPermission}
         listContacts={contactData?.data?.list}
       />
     </Box>

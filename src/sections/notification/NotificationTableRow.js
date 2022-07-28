@@ -1,4 +1,6 @@
 // @mui
+import { useRouter } from 'next/router'
+
 import { TableCell, TableRow, Tooltip, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
@@ -41,12 +43,17 @@ export default function NotificationTableRow({ row }) {
     },
   }
 
+  const router = useRouter()
   return (
     <TableRow hover>
       <TableCell align='left'>{User?.name}</TableCell>
 
       <TableCell align='left' width='50%'>
-        <Typography variant='body2' sx={styles.message}>
+        <Typography
+          variant='body2'
+          sx={styles.message}
+          onClick={() => router.push(`board?cardId=${content?.id}`)}
+        >
           {content?.message}
           <strong> {content?.title}</strong>
         </Typography>

@@ -172,7 +172,7 @@ function KanbanTaskForm({
 
   const cardByColumns = useMemo(() => {
     if (card) {
-      return columns[card.laneId].CandidateJobs.find(
+      return columns?.[card.laneId]?.CandidateJobs?.find(
         (item) => item.id === card.id
       )
     }
@@ -565,6 +565,7 @@ function KanbanTaskForm({
               Users={cardByColumns?.Users}
               laneId={cardByColumns?.laneId}
               cardId={cardByColumns?.id}
+              hasAddPermission={hasAddPermission}
             />
           )}
 
@@ -574,6 +575,7 @@ function KanbanTaskForm({
               laneId={card?.laneId}
               cardId={card?.id}
               cardNotInCol={true}
+              hasAddPermission={hasAddPermission}
             />
           )}
           <Stack direction='row' sx={{ flexShrink: 0, maxHeight: '48px' }}>

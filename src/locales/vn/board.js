@@ -5,6 +5,7 @@ const board = {
   save: 'Lưu',
   background: 'Màu nền',
   confirmStorage: 'Bạn có muốn lưu thẻ này',
+  waiting: 'Waiting',
 }
 
 export default board

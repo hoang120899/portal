@@ -1,7 +1,7 @@
 import React from 'react'
 
 // @mui
-import { Box, Paper, Stack, Typography } from '@mui/material'
+import { Box, Paper, Stack, Typography, useTheme } from '@mui/material'
 
 import PropTypes from 'prop-types'
 import { Draggable } from 'react-beautiful-dnd'
@@ -21,11 +21,20 @@ KanbanTaskCard.propTypes = {
   index: PropTypes.number,
   laneId: PropTypes.string,
   onOpenUpdateTask: PropTypes.func,
+  hasAddPermission: PropTypes.bool,
 }
 
-function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
+function KanbanTaskCard({
+  card,
+  index,
+  laneId,
+  onOpenUpdateTask,
+  hasAddPermission,
+}) {
   const { translate } = useLocales()
   const { Job, Candidate = {}, Labels = [], id: cardId } = card
+  const theme = useTheme()
+  const isLight = theme.palette.mode === 'light'
 
   const dispatch = useDispatch()
   const handleDeleteLabel = async (label) => {
@@ -53,7 +62,11 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
   ]
 
   return (
-    <Draggable draggableId={card.id} index={index}>
+    <Draggable
+      draggableId={card.id}
+      index={index}
+      isDragDisabled={!hasAddPermission}
+    >
       {(provided) => (
         <div
           {...provided.draggableProps}
@@ -89,7 +102,7 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                   spacing={1}
                   sx={{
                     p: 2,
-                    background: 'white',
+                    background: isLight ? 'white' : '#2c3947',
                     boxShadow: '0 1px 0 rgb(9 30 66 / 25%)',
                   }}
                 >
@@ -114,9 +127,9 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                           {item?.label}:
                         </Typography>
                         <Typography
+                          fontWeight={'normal'}
                           variant='subtitle2'
                           align='right'
-                          color='#777'
                           sx={{
                             overflow: 'hidden',
                             whiteSpace: 'nowrap',
@@ -132,6 +145,7 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                     Users={card?.Users}
                     laneId={laneId}
                     cardId={cardId}
+                    hasAddPermission={hasAddPermission}
                   />
                 </Stack>
               </Box>
@@ -147,6 +161,7 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                 laneId={laneId}
                 cardId={cardId}
                 Labels={Labels}
+                hasAddPermission={hasAddPermission}
               />
             </Box>
           </Paper>

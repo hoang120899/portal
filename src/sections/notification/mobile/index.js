@@ -7,8 +7,13 @@ import {
   TableRow,
 } from '@mui/material'
 
+import PropTypes from 'prop-types'
+
 import CollapsibleTableRow from './CollapsibleTableRow'
 
+CollapsibleTable.propTypes = {
+  dataSource: PropTypes.array,
+}
 export default function CollapsibleTable({ dataSource }) {
   return (
     <TableContainer sx={{ mx: 0.5 }}>

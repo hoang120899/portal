@@ -18,9 +18,15 @@ KanbanQuickMenu.propTypes = {
   laneId: PropTypes.string,
   cardId: PropTypes.string,
   Labels: PropTypes.array,
+  hasAddPermission: PropTypes.bool,
 }
 
-export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
+export default function KanbanQuickMenu({
+  laneId,
+  cardId,
+  Labels = [],
+  hasAddPermission,
+}) {
   const [actions, setActions] = useState('actions')
   const { translate } = useLocales()
 
@@ -44,13 +50,15 @@ export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
       default:
         return (
           <>
-            <MenuItem
-              onClick={() => {
-                setActions('move')
-              }}
-            >
-              {translate('pages.board.moveCard')}
-            </MenuItem>
+            {hasAddPermission && (
+              <MenuItem
+                onClick={() => {
+                  setActions('move')
+                }}
+              >
+                {translate('pages.board.moveCard')}
+              </MenuItem>
+            )}
             <MenuItem
               onClick={() => {
                 setActions('storage')
@@ -58,13 +66,15 @@ export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
             >
               {translate('pages.board.storageCard')}
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setActions('label')
-              }}
-            >
-              {translate('pages.board.createLabel')}
-            </MenuItem>
+            {hasAddPermission && (
+              <MenuItem
+                onClick={() => {
+                  setActions('label')
+                }}
+              >
+                {translate('pages.board.createLabel')}
+              </MenuItem>
+            )}
           </>
         )
     }
