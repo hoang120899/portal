@@ -15,3 +15,13 @@ export const TABLE_DESKTOP_HEAD = [
 ]
 
 export const TABLE_MOBILE_HEAD = [{ id: 'name', label: 'Name', align: 'left' }]
+
+export const CALENDAR_CONFIG = {
+  initialDate: new Date(),
+  rerenderDelay: 10,
+  initialView: 'dayGridMonth',
+  dayMaxEventRows: 1,
+  headerToolbar: false,
+  allDayMaintainDuration: true,
+  eventResizableFromStart: true,
+}

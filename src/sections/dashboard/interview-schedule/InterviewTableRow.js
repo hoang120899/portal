@@ -1,17 +1,28 @@
 // @mui
 import { Link, TableCell, TableRow, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
 // components
 import Label from '@/components/Label'
 import TextMaxLine from '@/components/TextMaxLine'
+import palette from '@/theme/palette'
 
 InterviewTableRow.propTypes = {
   row: PropTypes.object,
+  onOpenInterviewDetail: PropTypes.func,
 }
 
-export default function InterviewTableRow({ row = {} }) {
+const TypographyRootStyle = styled('div')(() => ({
+  '&:hover .MuiTypography-root': {
+    color: `${palette.light.warning.main}`,
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}))
+
+export default function InterviewTableRow({ row = {}, onOpenInterviewDetail }) {
   const {
     linkZoom = '',
     timeInterviewStr = '',
@@ -23,12 +34,15 @@ export default function InterviewTableRow({ row = {} }) {
   return (
     <TableRow hover>
       <TableCell align='left'>
-        <Typography
-          variant='subtitle2'
-          sx={{ cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          <TextMaxLine>{candidateName}</TextMaxLine>
-        </Typography>
+        <TypographyRootStyle>
+          <Typography
+            variant='subtitle2'
+            sx={{ cursor: 'pointer', fontWeight: 'bold' }}
+            onClick={onOpenInterviewDetail.bind(null, row)}
+          >
+            <TextMaxLine>{candidateName}</TextMaxLine>
+          </Typography>
+        </TypographyRootStyle>
       </TableCell>
 
       <TableCell align='left'>

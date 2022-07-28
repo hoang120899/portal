@@ -11,6 +11,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
@@ -18,12 +19,25 @@ import PropTypes from 'prop-types'
 import Iconify from '@/components/Iconify'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import palette from '@/theme/palette'
+
+const TypographyRootStyle = styled('div')(() => ({
+  '&:hover .MuiTypography-root': {
+    color: `${palette.light.warning.main}`,
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
+}))
 
 InterviewCollapsibleTableRow.propTypes = {
   row: PropTypes.object,
+  onOpenInterviewDetail: PropTypes.func,
 }
 
-export default function InterviewCollapsibleTableRow({ row }) {
+export default function InterviewCollapsibleTableRow({
+  row,
+  onOpenInterviewDetail,
+}) {
   const { translate } = useLocales()
   const {
     linkZoom = '',
@@ -52,12 +66,15 @@ export default function InterviewCollapsibleTableRow({ row }) {
               }
             />
           </IconButton>
-          <Typography
-            variant='subtitle2'
-            sx={{ cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            {candidateName}
-          </Typography>
+          <TypographyRootStyle>
+            <Typography
+              variant='subtitle2'
+              sx={{ cursor: 'pointer', fontWeight: 'bold' }}
+              onClick={onOpenInterviewDetail.bind(null, row)}
+            >
+              {candidateName}
+            </Typography>
+          </TypographyRootStyle>
         </TableCell>
       </TableRow>
       <TableRow>

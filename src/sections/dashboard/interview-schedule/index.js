@@ -25,8 +25,13 @@ import { fDate, fEndOfMonth, fStartOfMonth } from '@/utils/formatTime'
 import CalendarStyle from './CalendarStyle'
 import CalendarToolbar from './CalendarToolbar'
 import InterviewCollapsibleTableRow from './InterviewCollapsibleTableRow'
+import InterviewDetail from './InterviewDetail'
 import InterviewTableRow from './InterviewTableRow'
-import { TABLE_DESKTOP_HEAD, TABLE_MOBILE_HEAD } from './config'
+import {
+  CALENDAR_CONFIG,
+  TABLE_DESKTOP_HEAD,
+  TABLE_MOBILE_HEAD,
+} from './config'
 import { useGetAdminCalendarInterviewQuery } from './interviewScheduleSlice'
 
 InterviewSchedule.propTypes = {
@@ -40,8 +45,14 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
   const isMobileScreen = useResponsive('down', 'sm')
   const calendarRef = useRef(null)
   const { toggle: open, onOpen, onClose } = useToggle()
-  const [date, setDate] = useState(new Date())
+  const {
+    toggle: openDetail,
+    onOpen: onOpenDetail,
+    onClose: onCloseDetail,
+  } = useToggle()
+  const [date, setDate] = useState(CALENDAR_CONFIG.initialDate)
   const [selectedInterviews, setSelectedInterviews] = useState([])
+  const [interviewDetail, setInterviewDetail] = useState({})
   const columns = isMobileScreen ? TABLE_MOBILE_HEAD : TABLE_DESKTOP_HEAD
 
   const startDate = useMemo(
@@ -122,13 +133,40 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
     onClose()
   }
 
+  const handleOpenInterviewDetail = useCallback(
+    (detail) => {
+      onClose()
+      setInterviewDetail(detail)
+      onOpenDetail()
+    },
+    [setInterviewDetail, onOpenDetail, onClose]
+  )
+
+  const handleCloseInterviewDetail = () => {
+    setInterviewDetail({})
+    onCloseDetail()
+    onOpen()
+  }
+
   const tableRowComp = useCallback(
     (row, index) => {
       if (isMobileScreen)
-        return <InterviewCollapsibleTableRow key={row?.id || index} row={row} />
-      return <InterviewTableRow key={row?.id || index} row={row} />
+        return (
+          <InterviewCollapsibleTableRow
+            key={row?.id || index}
+            row={row}
+            onOpenInterviewDetail={handleOpenInterviewDetail}
+          />
+        )
+      return (
+        <InterviewTableRow
+          key={row?.id || index}
+          row={row}
+          onOpenInterviewDetail={handleOpenInterviewDetail}
+        />
+      )
     },
-    [isMobileScreen]
+    [isMobileScreen, handleOpenInterviewDetail]
   )
   return (
     <Card {...other}>
@@ -148,18 +186,18 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
           selectable
           events={events}
           ref={calendarRef}
-          rerenderDelay={10}
+          rerenderDelay={CALENDAR_CONFIG.rerenderDelay}
           initialDate={date}
-          initialView={'dayGridMonth'}
-          dayMaxEventRows={3}
+          initialView={CALENDAR_CONFIG.initialView}
+          dayMaxEventRows={CALENDAR_CONFIG.dayMaxEventRows}
+          headerToolbar={CALENDAR_CONFIG.headerToolbar}
+          allDayMaintainDuration={CALENDAR_CONFIG.allDayMaintainDuration}
+          eventResizableFromStart={CALENDAR_CONFIG.eventResizableFromStart}
           eventDisplay='block'
-          headerToolbar={false}
-          allDayMaintainDuration
-          eventResizableFromStart
           select={handleSelectRange}
           eventClick={handleSelectEvent}
           plugins={[dayGridPlugin]}
-          height='auto'
+          // height='auto'
         />
       </CalendarStyle>
 
@@ -177,6 +215,28 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
             variant='outlined'
             color='inherit'
             onClick={handleCloseDialog}
+          >
+            {translate('Cancel')}
+          </Button>
+        </DialogActions>
+      </DialogAnimate>
+
+      <DialogAnimate
+        open={openDetail}
+        onClose={handleCloseInterviewDetail}
+        maxWidth='md'
+      >
+        <DialogTitle sx={{ mb: 1 }}>
+          {translate('Interview Detail')}
+        </DialogTitle>
+
+        <InterviewDetail interviewDetail={interviewDetail} />
+
+        <DialogActions>
+          <Button
+            variant='outlined'
+            color='inherit'
+            onClick={handleCloseInterviewDetail}
           >
             {translate('Cancel')}
           </Button>
