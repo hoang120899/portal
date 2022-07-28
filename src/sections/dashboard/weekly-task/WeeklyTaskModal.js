@@ -24,7 +24,7 @@ import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
 import {
   FormProvider,
-  RHFBasicSelect,
+  RHFAutocomplete, // RHFBasicSelect,
   RHFDatePicker,
   RHFTextField,
 } from '@/components/hook-form'
@@ -39,8 +39,7 @@ import {
 import { HANDLE_TYPE } from './config'
 import {
   useCreateWeeklyTaskMutation,
-  useGetTaskUserListQuery,
-  useUpdateWeeklyTaskMutation,
+  useGetTaskUserListQuery, // useUpdateWeeklyTaskMutation,
 } from './weeklyTaskSlice'
 
 WeeklyTaskModal.propTypes = {
@@ -77,7 +76,7 @@ export default function WeeklyTaskModal({
   })
   const { list: listUsers = [] } = data?.data || {}
 
-  const [updateWeeklyTask] = useUpdateWeeklyTaskMutation()
+  // const [updateWeeklyTask] = useUpdateWeeklyTaskMutation()
   const [createWeeklyTask] = useCreateWeeklyTaskMutation()
 
   const listUserOptions = useMemo(() => {
@@ -96,7 +95,7 @@ export default function WeeklyTaskModal({
   }, [endDate])
 
   const WeeklyTaskFormSchema = Yup.object().shape({
-    userId: Yup.string().required('Name is required'),
+    userId: Yup.string().required('Name is required').typeError(''),
     content: Yup.array().of(
       Yup.object().shape({
         content: Yup.string().required('').typeError(''),
@@ -124,7 +123,7 @@ export default function WeeklyTaskModal({
     resolver: yupResolver(WeeklyTaskFormSchema),
     defaultValues: isEditScreen ? defaultValuesEdit : defaultValuesAdd,
   })
-  const { handleSubmit, reset, control, watch } = methods
+  const { handleSubmit, reset, control, watch, setValue } = methods
   const { remove } = useFieldArray({
     control,
     name: 'content',
@@ -145,19 +144,20 @@ export default function WeeklyTaskModal({
   const onSubmit = async (data) => {
     try {
       if (isEditScreen) {
-        data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
-        data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
-        delete data.id
-        delete data.user
-        const payload = {
-          id: String(task?.id),
-          body: data,
-        }
-        setContentTask(data?.content)
-        await updateWeeklyTask(payload)
-        enqueueSnackbar(translate('Update task success!'))
-        onClose()
-        setIsReloading(!isReloading)
+        // console.log(data)
+        // data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
+        // data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
+        // delete data.id
+        // delete data.user
+        // const payload = {
+        //   id: String(task?.id),
+        //   body: data,
+        // }
+        // setContentTask(data?.content)
+        // await updateWeeklyTask(payload)
+        // enqueueSnackbar(translate('Update task success!'))
+        // onClose()
+        // setIsReloading(!isReloading)
       } else {
         data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
         data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
@@ -212,58 +212,77 @@ export default function WeeklyTaskModal({
         <Divider />
         <Box>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={{ sm: 3, xs: 1.5 }}>
-              <Grid item sm={3} xs={12} alignSelf='center'>
-                <Typography>
-                  Deadline<span style={styleAsterisk}>*</span>
-                </Typography>
-              </Grid>
-
-              <Grid item sm={9} xs={12}>
-                <Stack direction='row' columnGap={5}>
-                  <Stack spacing={0.5}>
-                    <Typography>From</Typography>
-                    <RHFDatePicker name='startDate' />
-                  </Stack>
-
-                  <Stack spacing={0.5}>
-                    <Typography>To</Typography>
-                    <RHFDatePicker name='endDate' />
-                  </Stack>
-                </Stack>
-              </Grid>
-
-              <Grid item sm={3} xs={12} alignSelf='center'>
-                <Typography>
-                  Name<span style={styleAsterisk}>*</span>
-                </Typography>
-              </Grid>
-
-              <Grid item sm={9} xs={12}>
-                <RHFBasicSelect
-                  label={'Name'}
-                  name='userId'
-                  options={listUserOptions}
-                />
-              </Grid>
-
-              <Grid item sm={3} xs={12}>
-                <Stack direction='row' columnGap={2} alignItems='center'>
+            <Scrollbar sx={{ maxHeight: '380px' }}>
+              <Grid container spacing={{ sm: 3, xs: 1.5 }}>
+                <Grid item sm={3} xs={12} alignSelf='center'>
                   <Typography>
-                    Task<span style={styleAsterisk}>*</span>
+                    Deadline<span style={styleAsterisk}>*</span>
                   </Typography>
-                  <IconButtonAnimate onClick={handleAddContentTask}>
-                    <Iconify
-                      icon={'akar-icons:circle-plus'}
-                      width={20}
-                      height={20}
-                    />
-                  </IconButtonAnimate>
-                </Stack>
-              </Grid>
+                </Grid>
 
-              <Grid item sm={9} xs={12}>
-                <Scrollbar sx={{ maxHeight: { sm: '200px', xs: '100px' } }}>
+                <Grid item sm={9} xs={12}>
+                  <Stack direction='row' columnGap={5}>
+                    <Stack spacing={0.5}>
+                      <Typography>From</Typography>
+                      <RHFDatePicker name='startDate' />
+                    </Stack>
+
+                    <Stack spacing={0.5}>
+                      <Typography>To</Typography>
+                      <RHFDatePicker name='endDate' />
+                    </Stack>
+                  </Stack>
+                </Grid>
+
+                <Grid item sm={3} xs={12} alignSelf='center'>
+                  <Typography>
+                    Name<span style={styleAsterisk}>*</span>
+                  </Typography>
+                </Grid>
+
+                <Grid item sm={9} xs={12}>
+                  <RHFAutocomplete
+                    AutocompleteProps={{
+                      size: 'small',
+                      renderOption: (props, option) => (
+                        <Box key={option.key} component='li' {...props}>
+                          {option.label}
+                        </Box>
+                      ),
+                      onChange: (field) => (event, newValue) => {
+                        field.onChange(newValue)
+                        if (newValue) {
+                          setValue('userId', newValue.value)
+                        }
+                      },
+                    }}
+                    label='Name'
+                    name='userId'
+                    options={listUserOptions}
+                  />
+                  {/* <RHFBasicSelect
+                    label={'Name'}
+                    name='userId'
+                    options={listUserOptions}
+                  /> */}
+                </Grid>
+
+                <Grid item sm={3} xs={12}>
+                  <Stack direction='row' columnGap={2} alignItems='center'>
+                    <Typography>
+                      Task<span style={styleAsterisk}>*</span>
+                    </Typography>
+                    <IconButtonAnimate onClick={handleAddContentTask}>
+                      <Iconify
+                        icon={'akar-icons:circle-plus'}
+                        width={20}
+                        height={20}
+                      />
+                    </IconButtonAnimate>
+                  </Stack>
+                </Grid>
+
+                <Grid item sm={9} xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={5}>
                       <Typography>Task content</Typography>
@@ -315,9 +334,9 @@ export default function WeeklyTaskModal({
                       </React.Fragment>
                     ))}
                   </Grid>
-                </Scrollbar>
+                </Grid>
               </Grid>
-            </Grid>
+            </Scrollbar>
 
             {watch('content') && (
               <Box sx={{ mt: 1.5 }}>

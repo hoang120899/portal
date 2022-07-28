@@ -105,22 +105,15 @@ export default function WeeklyTask({ title, subheader, ...other }) {
     defaultValues,
   })
 
-  const {
-    handleSubmit,
-    // formState: { errors, isSubmitting },
-  } = methods
+  const { handleSubmit } = methods
 
   const onSubmit = async (data) => {
     try {
       payload.current = {
         ...payload.current,
         body: {
-          startDate: data
-            ? new Date(data?.startDate).toISOString()
-            : defaultValues.startDate,
-          endDate: data
-            ? new Date(data?.endDate).toISOString()
-            : defaultValues.endDate,
+          startDate: data ? new Date(data?.startDate) : defaultValues.startDate,
+          endDate: data ? new Date(data?.endDate) : defaultValues.endDate,
         },
       }
       const res = await getAllWeeklyTasks(payload.current).unwrap()

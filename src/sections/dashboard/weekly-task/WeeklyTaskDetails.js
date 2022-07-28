@@ -5,6 +5,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import PropTypes from 'prop-types'
 
 import Scrollbar from '@/components/Scrollbar'
+import { DOMAIN_SERVER_API } from '@/config'
 
 const RootStyle = styled(Box)(() => ({
   display: 'flex',
@@ -48,7 +49,7 @@ export default function WeeklyTaskDetails({
           return (
             <Stack direction='row' alignItems='center' key={index}>
               <Avatar
-                src={`${item?.user?.linkAvatar}`}
+                src={`${DOMAIN_SERVER_API}/${item?.user?.linkAvatar}`}
                 sx={{ width: 48, height: 48 }}
               />
 
