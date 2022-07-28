@@ -145,15 +145,8 @@ export default function WeeklyTaskModal({
   const onSubmit = async (data) => {
     try {
       if (isEditScreen) {
-        data.startDate = format(
-          new Date(fDateCalendar(data.startDate)),
-          'yyyy-MM-dd'
-        )
-        data.endDate = format(
-          new Date(fDateCalendar(data.endDate)),
-          'yyyy-MM-dd'
-        )
-
+        data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
+        data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
         delete data.id
         delete data.user
         const payload = {
@@ -166,14 +159,8 @@ export default function WeeklyTaskModal({
         onClose()
         setIsReloading(!isReloading)
       } else {
-        data.startDate = format(
-          new Date(fDateCalendar(data.startDate)),
-          'yyyy-MM-dd'
-        )
-        data.endDate = format(
-          new Date(fDateCalendar(data.endDate)),
-          'yyyy-MM-dd'
-        )
+        data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
+        data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
         const payload = {
           body: data,
         }
