@@ -1,5 +1,8 @@
 import { apiSlice } from '@/redux/api/apiSlice'
-import { API_LIST_JOBS_PROFILE } from '@/routes/api'
+import {
+  API_LIST_JOBS_PROFILE,
+  API_MEMBER_ACTIVITIES_USER_INFO,
+} from '@/routes/api'
 
 export const listJobSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,7 +12,13 @@ export const listJobSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getUserProfile: builder.query({
+      query: ({ userId = '' }) => ({
+        url: `${API_MEMBER_ACTIVITIES_USER_INFO}/${userId}`,
+        method: 'GET',
+      }),
+    }),
   }),
 })
 
-export const { useGetListJobQuery } = listJobSlice
+export const { useGetListJobQuery, useGetUserProfileQuery } = listJobSlice

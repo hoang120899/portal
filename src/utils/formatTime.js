@@ -31,14 +31,11 @@ export function fToNow(date) {
 }
 
 export function fDateCalendar(date) {
+  // use with date input format dd/MM/yyyy
   try {
-    const mmDate = new Date(date)
-    if (mmDate instanceof Date && !isNaN(mmDate)) return mmDate
-
     const convertDate = date?.split('/') || []
     if (convertDate.length < 3) return new Date()
-
-    return new Date(`${convertDate[2]}/${convertDate[1]}/${convertDate[0]}`)
+    return new Date(`${convertDate[1]}/${convertDate[0]}/${convertDate[2]}`)
   } catch (error) {
     return new Date()
   }

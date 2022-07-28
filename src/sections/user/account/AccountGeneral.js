@@ -1,7 +1,18 @@
 import { useCallback } from 'react'
+import { useEffect } from 'react'
+
+import { useRouter } from 'next/router'
 
 // @mui
-import { Box, Card, Grid, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Card,
+  CircularProgress,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -15,44 +26,44 @@ import {
   RHFTextField,
   RHFUploadAvatar,
 } from '@/components/hook-form'
-import { MAX_SIZE_FILEIMAGE } from '@/config'
+import { DOMAIN_SERVER_API, MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
-import useResponsive from '@/hooks/useResponsive'
 import { useDispatch } from '@/redux/store'
 // utils
 import { fData } from '@/utils/formatNumber'
 
-import JobList from './profile'
+import { useGetUserProfileQuery } from './jobSlice'
+import JobList from './list'
 import { fetchUploadAPI } from './uploadAvatarSlice'
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar()
-
+  const router = useRouter()
   const { user } = useAuth()
+  const { data, isLoading, isFetching } = useGetUserProfileQuery({
+    userId: router?.query?.id,
+  })
+  const { user: newUser = {} } = data?.data || {}
+  const { name: userName, email, Role, Team, linkAvatar } = newUser || {}
+
+  const isNewUserProfile = router.query.id !== user.userId
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('Name is required'),
   })
 
-  const defaultValues = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-    team: user?.team || '',
-    role: user?.role || '',
-    photoURL: user?.photoURL || '',
-    phoneNumber: user?.phoneNumber || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
-  }
+  useEffect(() => {
+    setValue('displayName', userName || '')
+    setValue('email', email || '')
+    setValue('role', Role?.name || '')
+    setValue('team', Team?.name || '')
+    setValue('photoURL', linkAvatar || '')
+  }, [setValue, userName, email, Role, Team, linkAvatar])
+
   const dispatch = useDispatch()
   const methods = useForm({
     resolver: yupResolver(UpdateUserSchema),
-    defaultValues,
   })
 
   const { setValue, handleSubmit } = methods
@@ -65,7 +76,6 @@ export default function AccountGeneral() {
       // TODO
     }
   }
-  const isMobile = useResponsive('down', 600, 'md')
   const handleDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0]
@@ -95,62 +105,136 @@ export default function AccountGeneral() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ py: 10, px: 3, textAlign: 'center' }} height={350}>
-            <RHFUploadAvatar
-              name='photoURL'
-              accept='image/*'
-              maxSize={3145728}
-              onDrop={handleDrop}
-              helperText={
-                <Typography
-                  variant='caption'
-                  sx={{
-                    mt: 2,
-                    mx: 'auto',
-                    display: 'block',
-                    textAlign: 'center',
-                    color: 'text.secondary',
-                  }}
-                >
-                  Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
-                </Typography>
-              }
-            />
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{ maxHeight: { sm: '300px', xs: '420px' } }}
+        >
+          <Card
+            sx={{
+              py: 10,
+              px: 3,
+              textAlign: 'center',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            height={350}
+          >
+            {isNewUserProfile ? (
+              <Avatar
+                src={`${DOMAIN_SERVER_API}/${linkAvatar}`}
+                sx={{ width: '120px', height: '120px' }}
+              />
+            ) : (
+              <RHFUploadAvatar
+                name='photoURL'
+                accept='image/*'
+                maxSize={3145728}
+                onDrop={handleDrop}
+                disabled={isNewUserProfile}
+                helperText={
+                  <Typography
+                    variant='caption'
+                    sx={{
+                      mt: 2,
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Allowed *.jpeg, *.jpg, *.png, *.gif
+                    <br /> max size of {fData(3145728)}
+                  </Typography>
+                }
+              />
+            )}
           </Card>
         </Grid>
-        <Grid item xs={12} md={8} height={350}>
-          <Card sx={{ py: 15, marginTop: 0, px: 3, textAlign: 'center' }}>
-            <Box
-              sx={{
-                display: 'grid',
-                rowGap: 5,
-                columnGap: 2,
-                gridTemplateColumns: {
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(2, 1fr)',
-                },
-              }}
-            >
-              <RHFTextField name='displayName' label='Name' disabled />
-              <RHFTextField name='email' label='Email Address' disabled />
+        <Grid
+          item
+          xs={12}
+          md={8}
+          sx={{ maxHeight: { sm: '300px', xs: '420px' } }}
+        >
+          <Card
+            sx={{
+              py: 15,
+              marginTop: 0,
+              px: 3,
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {isLoading || isFetching ? (
+              <Box sx={{ width: '100%' }}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'grid',
+                  rowGap: 3,
+                  columnGap: 2,
+                  gridTemplateColumns: {
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(2, 1fr)',
+                  },
+                }}
+              >
+                <Stack alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Name
+                  </Typography>
+                  <RHFTextField name='displayName' disabled />
+                </Stack>
 
-              <RHFTextField name='role' label='Role' disabled />
-              <RHFTextField name='team' label='Team' disabled />
-            </Box>
+                <Stack alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Email Address
+                  </Typography>
+                  <RHFTextField name='email' disabled />
+                </Stack>
+
+                <Stack alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Role
+                  </Typography>
+
+                  <RHFTextField name='role' disabled />
+                </Stack>
+
+                <Stack alignItems={'flex-start'}>
+                  <Typography
+                    variant='body2'
+                    sx={{ pl: 1, color: 'text.secondary' }}
+                  >
+                    Team
+                  </Typography>
+
+                  <RHFTextField name='team' disabled />
+                </Stack>
+              </Box>
+            )}
           </Card>
         </Grid>
       </Grid>
-      {isMobile ? (
-        <Grid item xs={10} sx={{ mx: 0, marginTop: 25 }}>
-          <JobList />
-        </Grid>
-      ) : (
-        <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
-          <JobList />
-        </Grid>
-      )}
+      <Grid item xs={10} sx={{ mx: 0, marginTop: 5 }}>
+        <JobList />
+      </Grid>
     </FormProvider>
   )
 }

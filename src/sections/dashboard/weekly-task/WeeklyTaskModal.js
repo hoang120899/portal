@@ -31,7 +31,6 @@ import {
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 import {
-  fDate,
   fDateCalendar,
   fDateEndOfWeek,
   fDateStartOfWeek,
@@ -88,15 +87,11 @@ export default function WeeklyTaskModal({
 
   const startDateFormat = useMemo(() => {
     if (!startDate) return fDateStartOfWeek(new Date())
-    const newDate = startDate.split('/')
-    if (Number(newDate[0]) <= 12) return fDate(startDate)
     return fDateCalendar(startDate)
   }, [startDate])
 
   const endDateFormat = useMemo(() => {
     if (!endDate) return fDateEndOfWeek(new Date())
-    const newDate = endDate.split('/')
-    if (Number(newDate[0]) <= 12) return fDate(endDate)
     return fDateCalendar(endDate)
   }, [endDate])
 
@@ -146,9 +141,6 @@ export default function WeeklyTaskModal({
       return arr.reduce(reducer, 0)
     }
   }
-
-  // console.log(calcTotal(getValues('content'), 'target'))
-  // console.log(getValues('content'))
 
   const onSubmit = async (data) => {
     try {

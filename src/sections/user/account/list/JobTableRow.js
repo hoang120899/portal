@@ -2,15 +2,20 @@ import { TableCell, TableRow, Typography, useTheme } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
-import Label from '@/components/Label'
+import useLocales from '@/hooks/useLocales'
+import {
+  DEFAULT_STATUS_COLOR,
+  STATUS_COLOR,
+} from '@/sections/dashboard/active-job/config'
 
-// components
-
-JobTaskTableRow.propTypes = {
+JobTableRow.propTypes = {
   row: PropTypes.object,
 }
-export default function JobTaskTableRow({ row }) {
+export default function JobTableRow({ row }) {
+  const { translate } = useLocales()
   const theme = useTheme()
+  const color = STATUS_COLOR[row?.jobStatus] || DEFAULT_STATUS_COLOR
+
   return (
     <TableRow hover>
       <TableCell align='left'>
@@ -22,13 +27,13 @@ export default function JobTaskTableRow({ row }) {
           {row.type}
         </Typography>
       </TableCell>
-      <TableCell align='left' width={160}>
+      <TableCell align='left' width={200}>
         <Typography variant='subtitle1'>{row?.salary}</Typography>
         <Typography
           variant='subtitle2'
           sx={{ px: 1, paddingLeft: 0, color: '#b5b5c3', fontSize: 13 }}
         >
-          Salary
+          {translate('Salary')}
         </Typography>
       </TableCell>
       <TableCell align='left' width={160}>
@@ -41,13 +46,13 @@ export default function JobTaskTableRow({ row }) {
         </Typography>
       </TableCell>
       <TableCell align='left'>
-        <Label
+        <Typography
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={(status === 'banned' && 'error') || 'success'}
+          color={color}
           sx={{ textTransform: 'capitalize' }}
         >
           {row.jobStatus}
-        </Label>
+        </Typography>
       </TableCell>
     </TableRow>
   )

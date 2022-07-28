@@ -22,7 +22,10 @@ export const PATH_AUTH = {
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
   dashboard: path(ROOTS_DASHBOARD, 'dashboard'),
-  profile: path(ROOTS_DASHBOARD, 'profile/'),
+  profile: {
+    root: path(ROOTS_DASHBOARD, 'profile/'),
+    view: (id) => path(ROOTS_DASHBOARD, `profile/${id}`),
+  },
   notification: path(ROOTS_DASHBOARD, 'notification'),
   task: {
     root: path(ROOTS_DASHBOARD, 'task'),

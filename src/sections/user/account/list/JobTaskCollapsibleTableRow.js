@@ -13,18 +13,32 @@ import {
 } from '@mui/material'
 
 import { useTheme } from '@emotion/react'
+import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
-import Label from '@/components/Label'
+import TextMaxLine from '@/components/TextMaxLine'
+import useLocales from '@/hooks/useLocales'
+import {
+  DEFAULT_STATUS_COLOR,
+  STATUS_COLOR,
+} from '@/sections/dashboard/active-job/config'
 
-export default function JobTaskTableRowMobile({ row }) {
+JobTaskCollapsibleTableRow.propTypes = {
+  row: PropTypes.object,
+}
+
+export default function JobTaskCollapsibleTableRow({ row }) {
   const theme = useTheme()
+  const { translate } = useLocales()
+  const color = STATUS_COLOR[row?.jobStatus] || DEFAULT_STATUS_COLOR
   const [open, setOpen] = useState(true)
   return (
     <>
       <TableRow>
-        <TableRow sx={{ display: 'flex', marginTop: 2 }}>
+        <TableCell
+          sx={{ display: 'flex', marginTop: 2, px: 2, alignItems: 'center' }}
+        >
           <IconButton
             size='small'
             color={open ? 'primary' : 'default'}
@@ -38,20 +52,11 @@ export default function JobTaskTableRowMobile({ row }) {
               }
             />
           </IconButton>
-          <TableRow>
-            <Typography
-              variant='inherit'
-              sx={{
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                overflow: 'hidden',
-                msTextOverflow: 'ellipsis',
-              }}
-            >
-              {row.title}
-            </Typography>
-          </TableRow>
-        </TableRow>
+
+          <TextMaxLine variant='subtitle2' line={2}>
+            {row.title}
+          </TextMaxLine>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell sx={{ py: 0 }} colSpan={6}>
@@ -78,7 +83,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Salary
+                        {translate('Salary')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -96,7 +101,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Candidate
+                        {translate('Candidate')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -116,7 +121,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Type
+                        {translate('Type')}
                       </Typography>
                     </TableCell>
                     <TableCell>
@@ -134,19 +139,19 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Job Status
+                        {translate('Job Status')}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Label
+                      <Typography
                         variant={
                           theme.palette.mode === 'light' ? 'ghost' : 'filled'
                         }
-                        color={(status === 'banned' && 'error') || 'success'}
+                        color={color}
                         sx={{ textTransform: 'capitalize' }}
                       >
                         {row.jobStatus}
-                      </Label>
+                      </Typography>
                     </TableCell>
                   </TableRow>
 
@@ -161,7 +166,7 @@ export default function JobTaskTableRowMobile({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        View Detail
+                        {translate('View Detail')}
                       </Typography>
                     </TableCell>
                     <TableCell>
