@@ -1,15 +1,23 @@
-// https://react-pdf-viewer.dev/examples/preview-a-pdf-file-from-base-64/
+// https://stackoverflow.com/questions/11415665/save-base64-string-as-pdf-at-client-side-with-javascript
 export const base64toBlob = (data) => {
-  // Cut the prefix `data:application/pdf;base64` from the raw base 64
-  const base64WithoutPrefix = data.substr('data:application/pdf;base64,'.length)
+  const sliceSize = 512
+  data = data.replace(/^[^,]+,/, '')
+  data = data.replace(/\s/g, '')
+  const byteCharacters = window.atob(data)
+  const byteArrays = []
 
-  const bytes = atob(base64WithoutPrefix)
-  let length = bytes.length
-  let out = new Uint8Array(length)
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize)
 
-  while (length--) {
-    out[length] = bytes.charCodeAt(length)
+    const byteNumbers = new Array(slice.length)
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i)
+    }
+
+    const byteArray = new Uint8Array(byteNumbers)
+
+    byteArrays.push(byteArray)
   }
 
-  return new Blob([out], { type: 'application/pdf' })
+  return new Blob(byteArrays, { type: 'application/pdf' })
 }

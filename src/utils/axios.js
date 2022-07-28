@@ -6,7 +6,6 @@ import { handleRefreshToken } from './jwt'
 
 const axiosInstance = axios.create({
   baseURL: DOMAIN_SERVER_API,
-  timeout: 10000,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',
