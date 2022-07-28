@@ -68,21 +68,37 @@ export default function CandidateModalDetail({
   const dispatch = useDispatch()
   useEffect(() => {
     if (!cv) return
-    const data = {
-      linkDrive: cv,
-    }
-    dispatch(convertDriverToBase64(data))
+    dispatch(convertDriverToBase64({ linkDrive: cv }))
   }, [cv, dispatch])
   useEffect(() => {
-    setValue(DETAIL_FIELD.NAME, name)
-    setValue(DETAIL_FIELD.EMAIl, email)
+    setValue(DETAIL_FIELD.NAME, name || '')
+    setValue(DETAIL_FIELD.EMAIl, email || '')
     setValue(DETAIL_FIELD.APPROACH_DATE, date)
-    setValue(DETAIL_FIELD.PHONE, phone)
+    setValue(DETAIL_FIELD.PHONE, phone || '')
     setValue(DETAIL_FIELD.LINK_CV, jobs?.[0]?.cv)
-  }, [setValue, name, email, phone, date, jobs])
+    setValue(DETAIL_FIELD.CLIENT_ID, jobs?.[0]?.value)
+    setValue(DETAIL_FIELD.LOCATION, jobs?.[0]?.location)
+    setValue(DETAIL_FIELD.POSITION, jobs?.[0]?.candidateJob?.position)
+    setValue(DETAIL_FIELD.NOT_APPROACH, jobs?.[0]?.candidateJob?.noteApproach)
+  }, [setValue, name, email, cv, phone, date, jobs])
+  useEffect(() => {
+    setValue(DETAIL_FIELD.JOB_NAME, jobs?.[0]?.candidateJobId || '')
+  }, [jobs, setValue])
 
   const handleOpenPDF = () => {
     setIsOpenPDF(true)
+  }
+  const handleChangeSelectJobs = (event) => {
+    const value = event.target.value
+    const job = jobs?.find((item) => item.candidateJobId === value)
+    if (job) {
+      setValue(DETAIL_FIELD.JOB_NAME, job?.candidateJobId || '')
+      setValue(DETAIL_FIELD.CLIENT_ID, job?.value || '')
+      setValue(DETAIL_FIELD.LOCATION, job?.location || '')
+      setValue(DETAIL_FIELD.POSITION, job?.candidateJob?.position || '')
+      setValue(DETAIL_FIELD.LINK_CV, job?.cv || '')
+      setValue(DETAIL_FIELD.NOT_APPROACH, job?.candidateJob?.noteApproach || '')
+    }
   }
   return (
     <Drawer
@@ -118,9 +134,8 @@ export default function CandidateModalDetail({
                   name={DETAIL_FIELD.JOB_NAME}
                   label={'Job Name'}
                   options={listJobs}
-                  defaultValue={{
-                    label: listJobs?.ơ,
-                  }}
+                  onChange={handleChangeSelectJobs}
+                  defaultValue={listJobs?.[0]?.value}
                 />
               </Stack>
             </Grid>
@@ -232,7 +247,7 @@ export default function CandidateModalDetail({
             </Grid>
           </Grid>
           <Grid item xs={12} mt={3}>
-            {cv ? (
+            {cv && base64 ? (
               <DialogActions>
                 <LoadingButton
                   variant='contained'

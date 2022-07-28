@@ -22,9 +22,13 @@ import useLocales from '@/hooks/useLocales'
 
 CandidatesCollapsibleTableRow.propTypes = {
   row: PropTypes.object,
+  handleGetCandidateDetail: PropTypes.func,
 }
 
-export default function CandidatesCollapsibleTableRow({ row }) {
+export default function CandidatesCollapsibleTableRow({
+  row,
+  handleGetCandidateDetail,
+}) {
   const { translate } = useLocales()
   const { name = '', phone = '', date = [], titleJob = [] } = row
 
@@ -57,7 +61,19 @@ export default function CandidatesCollapsibleTableRow({ row }) {
               }
             />
           </IconButton>
-          <Typography variant='subtitle2'>{name}</Typography>
+          <Typography
+            onClick={handleGetCandidateDetail}
+            variant='subtitle2'
+            sx={{
+              color: '#637381',
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#ffe16a',
+              },
+            }}
+          >
+            {name}
+          </Typography>
         </TableCell>
       </TableRow>
 
