@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
+import TextMaxLine from '@/components/TextMaxLine'
 import {
   DEFAULT_STATUS_COLOR,
   STATUS_COLOR,
@@ -48,17 +49,9 @@ export default function JobTaskTableRowMobile({ row }) {
             />
           </IconButton>
 
-          <Typography
-            variant='inherit'
-            sx={{
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              overflow: 'hidden',
-              msTextOverflow: 'ellipsis',
-            }}
-          >
+          <TextMaxLine variant='subtitle2' line={2}>
             {row.title}
-          </Typography>
+          </TextMaxLine>
         </TableCell>
       </TableRow>
       <TableRow>

@@ -26,7 +26,7 @@ import {
   RHFTextField,
   RHFUploadAvatar,
 } from '@/components/hook-form'
-import { MAX_SIZE_FILEIMAGE } from '@/config'
+import { DOMAIN_SERVER_API, MAX_SIZE_FILEIMAGE } from '@/config'
 // hooks
 import useAuth from '@/hooks/useAuth'
 import useResponsive from '@/hooks/useResponsive'
@@ -140,7 +140,7 @@ export default function AccountGeneral() {
           >
             {isNewUserProfile ? (
               <Avatar
-                src={`${process.env.NEXT_PUBLIC_HOST_API_KEY}/${newUser?.linkAvatar}`}
+                src={`${DOMAIN_SERVER_API}/${newUser?.linkAvatar}`}
                 sx={{ width: '120px', height: '120px' }}
               />
             ) : (
@@ -202,7 +202,7 @@ export default function AccountGeneral() {
                   },
                 }}
               >
-                <Stack display={'flex'} alignItems={'flex-start'}>
+                <Stack alignItems={'flex-start'}>
                   <Typography
                     variant='body2'
                     sx={{ pl: 1, color: 'text.secondary' }}
@@ -212,7 +212,7 @@ export default function AccountGeneral() {
                   <RHFTextField name='displayName' disabled />
                 </Stack>
 
-                <Stack display={'flex'} alignItems={'flex-start'}>
+                <Stack alignItems={'flex-start'}>
                   <Typography
                     variant='body2'
                     sx={{ pl: 1, color: 'text.secondary' }}
@@ -222,7 +222,7 @@ export default function AccountGeneral() {
                   <RHFTextField name='email' disabled />
                 </Stack>
 
-                <Stack display={'flex'} alignItems={'flex-start'}>
+                <Stack alignItems={'flex-start'}>
                   <Typography
                     variant='body2'
                     sx={{ pl: 1, color: 'text.secondary' }}
@@ -233,7 +233,7 @@ export default function AccountGeneral() {
                   <RHFTextField name='role' disabled />
                 </Stack>
 
-                <Stack display={'flex'} alignItems={'flex-start'}>
+                <Stack alignItems={'flex-start'}>
                   <Typography
                     variant='body2'
                     sx={{ pl: 1, color: 'text.secondary' }}
