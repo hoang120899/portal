@@ -15,6 +15,9 @@ const candidates = {
   search: 'Search',
   jobApply: 'Job apply',
   timeApply: 'Time apply',
+  source: 'Source',
+  column: 'Column',
+  follower: 'Follower',
 }
 
 export default candidates

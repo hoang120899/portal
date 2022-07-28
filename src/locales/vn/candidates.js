@@ -15,6 +15,9 @@ const candidates = {
   search: 'Tìm kiếm',
   jobApply: 'Việc ứng tuyển',
   timeApply: 'Thời gian ứng tuyển',
+  source: 'Tài liệu',
+  column: 'Cột',
+  follower: 'Người theo dõi',
 }
 
 export default candidates

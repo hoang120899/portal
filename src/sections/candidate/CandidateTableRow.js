@@ -26,7 +26,13 @@ export default function CandidateTableRow({
   const renderData = (listData) => (
     <>
       {listData?.map((data, id) => (
-        <Typography variant='subtitle2' sx={{ color: '#637381' }} key={id}>
+        <Typography
+          variant='subtitle2'
+          sx={{
+            fontWeight: 'normal',
+          }}
+          key={id}
+        >
           {data}
         </Typography>
       ))}
@@ -41,7 +47,7 @@ export default function CandidateTableRow({
           key={id}
           sx={{
             backgroundColor: `${data.background}`,
-            color: '#ffffff',
+            color: '#fff',
             py: 0.5,
             mb: 0.6,
             borderRadius: 0.6,
@@ -60,7 +66,6 @@ export default function CandidateTableRow({
           onClick={handleGetCandidateDetail}
           variant='subtitle2'
           sx={{
-            color: '#637381',
             cursor: 'pointer',
             '&:hover': {
               color: '#ffe16a',

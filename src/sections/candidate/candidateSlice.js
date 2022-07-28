@@ -7,7 +7,7 @@ import {
   API_ADMIN_DOWNLOAD_CV_PDF,
   API_ADMIN_SEARCH_CANDIDATE,
 } from '@/routes/api'
-import { _postApi } from '@/utils/axios'
+import { _getApi, _postApi } from '@/utils/axios'
 
 import { SEARCH_FIELD } from './config'
 
@@ -39,14 +39,17 @@ export const candidateApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
-    getAdminCandidateDetail: builder.query({
-      query: ({ candidateId }) => ({
-        url: `${API_ADMIN_DETAIL_CANDIDATE}/${candidateId}`,
-        method: 'GET',
-      }),
-    }),
   }),
 })
+export const getAdminCandidateDetail = createAsyncThunk(
+  'getCandidate/Detail',
+  async ({ candidateId }) => {
+    const response = await _getApi(
+      `${API_ADMIN_DETAIL_CANDIDATE}/${candidateId}`
+    )
+    return response.data
+  }
+)
 export const convertDriverToBase64 = createAsyncThunk(
   'convertBase64/download',
   async ({ linkDrive }) => {
@@ -63,19 +66,23 @@ export const convertDriverToBase64 = createAsyncThunk(
 export const candidateSlice = createSlice({
   name: 'candidates',
   initialState: {
+    candidateDetail: {},
     base64: '',
     isLoadingPDF: true,
   },
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(convertDriverToBase64.fulfilled, (state, action) => {
-      state.base64 = action.payload
-      state.isLoadingPDF = false
-    })
+    builder
+      .addCase(getAdminCandidateDetail.fulfilled, (state, action) => {
+        state.candidateDetail = action.payload.data
+        state.base64 = ''
+        state.isLoadingPDF = true
+      })
+      .addCase(convertDriverToBase64.fulfilled, (state, action) => {
+        state.base64 = action.payload
+        state.isLoadingPDF = false
+      })
   },
 })
-export const {
-  useGetAdminSearchCandidateQuery,
-  useGetAdminCandidateDetailQuery,
-} = candidateApiSlice
+export const { useGetAdminSearchCandidateQuery } = candidateApiSlice
 export default candidateSlice.reducer

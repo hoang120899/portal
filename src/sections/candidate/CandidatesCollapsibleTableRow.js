@@ -30,16 +30,56 @@ export default function CandidatesCollapsibleTableRow({
   handleGetCandidateDetail,
 }) {
   const { translate } = useLocales()
-  const { name = '', phone = '', date = [], titleJob = [] } = row
+  const {
+    name = '',
+    phone = '',
+    date = [],
+    titleJob = [],
+    source = [],
+    lane = [],
+    follower = [],
+  } = row
 
   const [open, setOpen] = useState(true)
   const renderData = (listData) => (
     <>
       {listData?.map((data, id) => (
-        <Typography variant='subtitle2' key={id} sx={{ color: '#637381' }}>
-          <TextMaxLine line={1} key={id} sx={{ maxWidth: 160 }}>
+        <Typography
+          variant='subtitle2'
+          key={id}
+          sx={{
+            fontWeight: 'normal',
+          }}
+        >
+          <TextMaxLine
+            line={1}
+            key={id}
+            sx={{ maxWidth: 160, fontWeight: 'normal' }}
+          >
             {data}
           </TextMaxLine>
+        </Typography>
+      ))}
+    </>
+  )
+  const renderDataColumn = (listData) => (
+    <>
+      {listData?.map((data, id) => (
+        <Typography
+          width={110}
+          variant='subtitle2'
+          key={id}
+          sx={{
+            backgroundColor: `${data.background}`,
+            color: '#fff',
+            py: 0.5,
+            mb: 0.6,
+            pl: 1,
+            borderRadius: 0.6,
+            cursor: 'pointer',
+          }}
+        >
+          {data.nameColumn}
         </Typography>
       ))}
     </>
@@ -65,11 +105,11 @@ export default function CandidatesCollapsibleTableRow({
             onClick={handleGetCandidateDetail}
             variant='subtitle2'
             sx={{
-              color: '#637381',
               cursor: 'pointer',
               '&:hover': {
                 color: '#ffe16a',
               },
+              fontWeight: 'normal',
             }}
           >
             {name}
@@ -120,6 +160,24 @@ export default function CandidatesCollapsibleTableRow({
                         </Typography>
                       </Label>
                     </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>
+                      {translate('pages.candidates.source')}
+                    </TableCell>
+                    <TableCell>{renderData(source)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>
+                      {translate('pages.candidates.column')}
+                    </TableCell>
+                    <TableCell>{renderDataColumn(lane)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>
+                      {translate('pages.candidates.follower')}
+                    </TableCell>
+                    <TableCell>{renderData(follower)}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

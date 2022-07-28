@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { LoadingButton } from '@mui/lab'
 import {
@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 
+import CopyClipboard from '@/components/CopyClipboard'
 import Iconify from '@/components/Iconify'
 import PreviewPdf from '@/components/PreviewPdf'
 import {
@@ -25,11 +26,10 @@ import {
   RHFDateTimePicker,
   RHFTextField,
 } from '@/components/hook-form'
-import useRole from '@/hooks/useRole'
 
 import {
   convertDriverToBase64,
-  useGetAdminCandidateDetailQuery,
+  getAdminCandidateDetail,
 } from './candidateSlice'
 import { DETAIL_FIELD } from './config'
 
@@ -46,53 +46,72 @@ export default function CandidateModalDetail({
   disabled = false,
   detailCandidate,
 }) {
+  const defaultValues = {
+    [DETAIL_FIELD.NAME]: '',
+    [DETAIL_FIELD.JOB_NAME]: '',
+    [DETAIL_FIELD.LOCATION]: '',
+    [DETAIL_FIELD.CLIENT_ID]: '',
+    [DETAIL_FIELD.PHONE]: '',
+    [DETAIL_FIELD.APPROACH_DATE]: '',
+    [DETAIL_FIELD.LINK_CV]: '',
+    [DETAIL_FIELD.POSITION]: '',
+    [DETAIL_FIELD.NOT_APPROACH]: '',
+  }
   const methods = useForm({
-    defaultValues: {},
+    defaultValues: defaultValues,
   })
-  const { currentRole } = useRole()
-
   const { setValue, watch } = methods
   const { id } = detailCandidate
-  const { data } = useGetAdminCandidateDetailQuery({
-    candidateId: id,
-    currentRole,
-  })
+  const { base64, candidateDetail, isLoadingPDF } = useSelector(
+    (state) => state.candidates
+  )
+  const [copyLinkCVText, setCopyLinkCVText] = useState('')
+  const copyLinkCVRef = useRef()
   const [isOpenPDF, setIsOpenPDF] = useState(false)
-  const { name, email, jobs, phone, date } = data?.data?.data || {}
-  const listJobs = jobs?.map(({ label, candidateJobId }) => ({
-    label,
-    value: candidateJobId,
-  }))
+  const { name, email, jobs, phone, date } = candidateDetail || {}
+  const [listJobs, setListJob] = useState([])
   const cv = watch(DETAIL_FIELD.LINK_CV)
-  const { base64, isLoadingPDF } = useSelector((state) => state.candidates)
   const dispatch = useDispatch()
   useEffect(() => {
+    dispatch(
+      getAdminCandidateDetail({
+        candidateId: id,
+      })
+    )
+  }, [dispatch, id])
+  useEffect(() => {
     if (!cv) return
+    setCopyLinkCVText(copyLinkCVRef.current?.value)
     dispatch(convertDriverToBase64({ linkDrive: cv }))
   }, [cv, dispatch])
   useEffect(() => {
+    const jobArray = jobs?.map(({ label }) => ({
+      label,
+      value: label,
+    }))
+    setListJob(jobArray)
     setValue(DETAIL_FIELD.NAME, name || '')
     setValue(DETAIL_FIELD.EMAIl, email || '')
-    setValue(DETAIL_FIELD.APPROACH_DATE, date)
+    setValue(DETAIL_FIELD.APPROACH_DATE, date || '')
     setValue(DETAIL_FIELD.PHONE, phone || '')
-    setValue(DETAIL_FIELD.LINK_CV, jobs?.[0]?.cv)
-    setValue(DETAIL_FIELD.CLIENT_ID, jobs?.[0]?.value)
-    setValue(DETAIL_FIELD.LOCATION, jobs?.[0]?.location)
-    setValue(DETAIL_FIELD.POSITION, jobs?.[0]?.candidateJob?.position)
-    setValue(DETAIL_FIELD.NOT_APPROACH, jobs?.[0]?.candidateJob?.noteApproach)
-  }, [setValue, name, email, cv, phone, date, jobs])
-  useEffect(() => {
-    setValue(DETAIL_FIELD.JOB_NAME, jobs?.[0]?.candidateJobId || '')
-  }, [jobs, setValue])
-
+    setValue(DETAIL_FIELD.JOB_NAME, jobs?.[0]?.label || '')
+    setValue(DETAIL_FIELD.LINK_CV, jobs?.[0]?.cv || '')
+    setValue(DETAIL_FIELD.CLIENT_ID, jobs?.[0]?.value || '')
+    setValue(DETAIL_FIELD.LOCATION, jobs?.[0]?.location || '')
+    setValue(DETAIL_FIELD.POSITION, jobs?.[0]?.candidateJob?.position || '')
+    setValue(
+      DETAIL_FIELD.NOT_APPROACH,
+      jobs?.[0]?.candidateJob?.noteApproach || ''
+    )
+  }, [id, setValue, name, email, cv, phone, date, jobs])
   const handleOpenPDF = () => {
     setIsOpenPDF(true)
   }
   const handleChangeSelectJobs = (event) => {
     const value = event.target.value
-    const job = jobs?.find((item) => item.candidateJobId === value)
+    const job = jobs?.find((item) => item.label === value)
     if (job) {
-      setValue(DETAIL_FIELD.JOB_NAME, job?.candidateJobId || '')
+      setValue(DETAIL_FIELD.JOB_NAME, job?.label || '')
       setValue(DETAIL_FIELD.CLIENT_ID, job?.value || '')
       setValue(DETAIL_FIELD.LOCATION, job?.location || '')
       setValue(DETAIL_FIELD.POSITION, job?.candidateJob?.position || '')
@@ -135,7 +154,7 @@ export default function CandidateModalDetail({
                   label={'Job Name'}
                   options={listJobs}
                   onChange={handleChangeSelectJobs}
-                  defaultValue={listJobs?.[0]?.value}
+                  defaultValue=''
                 />
               </Stack>
             </Grid>
@@ -195,6 +214,7 @@ export default function CandidateModalDetail({
                 <Typography>Link CV</Typography>
                 <Grid sx={{ display: 'flex' }}>
                   <RHFTextField
+                    inputRef={copyLinkCVRef}
                     disabled={disabled}
                     name={DETAIL_FIELD.LINK_CV}
                     placeholder='Enter link or import cv'
@@ -221,12 +241,27 @@ export default function CandidateModalDetail({
                       />
                     </Button>
                   )}
+                  {cv && (
+                    <CopyClipboard
+                      value={copyLinkCVText}
+                      placement='top-start'
+                      arrow
+                    >
+                      <Button>
+                        <Iconify
+                          icon={'fluent:copy-16-regular'}
+                          width={32}
+                          height={32}
+                        />
+                      </Button>
+                    </CopyClipboard>
+                  )}
                 </Grid>
               </Stack>
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <Typography>Position:</Typography>
+                <Typography>Position</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.POSITION}
@@ -235,7 +270,7 @@ export default function CandidateModalDetail({
               </Stack>
             </Grid>
             <Grid item xs={12}>
-              <Stack spacing={1}>
+              <Stack spacing={0}>
                 <Typography>Note Approach</Typography>
                 <RHFTextField
                   disabled={disabled}
@@ -247,7 +282,7 @@ export default function CandidateModalDetail({
             </Grid>
           </Grid>
           <Grid item xs={12} mt={3}>
-            {cv && base64 ? (
+            {cv ? (
               <DialogActions>
                 <LoadingButton
                   variant='contained'
