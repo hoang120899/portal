@@ -1,5 +1,5 @@
 // @mui
-import React from 'react'
+import React, { forwardRef } from 'react'
 
 import { Box, Button } from '@mui/material'
 
@@ -16,10 +16,7 @@ function WeeklyTaskTableToolbar(props, ref) {
         py: 2.5,
         px: 3,
         display: 'grid',
-        gridTemplateColumns: {
-          sm: 'repeat(3, 1fr)',
-          xs: 'repeat(1, 1fr)',
-        },
+        gridTemplateColumns: '5fr 5fr 2fr',
         gap: 1,
       }}
     >
@@ -32,6 +29,4 @@ function WeeklyTaskTableToolbar(props, ref) {
   )
 }
 
-const forwardRefToolbar = React.forwardRef(WeeklyTaskTableToolbar)
-
-export default forwardRefToolbar
+export default forwardRef(WeeklyTaskTableToolbar)

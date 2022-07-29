@@ -13,7 +13,6 @@ import {
 import { useTheme } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
-import { format } from 'date-fns'
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -31,6 +30,7 @@ import {
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 import {
+  fDate,
   fDateCalendar,
   fDateEndOfWeek,
   fDateStartOfWeek,
@@ -145,8 +145,8 @@ export default function WeeklyTaskModal({
   const onSubmit = async (data) => {
     try {
       if (isEditScreen) {
-        data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
-        data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
+        data.startDate = fDateCalendar(fDate(data.startDate))
+        data.endDate = fDateCalendar(fDate(data.endDate))
         delete data.id
         delete data.user
         const payload = {
@@ -159,8 +159,8 @@ export default function WeeklyTaskModal({
         onClose()
         setIsReloading(!isReloading)
       } else {
-        data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
-        data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
+        data.startDate = fDateCalendar(fDate(data.startDate))
+        data.endDate = fDateCalendar(fDate(data.endDate))
         const payload = {
           body: data,
         }
@@ -187,6 +187,8 @@ export default function WeeklyTaskModal({
       remove(index)
       reset({
         ...task,
+        startDate: fDateCalendar(startDate),
+        endDate: fDateCalendar(endDate),
         content: [...newContentTask],
       })
     } else {
@@ -216,19 +218,20 @@ export default function WeeklyTaskModal({
               <Grid container spacing={{ sm: 3, xs: 1.5 }}>
                 <Grid item sm={3} xs={12} alignSelf='center'>
                   <Typography>
-                    Deadline<span style={styleAsterisk}>*</span>
+                    {translate('Deadline')}
+                    <span style={styleAsterisk}>*</span>
                   </Typography>
                 </Grid>
 
                 <Grid item sm={9} xs={12}>
                   <Stack direction='row' columnGap={5}>
                     <Stack spacing={0.5}>
-                      <Typography>From</Typography>
+                      <Typography>{translate('From')}</Typography>
                       <RHFDatePicker name='startDate' />
                     </Stack>
 
                     <Stack spacing={0.5}>
-                      <Typography>To</Typography>
+                      <Typography>{translate('To')}</Typography>
                       <RHFDatePicker name='endDate' />
                     </Stack>
                   </Stack>
@@ -236,14 +239,14 @@ export default function WeeklyTaskModal({
 
                 <Grid item sm={3} xs={12} alignSelf='center'>
                   <Typography>
-                    Name<span style={styleAsterisk}>*</span>
+                    {translate('Name')}
+                    <span style={styleAsterisk}>*</span>
                   </Typography>
                 </Grid>
 
                 <Grid item sm={9} xs={12}>
                   <RHFAutocomplete
                     AutocompleteProps={{
-                      multiple: false,
                       size: 'small',
                       defaultValue: task?.user?.name,
                       renderOption: (props, option) => (
@@ -267,11 +270,12 @@ export default function WeeklyTaskModal({
                 <Grid item sm={3} xs={12}>
                   <Stack direction='row' columnGap={2} alignItems='center'>
                     <Typography>
-                      Task<span style={styleAsterisk}>*</span>
+                      {translate('Task')}
+                      <span style={styleAsterisk}>*</span>
                     </Typography>
                     <IconButtonAnimate onClick={handleAddContentTask}>
                       <Iconify
-                        icon={'akar-icons:circle-plus'}
+                        icon='akar-icons:circle-plus'
                         width={20}
                         height={20}
                       />
@@ -282,15 +286,15 @@ export default function WeeklyTaskModal({
                 <Grid item sm={9} xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={5}>
-                      <Typography>Task content</Typography>
+                      <Typography>{translate('Task content')}</Typography>
                     </Grid>
 
                     <Grid item xs={3}>
-                      <Typography>Achievement</Typography>
+                      <Typography>{translate('Achievement')}</Typography>
                     </Grid>
 
                     <Grid item xs={2}>
-                      <Typography>Target</Typography>
+                      <Typography>{translate('Target')}</Typography>
                     </Grid>
 
                     <Grid item xs={2}>

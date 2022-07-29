@@ -17,12 +17,12 @@ import useResponsive from '@/hooks/useResponsive'
 import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 
+import WeeklyTaskCollapsibleTable from './WeeklyTaskCollapsibleTable'
 import WeeklyTaskDetailModal from './WeeklyTaskDetailModal'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
 import WeeklyTaskModal from './WeeklyTaskModal'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
 import { HANDLE_TYPE } from './config'
-import WeeklyTaskCollapsibleTable from './mobile/WeeklyTaskCollapsibleTable'
 import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
 WeeklyTask.propTypes = {
@@ -109,11 +109,12 @@ export default function WeeklyTask({ title, subheader, ...other }) {
 
   const onSubmit = async (data) => {
     try {
+      const { startDate, endDate } = data
       payload.current = {
         ...payload.current,
         body: {
-          startDate: data ? new Date(data?.startDate) : defaultValues.startDate,
-          endDate: data ? new Date(data?.endDate) : defaultValues.endDate,
+          startDate: data ? new Date(startDate) : defaultValues.startDate,
+          endDate: data ? new Date(endDate) : defaultValues.endDate,
         },
       }
       const res = await getAllWeeklyTasks(payload.current).unwrap()
