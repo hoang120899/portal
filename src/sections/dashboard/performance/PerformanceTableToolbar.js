@@ -3,25 +3,27 @@ import { Box, Button } from '@mui/material'
 
 // components
 import { RHFDatePicker } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
+
+import { FORM_FIELDS } from './config'
 
 export default function PerformanceTableToolbar() {
+  const { translate } = useLocales()
+
   return (
     <Box
       sx={{
         py: 2.5,
         px: 3,
         display: 'grid',
-        gridTemplateColumns: {
-          md: 'repeat(2, 160px) 110px',
-          sm: 'repeat(2, 1fr)',
-        },
+        gridTemplateColumns: '5fr 5fr 2fr',
         gap: 1,
       }}
     >
-      <RHFDatePicker name='startDate' />
-      <RHFDatePicker name='endDate' />
+      <RHFDatePicker name={FORM_FIELDS.START_DATE} />
+      <RHFDatePicker name={FORM_FIELDS.END_DATE} />
       <Button type='submit' variant='contained'>
-        Apply
+        {translate('Apply')}
       </Button>
     </Box>
   )

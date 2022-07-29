@@ -1,15 +1,16 @@
 import { apiSlice } from '@/redux/api/apiSlice'
 import { API_PERFORMANCE } from '@/routes/api'
 
-export const activeJobsSlice = apiSlice.injectEndpoints({
+export const performanceSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getJobs: builder.query({
-      query: () => ({
-        url: API_PERFORMANCE,
+    getDataPerformance: builder.query({
+      query: (data) => ({
+        url: `${API_PERFORMANCE}/?${data.currentRole}`,
         method: 'POST',
+        data: JSON.stringify(data.body),
       }),
     }),
   }),
 })
 
-export const { useGetJobsQuery } = activeJobsSlice
+export const { useGetDataPerformanceQuery } = performanceSlice
