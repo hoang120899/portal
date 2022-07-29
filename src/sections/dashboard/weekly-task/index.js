@@ -10,18 +10,19 @@ import { useForm } from 'react-hook-form'
 // components
 import EmptyContent from '@/components/EmptyContent'
 import { FormProvider } from '@/components/hook-form'
+import { DASHBOARD_TABLE_HEIGHT } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 
+import WeeklyTaskCollapsibleTable from './WeeklyTaskCollapsibleTable'
 import WeeklyTaskDetailModal from './WeeklyTaskDetailModal'
 import WeeklyTaskDetails from './WeeklyTaskDetails'
 import WeeklyTaskModal from './WeeklyTaskModal'
 import WeeklyTaskTableToolbar from './WeeklyTaskTableToolbar'
 import { HANDLE_TYPE } from './config'
-import WeeklyTaskCollapsibleTable from './mobile/WeeklyTaskCollapsibleTable'
 import { useGetAllWeeklyTasksMutation } from './weeklyTaskSlice'
 
 WeeklyTask.propTypes = {
@@ -47,6 +48,9 @@ export default function WeeklyTask({ title, subheader, ...other }) {
   const [chosenTask, setChosenTask] = useState({})
   const [isOpen, setIsOpen] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
+
+  const headerRef = useRef(null)
+  const tableToolbarRef = useRef(null)
 
   const handleGetDetailWeeklyTask = (row) => {
     setIsOpenDetail(true)
@@ -101,22 +105,16 @@ export default function WeeklyTask({ title, subheader, ...other }) {
     defaultValues,
   })
 
-  const {
-    handleSubmit,
-    // formState: { errors, isSubmitting },
-  } = methods
+  const { handleSubmit } = methods
 
   const onSubmit = async (data) => {
     try {
+      const { startDate, endDate } = data
       payload.current = {
         ...payload.current,
         body: {
-          startDate: data
-            ? new Date(data?.startDate).toISOString()
-            : defaultValues.startDate,
-          endDate: data
-            ? new Date(data?.endDate).toISOString()
-            : defaultValues.endDate,
+          startDate: data ? new Date(startDate) : defaultValues.startDate,
+          endDate: data ? new Date(endDate) : defaultValues.endDate,
         },
       }
       const res = await getAllWeeklyTasks(payload.current).unwrap()
@@ -127,9 +125,15 @@ export default function WeeklyTask({ title, subheader, ...other }) {
     }
   }
 
+  const headerHeight = headerRef.current?.offsetHeight || 0
+  const tableToolbarHeight = tableToolbarRef.current?.offsetHeight || 0
+  const listTaskTableHeight =
+    DASHBOARD_TABLE_HEIGHT - headerHeight - tableToolbarHeight - 20
+
   return (
     <Card {...other}>
       <Stack
+        ref={headerRef}
         direction='row'
         alignItems='flex-end'
         justifyContent='space-between'
@@ -150,7 +154,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
         )}
       </Stack>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <WeeklyTaskTableToolbar />
+        <WeeklyTaskTableToolbar ref={tableToolbarRef} />
       </FormProvider>
       {list.length > 0 ? (
         isMedium || isLarge ? (
@@ -158,12 +162,14 @@ export default function WeeklyTask({ title, subheader, ...other }) {
             dataSource={list}
             isLoading={isLoading}
             handleGetDetailWeeklyTask={handleGetDetailWeeklyTask}
+            height={listTaskTableHeight}
           />
         ) : (
           <WeeklyTaskDetails
             list={list}
             isLoading={isLoading}
             handleGetDetailWeeklyTask={handleGetDetailWeeklyTask}
+            height={listTaskTableHeight}
           />
         )
       ) : (

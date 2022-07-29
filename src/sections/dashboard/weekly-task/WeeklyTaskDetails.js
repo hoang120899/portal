@@ -5,6 +5,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import PropTypes from 'prop-types'
 
 import Scrollbar from '@/components/Scrollbar'
+import { DOMAIN_SERVER_API } from '@/config'
 
 const RootStyle = styled(Box)(() => ({
   display: 'flex',
@@ -17,16 +18,18 @@ WeeklyTaskDetails.propTypes = {
   list: PropTypes.array.isRequired,
   isLoading: PropTypes.bool,
   handleGetDetailWeeklyTask: PropTypes.func,
+  height: PropTypes.number,
 }
 
 export default function WeeklyTaskDetails({
   list = [],
   isLoading,
   handleGetDetailWeeklyTask = {},
+  height = 0,
 }) {
   const theme = useTheme()
   return (
-    <Scrollbar sx={{ height: { xs: '384px !important' } }}>
+    <Scrollbar sx={{ maxHeight: { sm: `${height}px`, xs: 600 } }}>
       <Stack spacing={3} sx={{ p: 3 }}>
         {list.map((item, index) => {
           if (isLoading) {
@@ -46,7 +49,7 @@ export default function WeeklyTaskDetails({
           return (
             <Stack direction='row' alignItems='center' key={index}>
               <Avatar
-                src={`${item?.user?.linkAvatar}`}
+                src={`${DOMAIN_SERVER_API}/${item?.user?.linkAvatar}`}
                 sx={{ width: 48, height: 48 }}
               />
 

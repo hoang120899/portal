@@ -11,6 +11,7 @@ import { useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
+import { DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 
@@ -24,12 +25,14 @@ WeeklyTaskDetailModal.propTypes = {
 export default function WeeklyTaskDetailModal({
   isOpen,
   onClose,
-  task = [],
+  task = {},
   handleOpenEdit,
 }) {
   const { translate } = useLocales()
   const { isLeaderRole } = useRole()
   const theme = useTheme()
+  const { startDate = '', endDate = '', user = {}, content = [] } = task || {}
+  const { linkAvatar, name, nameTeam } = user || {}
 
   return (
     <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={onClose} task={task}>
@@ -38,25 +41,28 @@ export default function WeeklyTaskDetailModal({
           variant='body1'
           sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          {task?.startDate} - {task?.endDate}
+          {startDate} - {endDate}
         </Typography>
         <Divider />
 
         <Stack direction='row' alignItems='center'>
-          <Avatar src={task?.user?.linkAvatar} sx={{ width: 48, height: 48 }} />
+          <Avatar
+            src={`${DOMAIN_SERVER_API}/${linkAvatar}`}
+            sx={{ width: 48, height: 48 }}
+          />
 
           <Box sx={{ flexGrow: 1, ml: 2, minWidth: 100 }}>
             <Typography variant='subtitle2' sx={{ mb: 0.5 }} noWrap>
-              {task?.user?.name}
+              {name}
             </Typography>
 
             <Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
-              {task?.user?.nameTeam}
+              {nameTeam}
             </Typography>
           </Box>
         </Stack>
 
-        {task?.content?.map((item, index) => {
+        {content?.map(({ content, percent, target }, index) => {
           if (task) {
             return (
               <Typography
@@ -65,8 +71,8 @@ export default function WeeklyTaskDetailModal({
                 noWrap
                 key={index}
               >
-                {`${item.content} (achievement: ${item.percent}%, target: ${
-                  item.target ? item.target : '0'
+                {`${content} (achievement: ${percent}%, target: ${
+                  target || '0'
                 }%)`}
               </Typography>
             )
