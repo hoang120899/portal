@@ -11,6 +11,7 @@ import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 
 import RecruitmentProgressTableRow from './RecruitmentProgressTableRow'
+import { DEFAULT_ROWS_PER_PAGE } from './config'
 import { useGetAllRecruitmentProgressQuery } from './recruitmentProgressSlice'
 
 RecruitementProgress.propTypes = {
@@ -20,7 +21,7 @@ RecruitementProgress.propTypes = {
 
 export default function RecruitementProgress({ title, subheader, ...other }) {
   const { page, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
-    useTable({ defaultRowsPerPage: 5 })
+    useTable({ defaultRowsPerPage: DEFAULT_ROWS_PER_PAGE })
   const { currentRole } = useRole()
   const { data, isLoading, isFetching } = useGetAllRecruitmentProgressQuery({
     pageSize: rowsPerPage,

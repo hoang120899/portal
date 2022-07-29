@@ -10,11 +10,12 @@ import {
   TimelineItem,
   TimelineSeparator,
 } from '@mui/lab'
-import { Box, TableCell, TableRow, Typography } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { Box, TableCell, TableRow } from '@mui/material'
+import { styled, useTheme } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
+import TextMaxLine from '@/components/TextMaxLine'
 import { PATH_DASHBOARD } from '@/routes/paths'
 
 const TimelineSeparatorStyle = styled(TimelineSeparator)(() => ({
@@ -27,6 +28,9 @@ const TimelineConnectorStyle = styled(TimelineConnector)(() => ({
 
 const TimelineContentStyle = styled(TimelineContent)(() => ({
   padding: '8px 10px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
 }))
 
 const ColorPreview = styled(Box)(() => ({
@@ -44,6 +48,7 @@ export default function RecruitmentProgressTableRow({ row }) {
     Lane: { nameColumn, background },
   } = row
   const router = useRouter()
+  const theme = useTheme()
 
   const handleForwardToBoard = () => {
     router.push(PATH_DASHBOARD.board.root)
@@ -51,7 +56,7 @@ export default function RecruitmentProgressTableRow({ row }) {
 
   return (
     <TableRow hover>
-      <TableCell align='left' sx={{ py: '2px', width: '65%' }}>
+      <TableCell align='left' sx={{ py: '2px', width: '55%' }}>
         <Box
           sx={{
             '& .MuiTimelineItem-missingOppositeContent:before': {
@@ -65,27 +70,40 @@ export default function RecruitmentProgressTableRow({ row }) {
             </TimelineSeparatorStyle>
 
             <TimelineContentStyle>
-              <Typography
+              <TextMaxLine
                 variant='subtitle2'
                 onClick={handleForwardToBoard}
-                sx={{ cursor: 'pointer' }}
+                sx={{
+                  cursor: 'pointer',
+                  maxWidth: '100%',
+                  '&:hover': { color: theme.palette.primary.main },
+                }}
+                line={1}
               >
                 {candidateName}
-              </Typography>
+              </TextMaxLine>
 
-              <Typography variant='caption' sx={{ color: 'text.secondary' }}>
+              <TextMaxLine
+                variant='caption'
+                sx={{ color: 'text.secondary', maxWidth: '100%' }}
+                line={1}
+              >
                 {title}
-              </Typography>
+              </TextMaxLine>
             </TimelineContentStyle>
           </TimelineItem>
         </Box>
       </TableCell>
-      <TableCell align='left'>
+      <TableCell align='left' sx={{ py: '2px', width: '45%' }}>
         <ColorPreview component='span'>
           <TimelineDot sx={{ bgcolor: `${background}` }} />
-          <Typography variant='subtitle2' sx={{ mt: '6px', ml: '4px' }}>
+          <TextMaxLine
+            variant='subtitle2'
+            sx={{ mt: '6px', ml: '4px', maxWidth: '100%' }}
+            line={2}
+          >
             {nameColumn}
-          </Typography>
+          </TextMaxLine>
         </ColorPreview>
       </TableCell>
     </TableRow>
