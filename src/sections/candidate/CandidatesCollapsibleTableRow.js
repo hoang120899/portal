@@ -10,6 +10,7 @@ import {
   TableCell,
   TableRow,
   Typography,
+  useTheme,
 } from '@mui/material'
 
 import PropTypes from 'prop-types'
@@ -41,6 +42,7 @@ export default function CandidatesCollapsibleTableRow({
   } = row
 
   const [open, setOpen] = useState(true)
+  const theme = useTheme()
   const renderData = (listData) => (
     <>
       {listData?.map((data, id) => (
@@ -49,12 +51,14 @@ export default function CandidatesCollapsibleTableRow({
           key={id}
           sx={{
             fontWeight: 'normal',
+            color: `${theme.palette.mode === 'dark' ? '#cccccc' : '#505050'}`,
+            fontSize: 14,
           }}
         >
           <TextMaxLine
             line={1}
             key={id}
-            sx={{ maxWidth: 160, fontWeight: 'normal' }}
+            sx={{ maxWidth: 160, fontWeight: 'normal', fontSize: 14 }}
           >
             {data}
           </TextMaxLine>
@@ -69,11 +73,13 @@ export default function CandidatesCollapsibleTableRow({
           width={110}
           variant='subtitle2'
           key={id}
+          noWrap
           sx={{
             backgroundColor: `${data.background}`,
             color: '#fff',
             py: 0.5,
             mb: 0.6,
+            px: 0.5,
             borderRadius: 0.6,
             textAlign: 'center',
             cursor: 'pointer',
@@ -103,13 +109,13 @@ export default function CandidatesCollapsibleTableRow({
           </IconButton>
           <Typography
             onClick={handleGetCandidateDetail}
-            variant='subtitle2'
+            variant='subtitle1'
             sx={{
               cursor: 'pointer',
               '&:hover': {
                 color: '#ffe16a',
               },
-              fontWeight: 'normal',
+              fontSize: 16,
             }}
           >
             {name}
@@ -173,12 +179,14 @@ export default function CandidatesCollapsibleTableRow({
                     </TableCell>
                     <TableCell>{renderDataColumn(lane)}</TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      {translate('pages.candidates.follower')}
-                    </TableCell>
-                    <TableCell>{renderData(follower)}</TableCell>
-                  </TableRow>
+                  {follower.length !== 0 && (
+                    <TableRow>
+                      <TableCell>
+                        {translate('pages.candidates.follower')}
+                      </TableCell>
+                      <TableCell>{renderData(follower)}</TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Paper>

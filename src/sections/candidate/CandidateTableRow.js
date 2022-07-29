@@ -1,5 +1,5 @@
 // @mui
-import { TableCell, TableRow, Typography } from '@mui/material'
+import { TableCell, TableRow, Typography, useTheme } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
@@ -14,6 +14,7 @@ export default function CandidateTableRow({
   row = {},
   handleGetCandidateDetail,
 }) {
+  const theme = useTheme()
   const {
     name = '',
     phone = '',
@@ -30,6 +31,7 @@ export default function CandidateTableRow({
           variant='subtitle2'
           sx={{
             fontWeight: 'normal',
+            color: `${theme.palette.mode === 'dark' ? '#cccccc' : '#505050'}`,
           }}
           key={id}
         >
@@ -42,13 +44,15 @@ export default function CandidateTableRow({
     <>
       {listData?.map((data, id) => (
         <Typography
-          width={100}
+          width={110}
           variant='subtitle2'
           key={id}
+          noWrap
           sx={{
             backgroundColor: `${data.background}`,
             color: '#fff',
             py: 0.5,
+            px: 0.5,
             mb: 0.6,
             borderRadius: 0.6,
             cursor: 'pointer',
@@ -68,6 +72,7 @@ export default function CandidateTableRow({
           sx={{
             cursor: 'pointer',
             fontWeight: 'normal',
+            color: `${theme.palette.mode === 'dark' ? '#cccccc' : '#505050'}`,
             '&:hover': {
               color: '#ffe16a',
             },
@@ -78,11 +83,13 @@ export default function CandidateTableRow({
       </TableCell>
 
       <TableCell align='left'>
-        <Label color='warning'>
-          <Typography variant='subtitle2' sx={{ borderRadius: 0.6, px: 1 }}>
-            {phone}
-          </Typography>
-        </Label>
+        {phone && (
+          <Label color='warning'>
+            <Typography variant='subtitle2' sx={{ borderRadius: 0.6, px: 1 }}>
+              {phone}
+            </Typography>
+          </Label>
+        )}
       </TableCell>
       <TableCell align='left' sx={{ width: 180 }}>
         {renderData(date)}

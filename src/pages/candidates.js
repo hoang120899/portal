@@ -1,17 +1,27 @@
 import React, { useCallback, useEffect, useReducer, useState } from 'react'
 
-import { Card, Container } from '@mui/material'
+import {
+  Card,
+  ClickAwayListener,
+  Container,
+  Slide,
+  Tooltip,
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import { useForm } from 'react-hook-form'
 
 import BasicTable from '@/components/BasicTable'
 // components
 import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
+import Iconify from '@/components/Iconify'
 import Page from '@/components/Page'
 import Pagination from '@/components/Pagination'
+import { IconButtonAnimate } from '@/components/animate'
 import { FormProvider } from '@/components/hook-form'
 // config
-import { PAGES } from '@/config'
+import { HEADER, NAVBAR, PAGES } from '@/config'
+import useCollapseDrawer from '@/hooks/useCollapseDrawer'
 // hooks
 import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
@@ -22,9 +32,9 @@ import useTable from '@/hooks/useTable'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
+// sections
 import CandidateModalDetail from '@/sections/candidate/CandidateModalDetail'
 import CandidateTableRow from '@/sections/candidate/CandidateTableRow'
-// sections
 import CandidateTableToolbar from '@/sections/candidate/CandidateTableToolbar'
 import CandidatesCollapsibleTableRow from '@/sections/candidate/CandidatesCollapsibleTableRow'
 import { useGetAdminSearchCandidateQuery } from '@/sections/candidate/candidateSlice'
@@ -33,12 +43,62 @@ import {
   TABLE_DESKTOP_HEAD,
   TABLE_MOBILE_HEAD,
 } from '@/sections/candidate/config'
+import cssStyles from '@/utils/cssStyles'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
 Candidates.getLayout = function getLayout({ roles = [] }, page) {
   return <Layout roles={roles}>{page}</Layout>
 }
+const SearchIconStyle = styled('div')(({ theme, ownerState }) => {
+  const { isCollapse = false } = ownerState
+  const left = isCollapse
+    ? NAVBAR.DASHBOARD_COLLAPSE_WIDTH
+    : NAVBAR.DASHBOARD_WIDTH
+  const paddingLeft =
+    (window.innerWidth - theme.breakpoints.values['xl'] - left) / 2
+
+  return {
+    top: HEADER.MOBILE_HEIGHT / 4,
+    left: NAVBAR.DASHBOARD_COLLAPSE_WIDTH,
+    zIndex: 1101,
+    position: 'fixed',
+    [theme.breakpoints.up('lg')]: {
+      top: HEADER.DASHBOARD_DESKTOP_HEIGHT / 4,
+      left,
+      paddingLeft: theme.spacing(2),
+    },
+    [theme.breakpoints.up('xl')]: {
+      paddingLeft: paddingLeft + parseInt(theme.spacing(2)),
+    },
+  }
+})
+
+const SearchbarStyle = styled('div')(({ theme, ownerState }) => {
+  const { isCollapse = false } = ownerState
+  const collapseWidth = isCollapse
+    ? NAVBAR.DASHBOARD_COLLAPSE_WIDTH
+    : NAVBAR.DASHBOARD_WIDTH
+
+  return {
+    ...cssStyles(theme).bgBlur(),
+    top: 0,
+    left: 0,
+    zIndex: 1102,
+    width: '100%',
+    display: 'flex',
+    position: 'absolute',
+    padding: theme.spacing(3),
+    boxShadow: theme.customShadows.z8,
+    '& form': {
+      width: '100%',
+    },
+    [theme.breakpoints.up('lg')]: {
+      left: collapseWidth,
+      width: `calc(100% - ${collapseWidth}px)`,
+    },
+  }
+})
 
 export async function getStaticProps() {
   return {
@@ -71,11 +131,13 @@ function reducer(state, action) {
 }
 
 export default function Candidates() {
+  const { isCollapse } = useCollapseDrawer()
   const { themeStretch } = useSettings()
   const { translate } = useLocales()
   const { currentRole } = useRole()
   const isMobileScreen = useResponsive('down', 'md')
   const [isOpen, setIsOpen] = useState(false)
+  const [isOpenSearchForm, setOpenSearchForm] = useState(false)
   const [detailCandidate, setDetailCandidate] = useState({})
   const { page, setPage, rowsPerPage, onChangePage, onChangeRowsPerPage } =
     useTable()
@@ -105,6 +167,7 @@ export default function Candidates() {
       type: 'search',
       payload: data,
     })
+    setOpenSearchForm(false)
   }
   const handleGetCandidateDetail = useCallback(
     (row) => () => {
@@ -136,6 +199,13 @@ export default function Candidates() {
     },
     [isMobileScreen, handleGetCandidateDetail]
   )
+  const handleOpenSearchForm = useCallback(() => {
+    setOpenSearchForm((prev) => !prev)
+  }, [])
+
+  const handleCloseSearchForm = useCallback(() => {
+    setOpenSearchForm(false)
+  }, [])
 
   return (
     <Page title={translate('pages.candidates.heading')}>
@@ -150,12 +220,42 @@ export default function Candidates() {
             { name: translate('pages.candidates.heading') },
           ]}
         />
+        <ClickAwayListener
+          onClickAway={handleCloseSearchForm}
+          mouseEvent='onMouseDown'
+          touchEvent='onTouchStart'
+        >
+          <div>
+            <SearchIconStyle ownerState={{ isCollapse }}>
+              <Tooltip
+                title={translate('Search')}
+                sx={{ visibility: !isOpenSearchForm ? 'visible' : 'hidden' }}
+              >
+                <IconButtonAnimate onClick={handleOpenSearchForm}>
+                  <Iconify icon={'eva:search-fill'} width={20} height={20} />
+                </IconButtonAnimate>
+              </Tooltip>
+            </SearchIconStyle>
+
+            <Slide
+              direction='down'
+              in={isOpenSearchForm}
+              mountOnEnter
+              unmountOnExit
+            >
+              <SearchbarStyle ownerState={{ isCollapse }}>
+                <FormProvider
+                  methods={methods}
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <CandidateTableToolbar />
+                </FormProvider>
+              </SearchbarStyle>
+            </Slide>
+          </div>
+        </ClickAwayListener>
 
         <Card sx={{ py: 2 }}>
-          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-            <CandidateTableToolbar />
-          </FormProvider>
-
           <BasicTable
             columns={columns}
             page={page}

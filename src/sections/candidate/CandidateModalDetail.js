@@ -233,43 +233,36 @@ export default function CandidateModalDetail({
                     name={DETAIL_FIELD.LINK_CV}
                     placeholder='Enter link or import cv'
                   />
-                  {base64 ? (
-                    <Link
-                      download={`${name ? name : ''}.pdf`}
-                      href={`data:application/pdf;base64,${base64}`}
-                    >
-                      <Button>
-                        <Iconify
-                          icon={'fa:cloud-download'}
-                          width={32}
-                          height={32}
-                        />
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Button>
-                      <Iconify
-                        icon={'fa:cloud-download'}
-                        width={32}
-                        height={32}
-                      />
-                    </Button>
-                  )}
-                  {cv && (
-                    <CopyClipboard
-                      value={copyLinkCVText}
-                      placement='top-start'
-                      arrow
-                    >
-                      <Button>
-                        <Iconify
-                          icon={'fluent:copy-16-regular'}
-                          width={32}
-                          height={32}
-                        />
-                      </Button>
-                    </CopyClipboard>
-                  )}
+                  {base64 ||
+                    (cv && (
+                      <>
+                        <Link
+                          download={`${name ? name : ''}.pdf`}
+                          href={`data:application/pdf;base64,${base64}`}
+                        >
+                          <Button>
+                            <Iconify
+                              icon={'fa:cloud-download'}
+                              width={32}
+                              height={32}
+                            />
+                          </Button>
+                        </Link>
+                        <CopyClipboard
+                          value={copyLinkCVText}
+                          placement='top-start'
+                          arrow
+                        >
+                          <Button>
+                            <Iconify
+                              icon={'fluent:copy-16-regular'}
+                              width={32}
+                              height={32}
+                            />
+                          </Button>
+                        </CopyClipboard>
+                      </>
+                    ))}
                 </Grid>
               </Stack>
             </Grid>
