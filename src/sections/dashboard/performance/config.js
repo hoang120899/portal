@@ -1,7 +1,6 @@
-import { format } from 'date-fns'
+export const SUB_MONTH_DEFAULT = 3
 
-import { _3ND_MONTH_AGO } from '@/config'
-
-export const DEFAULT_DATE_START = format(_3ND_MONTH_AGO, 'yyyy-MM-dd')
-
-export const DEFAULT_DATE_END = format(Date.now(), 'yyyy-MM-dd')
+export const FORM_FIELDS = {
+  START_DATE: 'startDate',
+  END_DATE: 'endDate',
+}

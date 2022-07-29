@@ -5,6 +5,8 @@ import { Box, Button } from '@mui/material'
 import { RHFDatePicker } from '@/components/hook-form'
 import useLocales from '@/hooks/useLocales'
 
+import { FORM_FIELDS } from './config'
+
 export default function PerformanceTableToolbar() {
   const { translate } = useLocales()
 
@@ -18,8 +20,8 @@ export default function PerformanceTableToolbar() {
         gap: 1,
       }}
     >
-      <RHFDatePicker name='startDate' />
-      <RHFDatePicker name='endDate' />
+      <RHFDatePicker name={FORM_FIELDS.START_DATE} />
+      <RHFDatePicker name={FORM_FIELDS.END_DATE} />
       <Button type='submit' variant='contained'>
         {translate('Apply')}
       </Button>

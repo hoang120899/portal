@@ -1,8 +1,6 @@
 // @mui
 import { enUS, viVN } from '@mui/material/locale'
 
-import { subMonths } from 'date-fns'
-
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
 
@@ -66,11 +64,11 @@ export const defaultPagination = PAGINATION[0] // 10
 
 // DATETIME FORMAT
 export const DATE_FORMAT = 'dd/MM/yyyy'
+export const DATE_YEAR_MONTH_DAY_FORMAT = 'yyyy-MM-dd'
 export const DATETIME_FORMAT = 'dd/MM/yyyy hh:mm'
 export const DATETIME_FORMAT_AMPM = 'dd/MM/yyyy hh:mm a'
 export const DATE_FORMAT_DAY_MONTH = 'do MMM'
-export const ISO_DATE_CONDITION = /\d{4}-\d{2}-\d{2}/
-export const _3ND_MONTH_AGO = subMonths(Date.now(), 3)
+
 // User setting
 export const PAGES = {
   Dashboard: 'Dashboard',
@@ -111,7 +109,7 @@ export const ROLE_BY_PAGES = [
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
   },
   {
-    pageNames: [PAGES.Jobs, PAGES.Clients, PAGES.Users],
+    pageNames: [PAGES.Jobs, PAGES.Clients],
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
   },
   {
@@ -121,6 +119,10 @@ export const ROLE_BY_PAGES = [
   {
     pageNames: [PAGES.Blogs],
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.BLOGER],
+  },
+  {
+    pageNames: [PAGES.Users],
+    roles: [ROLE.DIRECTOR, ROLE.LEADER],
   },
 ]
 

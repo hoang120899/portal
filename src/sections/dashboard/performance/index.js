@@ -1,20 +1,20 @@
-// @mui
-import { useState } from 'react'
+import { useReducer } from 'react'
 
+// @mui
 import { Card, CardHeader } from '@mui/material'
 
-import { format, parseISO } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
 // components
 import { FormProvider } from '@/components/hook-form'
-import { ISO_DATE_CONDITION } from '@/config'
+import { DATE_YEAR_MONTH_DAY_FORMAT } from '@/config'
 import useRole from '@/hooks/useRole'
+import { fDate, fDateSubMonths } from '@/utils/formatTime'
 
 import PerformanceDetails from './PerformanceDetails'
 import PerformanceTableToolbar from './PerformanceTableToolbar'
-import { DEFAULT_DATE_END, DEFAULT_DATE_START } from './config'
+import { FORM_FIELDS, SUB_MONTH_DEFAULT } from './config'
 import { useGetDataPerformanceQuery } from './performanceSlice'
 
 Performance.propTypes = {
@@ -22,39 +22,52 @@ Performance.propTypes = {
   subheader: PropTypes.string,
 }
 
+const defaultValues = {
+  [FORM_FIELDS.START_DATE]: fDateSubMonths(new Date(), SUB_MONTH_DEFAULT),
+  [FORM_FIELDS.END_DATE]: new Date(),
+}
+
+function reducer(state, action) {
+  const { type, payload = {} } = action
+  switch (type) {
+    case 'search':
+      return {
+        ...state,
+        ...payload,
+      }
+    default:
+      throw new Error()
+  }
+}
+
 export default function Performance({ title, subheader, ...other }) {
-  const [date, setDate] = useState({
-    startDate: DEFAULT_DATE_START,
-    endDate: DEFAULT_DATE_END,
-  })
   const { currentRole } = useRole()
+  const [searchFormValues, dispatch] = useReducer(reducer, defaultValues)
+  const { startDate, endDate } = searchFormValues
+
   const methods = useForm({
-    defaultValues: { ...date },
+    defaultValues,
   })
 
   const { handleSubmit } = methods
 
   const onSubmit = async (data) => {
-    if (ISO_DATE_CONDITION.test(data.startDate)) {
-      data.startDate = parseISO(data.startDate)
-    }
-    if (ISO_DATE_CONDITION.test(data.endDate)) {
-      data.endDate = parseISO(data.endDate)
-    }
     try {
-      const date = {
-        startDate: format(data.startDate, 'yyyy-MM-dd'),
-        endDate: format(data.endDate, 'yyyy-MM-dd'),
-      }
-      setDate({ ...date })
+      dispatch({
+        type: 'search',
+        payload: data,
+      })
     } catch (error) {
-      //
+      // TODO
     }
   }
 
   const { data } = useGetDataPerformanceQuery({
     currentRole,
-    body: { ...date },
+    body: {
+      [FORM_FIELDS.START_DATE]: fDate(startDate, DATE_YEAR_MONTH_DAY_FORMAT),
+      [FORM_FIELDS.END_DATE]: fDate(endDate, DATE_YEAR_MONTH_DAY_FORMAT),
+    },
   })
   const list = data?.data?.list
 

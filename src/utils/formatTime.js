@@ -4,12 +4,13 @@ import {
   formatDistanceToNow,
   getTime,
   startOfWeek,
+  subMonths,
 } from 'date-fns'
 
 import { DATE_FORMAT } from '@/config'
 
-export function fDate(date) {
-  return format(new Date(date), DATE_FORMAT)
+export function fDate(date, dateFormat = DATE_FORMAT) {
+  return format(new Date(date), dateFormat)
 }
 
 export function fDateTime(date) {
@@ -47,4 +48,8 @@ export function fDateStartOfWeek(date) {
 
 export function fDateEndOfWeek(date) {
   return endOfWeek(date)
+}
+
+export function fDateSubMonths(date, months) {
+  return subMonths(date, months)
 }

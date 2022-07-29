@@ -33,7 +33,7 @@ export default function PerformanceDetails({ list = [] }) {
                   {`${total} ${translate('CV')}`}
                 </Typography>
               </Box>
-              <Stack direction='column'>
+              <Stack>
                 {memberTeam.map(
                   ({ linkAvatar = '', name = '', totalCv = 0 }, index) => (
                     <Stack
