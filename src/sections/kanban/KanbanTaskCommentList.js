@@ -18,6 +18,7 @@ import PropTypes from 'prop-types'
 // components
 // utils
 import Scrollbar from '@/components/Scrollbar'
+import { DOMAIN_SERVER_API } from '@/config'
 import useAuth from '@/hooks/useAuth'
 import useLocales from '@/hooks/useLocales'
 import { useGetListCommentQuery } from '@/sections/kanban/kanbanSlice'
@@ -30,9 +31,15 @@ import { useEditCommentMutation } from './kanbanSlice'
 KanbanCommentList.propTypes = {
   title: PropTypes.string,
   cardId: PropTypes.string,
+  isLight: PropTypes.bool,
 }
 
-export default function KanbanCommentList({ title, cardId, ...other }) {
+export default function KanbanCommentList({
+  title,
+  cardId,
+  isLight,
+  ...other
+}) {
   const { data: commentData } = useGetListCommentQuery(cardId)
 
   const commentList = useMemo(() => {
@@ -56,7 +63,11 @@ export default function KanbanCommentList({ title, cardId, ...other }) {
       <Scrollbar>
         <Stack spacing={2} sx={{ p: 2 }}>
           {commentList.map((commentItem) => (
-            <KanbanCommentItem key={commentItem.id} commentItem={commentItem} />
+            <KanbanCommentItem
+              key={commentItem.id}
+              commentItem={commentItem}
+              isLight={isLight}
+            />
           ))}
         </Stack>
       </Scrollbar>
@@ -68,9 +79,10 @@ export default function KanbanCommentList({ title, cardId, ...other }) {
 
 KanbanCommentItem.propTypes = {
   commentItem: PropTypes.object,
+  isLight: PropTypes.bool,
 }
 
-function KanbanCommentItem({ commentItem }) {
+function KanbanCommentItem({ commentItem, isLight }) {
   const { User, content, updatedAt, userId, id } = commentItem
   const { translate } = useLocales()
   const { user } = useAuth()
@@ -104,7 +116,10 @@ function KanbanCommentItem({ commentItem }) {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={User.name} src={User.linkAvatar} />
+        <Avatar
+          alt={User.name}
+          src={`${DOMAIN_SERVER_API}/${User.linkAvatar}`}
+        />
 
         <Box ml={2} sx={{ flex: '1' }}>
           {isEdit ? (
@@ -118,13 +133,22 @@ function KanbanCommentItem({ commentItem }) {
             />
           ) : (
             <>
-              <Stack direction='row'>
+              <Stack
+                direction='column'
+                sx={{
+                  '& p:not(:first-child)': {
+                    opacity: isLight ? 1 : 0.8,
+                  },
+                }}
+              >
                 <Typography mr={1} sx={{ fontWeight: 'bold' }}>
                   {User.name}
                 </Typography>
                 <Typography>{content}</Typography>
               </Stack>
-              <Typography variant='caption'>{fDateTime(updatedAt)}</Typography>
+              <Typography variant='caption' sx={{ opacity: '0.5' }}>
+                {fDateTime(updatedAt)}
+              </Typography>
             </>
           )}
 

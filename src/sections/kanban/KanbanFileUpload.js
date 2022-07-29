@@ -71,7 +71,7 @@ export default function KanbanFileUpload({
             onChange={handleUploadFile}
             disabled={!hasAddPermission}
           />
-          <Iconify icon={'ant-design:upload-outlined'} width={32} height={32} />
+          <Iconify icon={'bxs:cloud-upload'} width={32} height={32} />
         </Button>
       </label>
     </Stack>

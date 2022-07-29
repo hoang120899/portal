@@ -108,7 +108,7 @@ const KanbanTableToolbar = ({
             ),
           }}
           name='search'
-          label='search'
+          label='Search'
           options={cardOptions}
           onChange={(e) => setKeySearch(e.target.value)}
         />

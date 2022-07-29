@@ -8,6 +8,7 @@ import {
   Grid,
   Modal,
   Stack,
+  Typography,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
@@ -64,6 +65,8 @@ KanbanTaskForm.propTypes = {
   onClose: PropTypes.func,
   onCloseUpdate: PropTypes.func,
   setOpenHistory: PropTypes.func,
+  isScrolled: PropTypes.bool,
+  isLight: PropTypes.bool,
 }
 
 function KanbanTaskForm({
@@ -75,6 +78,8 @@ function KanbanTaskForm({
   onClose,
   onCloseUpdate,
   setOpenHistory,
+  isScrolled,
+  isLight,
 }) {
   const AddTaskSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -288,6 +293,51 @@ function KanbanTaskForm({
         <CircularProgress size={60} />
       </Modal>
       <FormProvider onSubmit={handleSubmit(handleSubmitForm)} methods={methods}>
+        <Box
+          sx={{
+            position: 'sticky',
+            top: 0,
+            background: isLight ? 'white' : '#212b36',
+            zIndex: 1000,
+            borderBottom: '1px solid #d8d8d8',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            '& button': {
+              height: 'fit-content',
+            },
+            padding: '12px 24px',
+            marginX: '-24px',
+            boxShadow: isScrolled ? '0 1px 8px 0px #d8d8d8' : 'none',
+          }}
+        >
+          <Box component='header'>
+            <Typography variant='h5'>
+              {card ? translate('Update Card') : translate('Add Card')}
+            </Typography>
+          </Box>
+          <Stack direction='row' sx={{ flexShrink: 0, maxHeight: '48px' }}>
+            {hasAddPermission && (
+              <Button
+                type='submit'
+                variant='contained'
+                sx={{ marginLeft: '8px' }}
+              >
+                {card ? translate('Update') : translate('Save')}
+              </Button>
+            )}
+            <Button
+              type='button'
+              sx={{ marginLeft: '8px' }}
+              onClick={() => {
+                card ? handleCloseUpdateTask() : handleCloseAddTask()
+              }}
+            >
+              {translate('Cancel')}
+            </Button>
+          </Stack>
+        </Box>
+
         <Box mt={2}>
           <RHFTextField
             label={'Name'}
@@ -523,7 +573,7 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <KanbanFileUpload
-            label={'Link CV'}
+            label={'Upload CV to link'}
             nameTextField='linkCv'
             name={watch('name')}
             nameJob={watch('nameJob')}
@@ -535,7 +585,7 @@ function KanbanTaskForm({
         {card && (
           <Box mt={2}>
             <KanbanFileUpload
-              label={'Link Refine CV'}
+              label={'Upload CV to Link Refine'}
               nameTextField='refineCv'
               name={watch('name')}
               nameJob={watch('nameJob')}
@@ -578,31 +628,11 @@ function KanbanTaskForm({
               hasAddPermission={hasAddPermission}
             />
           )}
-          <Stack direction='row' sx={{ flexShrink: 0, maxHeight: '48px' }}>
-            {card && (
-              <Button type='button' variant='contained'>
-                {translate('Create Interview')}
-              </Button>
-            )}
-            {hasAddPermission && (
-              <Button
-                type='submit'
-                variant='contained'
-                sx={{ marginLeft: '8px' }}
-              >
-                {card ? translate('Update') : translate('Save')}
-              </Button>
-            )}
-            <Button
-              type='button'
-              sx={{ marginLeft: '8px' }}
-              onClick={() => {
-                card ? handleCloseUpdateTask() : handleCloseAddTask()
-              }}
-            >
-              {translate('Cancel')}
+          {card && (
+            <Button type='button' variant='contained'>
+              {translate('Create Interview')}
             </Button>
-          </Stack>
+          )}
         </Stack>
       </FormProvider>
     </>

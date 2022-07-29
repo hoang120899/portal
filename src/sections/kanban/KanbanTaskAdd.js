@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 // @mui
-import { Box, Button, Drawer, Stack, Typography } from '@mui/material'
+import { Box, Button, Drawer, Stack, Typography, useTheme } from '@mui/material'
 
 // @prop-types
 import PropTypes from 'prop-types'
@@ -53,6 +53,17 @@ function KanbanTaskAdd({
     onCloseUpdate()
     setOpenHistory(false)
   }
+  const [isScrolled, setIsScrolled] = useState(false)
+  const theme = useTheme()
+  const isLight = theme.palette.mode === 'light'
+
+  const handleScroll = (e) => {
+    if (e.target.scrollTop <= 10) {
+      setIsScrolled(false)
+    } else {
+      setIsScrolled(true)
+    }
+  }
 
   return (
     <Drawer
@@ -61,14 +72,9 @@ function KanbanTaskAdd({
         card ? handleCloseUpdateTask() : handleCloseAddTask()
       }}
       anchor='right'
-      PaperProps={{ sx: { width: { xs: 1, sm: 640 } } }}
+      PaperProps={{ sx: { width: { xs: 1, sm: 640 } }, onScroll: handleScroll }}
     >
-      <Box p={3}>
-        <Box component='header'>
-          <Typography variant='h5'>
-            {card ? translate('Update Card') : translate('Add Card')}
-          </Typography>
-        </Box>
+      <Box pb={3} pl={3} pr={3}>
         <Box>
           <KanbanTaskForm
             card={card}
@@ -79,6 +85,8 @@ function KanbanTaskAdd({
             onClose={onClose}
             onCloseUpdate={onCloseUpdate}
             setOpenHistory={setOpenHistory}
+            isScrolled={isScrolled}
+            isLight={isLight}
           />
 
           {card && (
@@ -113,6 +121,7 @@ function KanbanTaskAdd({
               <KanbanUpdateHistory
                 title={translate('News Update')}
                 cardId={card.id}
+                isLight={isLight}
               />
             </Box>
           )}
@@ -135,6 +144,7 @@ function KanbanTaskAdd({
                 <KanbanTaskCommentList
                   title={translate('List Comment')}
                   cardId={card.id}
+                  isLight={isLight}
                 />
               </Box>
             </Box>
