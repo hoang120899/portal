@@ -1,6 +1,8 @@
 // @mui
 import { enUS, viVN } from '@mui/material/locale'
 
+import { subMonths } from 'date-fns'
+
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
 
@@ -67,7 +69,8 @@ export const DATE_FORMAT = 'dd/MM/yyyy'
 export const DATETIME_FORMAT = 'dd/MM/yyyy hh:mm'
 export const DATETIME_FORMAT_AMPM = 'dd/MM/yyyy hh:mm a'
 export const DATE_FORMAT_DAY_MONTH = 'do MMM'
-
+export const ISO_DATE_CONDITION = /\d{4}-\d{2}-\d{2}/
+export const _3ND_MONTH_AGO = subMonths(Date.now(), 3)
 // User setting
 export const PAGES = {
   Dashboard: 'Dashboard',

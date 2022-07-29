@@ -17,7 +17,7 @@ export default function PerformanceDetails({ list = [] }) {
     <Scrollbar sx={{ height: { xs: '345px !important' } }}>
       <Stack spacing={1} sx={{ p: 3 }}>
         {list.map(({ idTeam, memberTeam, name, total }) => {
-          if (total == 0) return
+          if (!total) return
 
           return (
             <Stack alignItems='left' key={idTeam}>
@@ -30,7 +30,7 @@ export default function PerformanceDetails({ list = [] }) {
                   sx={{ color: 'text.secondary' }}
                   noWrap
                 >
-                  {`${total} CV`}
+                  {`${total} ${translate('CV')}`}
                 </Typography>
               </Box>
               <Stack direction='column'>

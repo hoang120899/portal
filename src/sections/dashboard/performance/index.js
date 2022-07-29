@@ -9,14 +9,12 @@ import { useForm } from 'react-hook-form'
 
 // components
 import { FormProvider } from '@/components/hook-form'
+import { ISO_DATE_CONDITION } from '@/config'
+import useRole from '@/hooks/useRole'
 
 import PerformanceDetails from './PerformanceDetails'
 import PerformanceTableToolbar from './PerformanceTableToolbar'
-import {
-  DEFAULT_DATE_END,
-  DEFAULT_DATE_START,
-  ISO_DATE_CONDITION,
-} from './config'
+import { DEFAULT_DATE_END, DEFAULT_DATE_START } from './config'
 import { useGetDataPerformanceQuery } from './performanceSlice'
 
 Performance.propTypes = {
@@ -29,6 +27,7 @@ export default function Performance({ title, subheader, ...other }) {
     startDate: DEFAULT_DATE_START,
     endDate: DEFAULT_DATE_END,
   })
+  const { currentRole } = useRole()
   const methods = useForm({
     defaultValues: { ...date },
   })
@@ -53,8 +52,10 @@ export default function Performance({ title, subheader, ...other }) {
     }
   }
 
-  const { data } = useGetDataPerformanceQuery({ ...date })
-
+  const { data } = useGetDataPerformanceQuery({
+    currentRole,
+    body: { ...date },
+  })
   const list = data?.data?.list
 
   return (
@@ -63,7 +64,7 @@ export default function Performance({ title, subheader, ...other }) {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <PerformanceTableToolbar />
       </FormProvider>
-      {list ? <PerformanceDetails list={list} /> : null}
+      {list && <PerformanceDetails list={list} />}
     </Card>
   )
 }

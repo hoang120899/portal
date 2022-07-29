@@ -5,9 +5,9 @@ export const performanceSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getDataPerformance: builder.query({
       query: (data) => ({
-        url: API_PERFORMANCE,
+        url: `${API_PERFORMANCE}/?${data.currentRole}`,
         method: 'POST',
-        data: JSON.stringify(data),
+        data: JSON.stringify(data.body),
       }),
     }),
   }),
