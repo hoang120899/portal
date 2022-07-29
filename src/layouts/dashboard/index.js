@@ -27,7 +27,7 @@ const MainStyle = styled('main', {
   paddingTop: HEADER.MOBILE_HEIGHT + 16,
   paddingBottom: 24,
   [theme.breakpoints.up('lg')]: {
-    paddingTop: HEADER.DASHBOARD_DESKTOP_HEIGHT + 24,
+    paddingTop: HEADER.DASHBOARD_DESKTOP_HEIGHT,
     width: `calc(100% - ${NAVBAR.DASHBOARD_WIDTH}px)`,
     transition: theme.transitions.create('margin-left', {
       duration: theme.transitions.duration.shorter,

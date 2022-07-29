@@ -1,9 +1,18 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useRouter } from 'next/router'
 
 // @mui
-import { Box, Button, Container, Stack } from '@mui/material'
+import {
+  Box,
+  Button,
+  ClickAwayListener,
+  Container,
+  Slide,
+  Stack,
+  Tooltip,
+} from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import { useSnackbar } from 'notistack'
 import { DragDropContext } from 'react-beautiful-dnd'
@@ -11,9 +20,11 @@ import { DragDropContext } from 'react-beautiful-dnd'
 import Iconify from '@/components/Iconify'
 // components
 import Page from '@/components/Page'
+import { IconButtonAnimate } from '@/components/animate'
 import { SkeletonKanbanColumn } from '@/components/skeleton'
 // config
-import { PAGES } from '@/config'
+import { HEADER, NAVBAR, PAGES } from '@/config'
+import useCollapseDrawer from '@/hooks/useCollapseDrawer'
 // hooks
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
@@ -36,6 +47,7 @@ import {
   useGetLabelQuery,
   useGetMemberQuery,
 } from '@/sections/kanban/kanbanSlice'
+import cssStyles from '@/utils/cssStyles'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -51,8 +63,58 @@ export async function getStaticProps() {
   }
 }
 
+const SearchIconStyle = styled('div')(({ theme, ownerState }) => {
+  const { isCollapse = false } = ownerState
+  const left = isCollapse
+    ? NAVBAR.DASHBOARD_COLLAPSE_WIDTH
+    : NAVBAR.DASHBOARD_WIDTH
+  const paddingLeft =
+    (window.innerWidth - theme.breakpoints.values['xl'] - left) / 2
+
+  return {
+    top: HEADER.MOBILE_HEIGHT / 4,
+    left: NAVBAR.DASHBOARD_COLLAPSE_WIDTH,
+    zIndex: 1101,
+    position: 'fixed',
+    [theme.breakpoints.up('lg')]: {
+      top: HEADER.DASHBOARD_DESKTOP_HEIGHT / 4,
+      left,
+      paddingLeft: theme.spacing(2),
+    },
+    [theme.breakpoints.up('xl')]: {
+      paddingLeft: paddingLeft + parseInt(theme.spacing(2)),
+    },
+  }
+})
+
+const SearchbarStyle = styled('div')(({ theme, ownerState }) => {
+  const { isCollapse = false } = ownerState
+  const collapseWidth = isCollapse
+    ? NAVBAR.DASHBOARD_COLLAPSE_WIDTH
+    : NAVBAR.DASHBOARD_WIDTH
+
+  return {
+    ...cssStyles(theme).bgBlur(),
+    top: 0,
+    left: 0,
+    zIndex: 1102,
+    width: '100%',
+    display: 'flex',
+    position: 'absolute',
+    padding: theme.spacing(3),
+    boxShadow: theme.customShadows.z8,
+    '& form': {
+      width: '100%',
+    },
+    [theme.breakpoints.up('lg')]: {
+      left: collapseWidth,
+      width: `calc(100% - ${collapseWidth}px)`,
+    },
+  }
+})
+
 export default function Board() {
-  const formRef = useRef()
+  const { isCollapse } = useCollapseDrawer()
   const { themeStretch } = useSettings()
   const { translate } = useLocales()
   const { enqueueSnackbar } = useSnackbar()
@@ -63,6 +125,8 @@ export default function Board() {
   const [card, setCard] = useState(null)
   const [open, setOpen] = useState(false)
   const [isAddTaskNoColumn, setIsAddTaskNoColumn] = useState(false)
+  const [isOpenSearchForm, setOpenSearchForm] = useState(false)
+
   const isLoading = useSelector((state) => state.kanban.isLoading)
   const board = useSelector((state) => selectBoard(state))
 
@@ -255,17 +319,53 @@ export default function Board() {
     )
   }
 
+  const handleOpenSearchForm = useCallback(() => {
+    setOpenSearchForm((prev) => !prev)
+  }, [])
+
+  const handleCloseSearchForm = useCallback(() => {
+    setOpenSearchForm(false)
+  }, [])
+
   return (
     <Page title={translate('nav.board')}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
-        <KanbanTableToolbar
-          ref={formRef}
-          onOpenUpdateTask={handleOpenUpdateTask}
-          labelOptions={labelOptions}
-          jobOptions={jobOptions}
-          clientOptions={clientOptions}
-          memberOptions={memberOptions}
-        />
+        <ClickAwayListener
+          onClickAway={handleCloseSearchForm}
+          mouseEvent='onMouseDown'
+          touchEvent='onTouchStart'
+        >
+          <div>
+            <SearchIconStyle ownerState={{ isCollapse }}>
+              <Tooltip
+                title={translate('Search')}
+                sx={{ visibility: !isOpenSearchForm ? 'visible' : 'hidden' }}
+              >
+                <IconButtonAnimate onClick={handleOpenSearchForm}>
+                  <Iconify icon={'eva:search-fill'} width={20} height={20} />
+                </IconButtonAnimate>
+              </Tooltip>
+            </SearchIconStyle>
+
+            <Slide
+              direction='down'
+              in={isOpenSearchForm}
+              mountOnEnter
+              unmountOnExit
+            >
+              <SearchbarStyle ownerState={{ isCollapse }}>
+                <KanbanTableToolbar
+                  onOpenUpdateTask={handleOpenUpdateTask}
+                  labelOptions={labelOptions}
+                  jobOptions={jobOptions}
+                  clientOptions={clientOptions}
+                  memberOptions={memberOptions}
+                  onCloseSearchForm={handleCloseSearchForm}
+                />
+              </SearchbarStyle>
+            </Slide>
+          </div>
+        </ClickAwayListener>
 
         <KanbanTaskAdd
           open={open}
@@ -279,7 +379,7 @@ export default function Board() {
         />
 
         {isLoading && !board.columnOrder.length ? (
-          <SkeletonKanbanColumn formRef={formRef.current} />
+          <SkeletonKanbanColumn />
         ) : (
           <DragDropContext onDragEnd={onDragEnd}>
             <Stack direction='row' spacing={2} sx={{ overflowY: 'hidden' }}>
@@ -287,7 +387,6 @@ export default function Board() {
                 <KanbanColumn
                   key={columnId}
                   column={board.columns[columnId]}
-                  formRef={formRef.current}
                   hasAddPermission={hasAddPermission}
                   onOpenAddTask={handleOpenAddTask}
                   onOpenUpdateTask={handleOpenUpdateTask}

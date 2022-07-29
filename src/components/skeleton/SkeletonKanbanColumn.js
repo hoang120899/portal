@@ -1,21 +1,13 @@
 // @mui
 import { Box, Paper, Skeleton, Stack } from '@mui/material'
 
-import PropTypes from 'prop-types'
-
 // hooks
 import useKanban from '@/hooks/useKanban'
 // sections
 import { CARD_WIDTH } from '@/sections/kanban/config'
 
-SkeletonKanbanColumn.propTypes = {
-  formRef: PropTypes.any,
-}
-
-export default function SkeletonKanbanColumn({ formRef }) {
-  const { kanbanColumn: { lgHeight = 0, xsHeight = 0 } = {} } = useKanban({
-    formRef,
-  })
+export default function SkeletonKanbanColumn() {
+  const { kanbanColumn: { lgHeight = 0, xsHeight = 0 } = {} } = useKanban()
 
   return (
     <Box

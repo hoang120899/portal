@@ -29,7 +29,6 @@ import { getMoreCardByColumn } from './kanbanSlice'
 
 KanbanColumn.propTypes = {
   column: PropTypes.object,
-  formRef: PropTypes.any,
   hasAddPermission: PropTypes.bool,
   onOpenAddTask: PropTypes.func,
   onOpenUpdateTask: PropTypes.func,
@@ -37,7 +36,6 @@ KanbanColumn.propTypes = {
 
 function KanbanColumn({
   column,
-  formRef,
   hasAddPermission,
   onOpenAddTask,
   onOpenUpdateTask,
@@ -45,9 +43,7 @@ function KanbanColumn({
   const dispatch = useDispatch()
   const { isLoading } = useSelector((state) => state.kanban)
   const scrollRef = useRef(null)
-  const { kanbanColumn: { lgHeight = 0, xsHeight = 0 } = {} } = useKanban({
-    formRef,
-  })
+  const { kanbanColumn: { lgHeight = 0, xsHeight = 0 } = {} } = useKanban()
   const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
   const {
     nameColumn,
