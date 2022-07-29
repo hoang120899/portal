@@ -24,7 +24,7 @@ import Scrollbar from '@/components/Scrollbar'
 import { IconButtonAnimate } from '@/components/animate'
 import {
   FormProvider,
-  RHFAutocomplete, // RHFBasicSelect,
+  RHFAutocomplete,
   RHFDatePicker,
   RHFTextField,
 } from '@/components/hook-form'
@@ -39,7 +39,8 @@ import {
 import { HANDLE_TYPE } from './config'
 import {
   useCreateWeeklyTaskMutation,
-  useGetTaskUserListQuery, // useUpdateWeeklyTaskMutation,
+  useGetTaskUserListQuery,
+  useUpdateWeeklyTaskMutation,
 } from './weeklyTaskSlice'
 
 WeeklyTaskModal.propTypes = {
@@ -76,7 +77,7 @@ export default function WeeklyTaskModal({
   })
   const { list: listUsers = [] } = data?.data || {}
 
-  // const [updateWeeklyTask] = useUpdateWeeklyTaskMutation()
+  const [updateWeeklyTask] = useUpdateWeeklyTaskMutation()
   const [createWeeklyTask] = useCreateWeeklyTaskMutation()
 
   const listUserOptions = useMemo(() => {
@@ -144,20 +145,19 @@ export default function WeeklyTaskModal({
   const onSubmit = async (data) => {
     try {
       if (isEditScreen) {
-        // console.log(data)
-        // data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
-        // data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
-        // delete data.id
-        // delete data.user
-        // const payload = {
-        //   id: String(task?.id),
-        //   body: data,
-        // }
-        // setContentTask(data?.content)
-        // await updateWeeklyTask(payload)
-        // enqueueSnackbar(translate('Update task success!'))
-        // onClose()
-        // setIsReloading(!isReloading)
+        data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
+        data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
+        delete data.id
+        delete data.user
+        const payload = {
+          id: String(task?.id),
+          body: data,
+        }
+        setContentTask(data?.content)
+        await updateWeeklyTask(payload)
+        enqueueSnackbar(translate('Update task success!'))
+        onClose()
+        setIsReloading(!isReloading)
       } else {
         data.startDate = fDateCalendar(format(data.startDate, 'dd/MM/yyyy'))
         data.endDate = fDateCalendar(format(data.endDate, 'dd/MM/yyyy'))
@@ -243,9 +243,11 @@ export default function WeeklyTaskModal({
                 <Grid item sm={9} xs={12}>
                   <RHFAutocomplete
                     AutocompleteProps={{
+                      multiple: false,
                       size: 'small',
+                      defaultValue: task?.user?.name,
                       renderOption: (props, option) => (
-                        <Box key={option.key} component='li' {...props}>
+                        <Box component='li' {...props} key={option.value}>
                           {option.label}
                         </Box>
                       ),
@@ -260,11 +262,6 @@ export default function WeeklyTaskModal({
                     name='userId'
                     options={listUserOptions}
                   />
-                  {/* <RHFBasicSelect
-                    label={'Name'}
-                    name='userId'
-                    options={listUserOptions}
-                  /> */}
                 </Grid>
 
                 <Grid item sm={3} xs={12}>
