@@ -74,8 +74,8 @@ export default function CandidatesCollapsibleTableRow({
             color: '#fff',
             py: 0.5,
             mb: 0.6,
-            pl: 1,
             borderRadius: 0.6,
+            textAlign: 'center',
             cursor: 'pointer',
           }}
         >

@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 
+import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
@@ -26,6 +27,8 @@ import {
   RHFDateTimePicker,
   RHFTextField,
 } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
+import { fDateCalendar } from '@/utils/formatTime'
 
 import {
   convertDriverToBase64,
@@ -46,6 +49,7 @@ export default function CandidateModalDetail({
   disabled = false,
   detailCandidate,
 }) {
+  const { translate } = useLocales()
   const defaultValues = {
     [DETAIL_FIELD.NAME]: '',
     [DETAIL_FIELD.JOB_NAME]: '',
@@ -92,7 +96,10 @@ export default function CandidateModalDetail({
     setListJob(jobArray)
     setValue(DETAIL_FIELD.NAME, name || '')
     setValue(DETAIL_FIELD.EMAIl, email || '')
-    setValue(DETAIL_FIELD.APPROACH_DATE, date || '')
+    setValue(
+      DETAIL_FIELD.APPROACH_DATE,
+      format(new Date(fDateCalendar(date)), 'yyyy-MM-dd') || ''
+    )
     setValue(DETAIL_FIELD.PHONE, phone || '')
     setValue(DETAIL_FIELD.JOB_NAME, jobs?.[0]?.label || '')
     setValue(DETAIL_FIELD.LINK_CV, jobs?.[0]?.cv || '')
@@ -138,7 +145,7 @@ export default function CandidateModalDetail({
           <Grid container spacing={2} sx={{ px: 2, pb: 2 }}>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <Typography>Name</Typography>
+                <Typography> {translate('pages.candidates.name')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.NAME}
@@ -148,7 +155,10 @@ export default function CandidateModalDetail({
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <Typography>Job Name</Typography>
+                <Typography>
+                  {' '}
+                  {translate('pages.candidates.jobName')}
+                </Typography>
                 <RHFBasicSelect
                   name={DETAIL_FIELD.JOB_NAME}
                   label={'Job Name'}
@@ -160,7 +170,9 @@ export default function CandidateModalDetail({
             </Grid>
             <Grid item xs={12} sm={6}>
               <Stack spacing={1}>
-                <Typography>Location</Typography>
+                <Typography>
+                  {translate('pages.candidates.location')}
+                </Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.LOCATION}
@@ -171,7 +183,7 @@ export default function CandidateModalDetail({
 
             <Grid item xs={12} sm={6}>
               <Stack spacing={1}>
-                <Typography>Client Name:</Typography>
+                <Typography>{translate('pages.candidates.client')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.CLIENT_ID}
@@ -181,7 +193,7 @@ export default function CandidateModalDetail({
             </Grid>
             <Grid item xs={12}>
               <Stack>
-                <Typography>Email</Typography>
+                <Typography>{translate('pages.candidates.email')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.EMAIl}
@@ -191,7 +203,7 @@ export default function CandidateModalDetail({
             </Grid>
             <Grid item xs={12} sm={6}>
               <Stack spacing={1}>
-                <Typography>Phone</Typography>
+                <Typography>{translate('pages.candidates.phone')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.PHONE}
@@ -202,16 +214,18 @@ export default function CandidateModalDetail({
 
             <Grid item xs={12} sm={6}>
               <Stack spacing={1}>
-                <Typography>Approach Date</Typography>
+                <Typography>
+                  {translate('pages.candidates.approachDate')}
+                </Typography>
                 <RHFDateTimePicker
-                  disabled={disabled}
                   name={DETAIL_FIELD.APPROACH_DATE}
+                  disabled={disabled}
                 />
               </Stack>
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <Typography>Link CV</Typography>
+                <Typography>{translate('pages.candidates.linkCV')}</Typography>
                 <Grid sx={{ display: 'flex' }}>
                   <RHFTextField
                     inputRef={copyLinkCVRef}
@@ -261,7 +275,9 @@ export default function CandidateModalDetail({
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <Typography>Position</Typography>
+                <Typography>
+                  {translate('pages.candidates.position')}
+                </Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.POSITION}
@@ -271,7 +287,9 @@ export default function CandidateModalDetail({
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={0}>
-                <Typography>Note Approach</Typography>
+                <Typography>
+                  {translate('pages.candidates.notApproach')}
+                </Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.NOT_APPROACH}

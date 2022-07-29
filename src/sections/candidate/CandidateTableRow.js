@@ -67,6 +67,7 @@ export default function CandidateTableRow({
           variant='subtitle2'
           sx={{
             cursor: 'pointer',
+            fontWeight: 'normal',
             '&:hover': {
               color: '#ffe16a',
             },

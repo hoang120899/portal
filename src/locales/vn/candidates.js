@@ -18,6 +18,14 @@ const candidates = {
   source: 'Tài liệu',
   column: 'Cột',
   follower: 'Người theo dõi',
+  jobName: 'Việc làm',
+  location: 'Địa điểm',
+  client: 'Tên khách ',
+  approachDate: 'Ngày đến hạn',
+  linkCV: 'Liên kết CV',
+  placeholderLink: 'Nhập liên kết hoặc nhập cv',
+  position: 'Chức vụ',
+  notApproach: 'Not Approach',
 }
 
 export default candidates

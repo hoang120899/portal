@@ -18,6 +18,14 @@ const candidates = {
   source: 'Source',
   column: 'Column',
   follower: 'Follower',
+  jobName: 'Job Name',
+  location: 'Location',
+  client: 'Client Name',
+  approachDate: 'Approachd Date',
+  linkCV: 'Link CV',
+  placeholderLink: 'Enter link or import cv',
+  position: 'Position',
+  notApproach: 'Not Approach',
 }
 
 export default candidates
