@@ -1,66 +1,93 @@
-// import React from 'react'
+import React from 'react'
 
-// // @mui
-// import {
-//   TimelineConnector,
-//   TimelineContent,
-//   TimelineDot,
-//   TimelineItem,
-//   TimelineSeparator,
-// } from '@mui/lab'
-// import { Box, Stack, TableCell, TableRow, Typography } from '@mui/material'
-// import { styled } from '@mui/material/styles'
+import { useRouter } from 'next/router'
 
-// import PropTypes from 'prop-types'
+// @mui
+import {
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineItem,
+  TimelineSeparator,
+} from '@mui/lab'
+import { Box, TableCell, TableRow, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
-// const TimelineSeparatorStyle = styled(TimelineSeparator)(() => ({
-//   padding: '10px 0',
-// }))
+import PropTypes from 'prop-types'
 
-// const TimelineConnectorStyle = styled(TimelineConnector)(() => ({
-//   width: '4px',
-// }))
+import { PATH_DASHBOARD } from '@/routes/paths'
 
-// const TimelineContentStyle = styled(TimelineContent)(() => ({
-//   padding: '8px 10px',
-// }))
+const TimelineSeparatorStyle = styled(TimelineSeparator)(() => ({
+  padding: '10px 0',
+}))
 
-// const ColorPreview = styled(Box)(() => ({
-//   display: 'flex',
-// }))
+const TimelineConnectorStyle = styled(TimelineConnector)(() => ({
+  width: '4px',
+}))
 
-// export default function RecruitmentProgressTableRow({ row }) {
-//   return (
-//     <TableRow hover>
-//       <TableCell align='left' sx={{py: '2px'}}>
-//         <Box sx={{
-//           '& .MuiTimelineItem-missingOppositeContent:before': {
-//             display: 'none',
-//           },
-//         }}>
-//           <TimelineItem>
-//             <TimelineSeparatorStyle>
-//               <TimelineConnectorStyle />
-//             </TimelineSeparatorStyle>
+const TimelineContentStyle = styled(TimelineContent)(() => ({
+  padding: '8px 10px',
+}))
 
-//             <TimelineContentStyle>
-//               <Typography variant='subtitle2'>name</Typography>
+const ColorPreview = styled(Box)(() => ({
+  display: 'flex',
+}))
 
-//               <Typography variant='caption' sx={{ color: 'text.secondary' }}>
-//                 team
-//               </Typography>
-//             </TimelineContentStyle>
-//           </TimelineItem>
-//         </Box>
-//       </TableCell>
-//       <TableCell align='left'>
-//         <ColorPreview component='span'>
-//           <TimelineDot color='primary' />
-//           <Typography variant='subtitle2' sx={{ mt: '6px', ml: '4px' }}>
-//             status
-//           </Typography>
-//         </ColorPreview>
-//       </TableCell>
-//     </TableRow>
-//   )
-// }
+RecruitmentProgressTableRow.propTypes = {
+  row: PropTypes.object,
+}
+
+export default function RecruitmentProgressTableRow({ row }) {
+  const {
+    Candidate: { name: candidateName },
+    Job: { title },
+    Lane: { nameColumn, background },
+  } = row
+  const router = useRouter()
+
+  const handleForwardToBoard = () => {
+    router.push(PATH_DASHBOARD.board.root)
+  }
+
+  return (
+    <TableRow hover>
+      <TableCell align='left' sx={{ py: '2px', width: '65%' }}>
+        <Box
+          sx={{
+            '& .MuiTimelineItem-missingOppositeContent:before': {
+              display: 'none',
+            },
+          }}
+        >
+          <TimelineItem>
+            <TimelineSeparatorStyle>
+              <TimelineConnectorStyle sx={{ bgcolor: `${background}` }} />
+            </TimelineSeparatorStyle>
+
+            <TimelineContentStyle>
+              <Typography
+                variant='subtitle2'
+                onClick={handleForwardToBoard}
+                sx={{ cursor: 'pointer' }}
+              >
+                {candidateName}
+              </Typography>
+
+              <Typography variant='caption' sx={{ color: 'text.secondary' }}>
+                {title}
+              </Typography>
+            </TimelineContentStyle>
+          </TimelineItem>
+        </Box>
+      </TableCell>
+      <TableCell align='left'>
+        <ColorPreview component='span'>
+          <TimelineDot sx={{ bgcolor: `${background}` }} />
+          <Typography variant='subtitle2' sx={{ mt: '6px', ml: '4px' }}>
+            {nameColumn}
+          </Typography>
+        </ColorPreview>
+      </TableCell>
+    </TableRow>
+  )
+}
