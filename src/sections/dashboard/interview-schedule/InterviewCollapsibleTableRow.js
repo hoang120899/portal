@@ -49,6 +49,10 @@ export default function InterviewCollapsibleTableRow({
 
   const [open, setOpen] = useState(true)
 
+  const handleOpenInterviewDetail = () => {
+    onOpenInterviewDetail(row)
+  }
+
   return (
     <>
       <TableRow>
@@ -70,7 +74,7 @@ export default function InterviewCollapsibleTableRow({
             <Typography
               variant='subtitle2'
               sx={{ cursor: 'pointer', fontWeight: 'bold' }}
-              onClick={onOpenInterviewDetail.bind(null, row)}
+              onClick={handleOpenInterviewDetail}
             >
               {candidateName}
             </Typography>

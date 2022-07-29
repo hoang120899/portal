@@ -31,6 +31,10 @@ export default function InterviewTableRow({ row = {}, onOpenInterviewDetail }) {
     locationName = '',
   } = row
 
+  const handleOpenInterviewDetail = () => {
+    onOpenInterviewDetail(row)
+  }
+
   return (
     <TableRow hover>
       <TableCell align='left'>
@@ -38,7 +42,7 @@ export default function InterviewTableRow({ row = {}, onOpenInterviewDetail }) {
           <Typography
             variant='subtitle2'
             sx={{ cursor: 'pointer', fontWeight: 'bold' }}
-            onClick={onOpenInterviewDetail.bind(null, row)}
+            onClick={handleOpenInterviewDetail}
           >
             <TextMaxLine>{candidateName}</TextMaxLine>
           </Typography>

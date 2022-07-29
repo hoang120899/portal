@@ -197,7 +197,6 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
           select={handleSelectRange}
           eventClick={handleSelectEvent}
           plugins={[dayGridPlugin]}
-          // height='auto'
         />
       </CalendarStyle>
 
