@@ -1,7 +1,13 @@
 import { useState } from 'react'
 
 // @mui
-import { Button, OutlinedInput, Paper, Stack } from '@mui/material'
+import {
+  Button,
+  OutlinedInput,
+  Paper,
+  Stack,
+  TextareaAutosize,
+} from '@mui/material'
 
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
@@ -42,7 +48,12 @@ export default function KanbanTaskCommentInput({ cardId }) {
         <OutlinedInput
           fullWidth
           multiline
-          rows={1}
+          InputProps={{
+            inputComponent: TextareaAutosize,
+            inputProps: {
+              minRows: 1,
+            },
+          }}
           placeholder={translate('Type a message')}
           sx={{ '& fieldset': { display: 'none' } }}
           value={comment}

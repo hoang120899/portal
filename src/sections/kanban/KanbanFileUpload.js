@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack'
 // @prop-types
 import PropTypes from 'prop-types'
 
+import CopyClipboard from '@/components/CopyClipboard'
 import Iconify from '@/components/Iconify'
 import { RHFTextField } from '@/components/hook-form'
 import { API_UPLOAD_LINK } from '@/routes/api'
@@ -18,19 +19,21 @@ KanbanFileUpload.propTypes = {
   linkCv: PropTypes.string,
   hasAddPermission: PropTypes.bool,
   setValue: PropTypes.func,
+  watch: PropTypes.func,
 }
 
 export default function KanbanFileUpload({
   label,
   nameTextField,
-  name,
-  nameJob,
   idJob,
   hasAddPermission,
   setValue,
+  watch,
 }) {
   const { enqueueSnackbar } = useSnackbar()
   const handleUploadFile = async (e) => {
+    const name = watch('name')
+    const nameJob = watch('nameJob')
     if (name === '' || nameJob === '') {
       enqueueSnackbar('Please fill in the form before uploading', {
         variant: 'info',
@@ -74,6 +77,13 @@ export default function KanbanFileUpload({
           <Iconify icon={'bxs:cloud-upload'} width={32} height={32} />
         </Button>
       </label>
+      {watch(nameTextField) && (
+        <CopyClipboard value={watch(nameTextField)} placement='top-start' arrow>
+          <Button>
+            <Iconify icon={'fluent:copy-16-regular'} width={32} height={32} />
+          </Button>
+        </CopyClipboard>
+      )}
     </Stack>
   )
 }

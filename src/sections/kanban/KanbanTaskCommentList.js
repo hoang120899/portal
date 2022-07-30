@@ -9,6 +9,7 @@ import {
   CardHeader,
   Stack,
   TextField,
+  TextareaAutosize,
   Typography,
 } from '@mui/material'
 
@@ -128,7 +129,12 @@ function KanbanCommentItem({ commentItem, isLight }) {
               value={comment}
               fullWidth
               multiline
-              rows={1}
+              InputProps={{
+                inputComponent: TextareaAutosize,
+                inputProps: {
+                  minRows: 1,
+                },
+              }}
               onChange={handleCommentChange}
             />
           ) : (

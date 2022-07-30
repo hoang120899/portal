@@ -8,6 +8,7 @@ import {
   Grid,
   Modal,
   Stack,
+  TextareaAutosize,
   Typography,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
@@ -575,8 +576,7 @@ function KanbanTaskForm({
           <KanbanFileUpload
             label={'Upload CV to link'}
             nameTextField='linkCv'
-            name={watch('name')}
-            nameJob={watch('nameJob')}
+            watch={watch}
             idJob={watchIdJob}
             hasAddPermission={hasAddPermission}
             setValue={setValue}
@@ -587,8 +587,7 @@ function KanbanTaskForm({
             <KanbanFileUpload
               label={'Upload CV to Link Refine'}
               nameTextField='refineCv'
-              name={watch('name')}
-              nameJob={watch('nameJob')}
+              watch={watch}
               idJob={watchIdJob}
               hasAddPermission={hasAddPermission}
               setValue={setValue}
@@ -601,7 +600,12 @@ function KanbanTaskForm({
             label={'Approach Point'}
             name='noteApproach'
             multiline
-            rows={3}
+            InputProps={{
+              inputComponent: TextareaAutosize,
+              inputProps: {
+                minRows: 3,
+              },
+            }}
           />
         </Box>
         <Stack
