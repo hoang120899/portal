@@ -142,7 +142,7 @@ function KanbanCommentItem({ commentItem, isLight }) {
               <Stack
                 direction='column'
                 sx={{
-                  '& p:not(:first-child)': {
+                  '& p:not(:first-of-type)': {
                     opacity: isLight ? 1 : 0.8,
                   },
                 }}

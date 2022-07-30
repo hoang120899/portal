@@ -48,7 +48,7 @@ export default function KanbanTaskCommentInput({ cardId }) {
         <OutlinedInput
           fullWidth
           multiline
-          InputProps={{
+          inputprops={{
             inputComponent: TextareaAutosize,
             inputProps: {
               minRows: 1,
