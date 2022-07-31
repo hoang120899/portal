@@ -25,7 +25,7 @@ const candidates = {
   linkCV: 'Liên kết CV',
   placeholderLink: 'Nhập liên kết hoặc nhập cv',
   position: 'Chức vụ',
-  notApproach: 'Not Approach',
+  notApproach: 'Không tiếp cận',
 }
 
 export default candidates

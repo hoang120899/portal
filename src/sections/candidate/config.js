@@ -6,6 +6,7 @@ export const SEARCH_FIELD = {
   JOB_ID: 'jobId',
   SKILL: 'skill',
 }
+
 export const DETAIL_FIELD = {
   NAME: 'name',
   JOB_NAME: 'jobName',
@@ -18,6 +19,7 @@ export const DETAIL_FIELD = {
   POSITION: 'position',
   NOT_APPROACH: 'notApproach',
 }
+
 export const TABLE_DESKTOP_HEAD = [
   { id: 'name', label: 'Name', align: 'left' },
   { id: 'phone', label: 'Phone', align: 'left' },
@@ -28,4 +30,10 @@ export const TABLE_DESKTOP_HEAD = [
   { id: 'follower', label: 'Follower', align: 'left' },
 ]
 
+export const URL_DOWNLOAD_CV = 'data:application/pdf;base64'
 export const TABLE_MOBILE_HEAD = [{ id: 'name', label: 'Name', align: 'left' }]
+export const THEME_DARK = 'dark'
+export const COLOR_THEME_DARK = '#cccccc'
+export const COLOR_THEME_LIGHT = '#505050'
+export const COLOR_DATA_COLUMN = '#fff'
+export const HOVER_COLOR_DATA = '#ffe16a'

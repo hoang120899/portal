@@ -41,6 +41,7 @@ export const candidateApiSlice = apiSlice.injectEndpoints({
     }),
   }),
 })
+
 export const getAdminCandidateDetail = createAsyncThunk(
   'getCandidate/Detail',
   async ({ candidateId }) => {
@@ -50,6 +51,7 @@ export const getAdminCandidateDetail = createAsyncThunk(
     return response.data
   }
 )
+
 export const convertDriverToBase64 = createAsyncThunk(
   'convertBase64/download',
   async ({ linkDrive }) => {
@@ -63,6 +65,7 @@ export const convertDriverToBase64 = createAsyncThunk(
     return base64
   }
 )
+
 export const candidateSlice = createSlice({
   name: 'candidates',
   initialState: {
@@ -84,5 +87,6 @@ export const candidateSlice = createSlice({
       })
   },
 })
+
 export const { useGetAdminSearchCandidateQuery } = candidateApiSlice
 export default candidateSlice.reducer

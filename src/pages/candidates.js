@@ -11,8 +11,8 @@ import { styled } from '@mui/material/styles'
 
 import { useForm } from 'react-hook-form'
 
-import BasicTable from '@/components/BasicTable'
 // components
+import BasicTable from '@/components/BasicTable'
 import HeaderBreadcrumbs from '@/components/HeaderBreadcrumbs'
 import Iconify from '@/components/Iconify'
 import Page from '@/components/Page'
@@ -21,8 +21,8 @@ import { IconButtonAnimate } from '@/components/animate'
 import { FormProvider } from '@/components/hook-form'
 // config
 import { HEADER, NAVBAR, PAGES } from '@/config'
-import useCollapseDrawer from '@/hooks/useCollapseDrawer'
 // hooks
+import useCollapseDrawer from '@/hooks/useCollapseDrawer'
 import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 import useRole from '@/hooks/useRole'
@@ -43,8 +43,8 @@ import {
   TABLE_DESKTOP_HEAD,
   TABLE_MOBILE_HEAD,
 } from '@/sections/candidate/config'
-import cssStyles from '@/utils/cssStyles'
 // utils
+import cssStyles from '@/utils/cssStyles'
 import { getRolesByPage } from '@/utils/role'
 
 Candidates.getLayout = function getLayout({ roles = [] }, page) {
@@ -169,6 +169,7 @@ export default function Candidates() {
     })
     setOpenSearchForm(false)
   }
+
   const handleGetCandidateDetail = useCallback(
     (row) => () => {
       setIsOpen(true)
@@ -176,9 +177,11 @@ export default function Candidates() {
     },
     []
   )
+
   const handleCloseCandidateDetail = () => {
     setIsOpen(false)
   }
+
   const tableRowComp = useCallback(
     (row, index) => {
       if (isMobileScreen)
@@ -199,6 +202,7 @@ export default function Candidates() {
     },
     [isMobileScreen, handleGetCandidateDetail]
   )
+
   const handleOpenSearchForm = useCallback(() => {
     setOpenSearchForm((prev) => !prev)
   }, [])

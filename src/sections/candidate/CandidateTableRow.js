@@ -5,6 +5,14 @@ import PropTypes from 'prop-types'
 
 import Label from '@/components/Label'
 
+import {
+  COLOR_DATA_COLUMN,
+  COLOR_THEME_DARK,
+  COLOR_THEME_LIGHT,
+  HOVER_COLOR_DATA,
+  THEME_DARK,
+} from './config'
+
 CandidateTableRow.propTypes = {
   row: PropTypes.object,
   handleGetCandidateDetail: PropTypes.func,
@@ -24,6 +32,7 @@ export default function CandidateTableRow({
     lane = [],
     follower = [],
   } = row
+
   const renderData = (listData) => (
     <>
       {listData?.map((data, id) => (
@@ -31,7 +40,11 @@ export default function CandidateTableRow({
           variant='subtitle2'
           sx={{
             fontWeight: 'normal',
-            color: `${theme.palette.mode === 'dark' ? '#cccccc' : '#505050'}`,
+            color: `${
+              theme.palette.mode === THEME_DARK
+                ? COLOR_THEME_DARK
+                : COLOR_THEME_LIGHT
+            }`,
           }}
           key={id}
         >
@@ -40,6 +53,7 @@ export default function CandidateTableRow({
       ))}
     </>
   )
+
   const renderDataColumn = (listData) => (
     <>
       {listData?.map((data, id) => (
@@ -50,7 +64,7 @@ export default function CandidateTableRow({
           noWrap
           sx={{
             backgroundColor: `${data.background}`,
-            color: '#fff',
+            color: COLOR_DATA_COLUMN,
             py: 0.5,
             px: 0.5,
             mb: 0.6,
@@ -72,9 +86,13 @@ export default function CandidateTableRow({
           sx={{
             cursor: 'pointer',
             fontWeight: 'normal',
-            color: `${theme.palette.mode === 'dark' ? '#cccccc' : '#505050'}`,
+            color: `${
+              theme.palette.mode === THEME_DARK
+                ? COLOR_THEME_DARK
+                : COLOR_THEME_LIGHT
+            }`,
             '&:hover': {
-              color: '#ffe16a',
+              color: HOVER_COLOR_DATA,
             },
           }}
         >
@@ -91,6 +109,7 @@ export default function CandidateTableRow({
           </Label>
         )}
       </TableCell>
+
       <TableCell align='left' sx={{ width: 180 }}>
         {renderData(date)}
       </TableCell>

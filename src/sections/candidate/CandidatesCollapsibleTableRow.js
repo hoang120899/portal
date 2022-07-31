@@ -21,6 +21,14 @@ import Label from '@/components/Label'
 import TextMaxLine from '@/components/TextMaxLine'
 import useLocales from '@/hooks/useLocales'
 
+import {
+  COLOR_DATA_COLUMN,
+  COLOR_THEME_DARK,
+  COLOR_THEME_LIGHT,
+  HOVER_COLOR_DATA,
+  THEME_DARK,
+} from './config'
+
 CandidatesCollapsibleTableRow.propTypes = {
   row: PropTypes.object,
   handleGetCandidateDetail: PropTypes.func,
@@ -43,6 +51,7 @@ export default function CandidatesCollapsibleTableRow({
 
   const [open, setOpen] = useState(true)
   const theme = useTheme()
+
   const renderData = (listData) => (
     <>
       {listData?.map((data, id) => (
@@ -51,14 +60,18 @@ export default function CandidatesCollapsibleTableRow({
           key={id}
           sx={{
             fontWeight: 'normal',
-            color: `${theme.palette.mode === 'dark' ? '#cccccc' : '#505050'}`,
+            color: `${
+              theme.palette.mode === THEME_DARK
+                ? COLOR_THEME_DARK
+                : COLOR_THEME_LIGHT
+            }`,
             fontSize: 14,
           }}
         >
           <TextMaxLine
             line={1}
             key={id}
-            sx={{ maxWidth: 160, fontWeight: 'normal', fontSize: 14 }}
+            sx={{ width: 160, fontWeight: 'normal', fontSize: 14 }}
           >
             {data}
           </TextMaxLine>
@@ -66,6 +79,7 @@ export default function CandidatesCollapsibleTableRow({
       ))}
     </>
   )
+
   const renderDataColumn = (listData) => (
     <>
       {listData?.map((data, id) => (
@@ -76,7 +90,7 @@ export default function CandidatesCollapsibleTableRow({
           noWrap
           sx={{
             backgroundColor: `${data.background}`,
-            color: '#fff',
+            color: COLOR_DATA_COLUMN,
             py: 0.5,
             mb: 0.6,
             px: 0.5,
@@ -107,13 +121,14 @@ export default function CandidatesCollapsibleTableRow({
               }
             />
           </IconButton>
+
           <Typography
             onClick={handleGetCandidateDetail}
             variant='subtitle1'
             sx={{
               cursor: 'pointer',
               '&:hover': {
-                color: '#ffe16a',
+                color: HOVER_COLOR_DATA,
               },
               fontSize: 16,
             }}
@@ -167,18 +182,21 @@ export default function CandidatesCollapsibleTableRow({
                       </Label>
                     </TableCell>
                   </TableRow>
+
                   <TableRow>
                     <TableCell>
                       {translate('pages.candidates.source')}
                     </TableCell>
                     <TableCell>{renderData(source)}</TableCell>
                   </TableRow>
+
                   <TableRow>
                     <TableCell>
                       {translate('pages.candidates.column')}
                     </TableCell>
                     <TableCell>{renderDataColumn(lane)}</TableCell>
                   </TableRow>
+
                   {follower.length !== 0 && (
                     <TableRow>
                       <TableCell>
