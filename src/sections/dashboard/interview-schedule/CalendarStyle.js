@@ -1,10 +1,14 @@
 import { alpha, styled } from '@mui/material/styles'
 
 const CalendarStyle = styled('div')(({ theme }) => ({
-  width: 'calc(100% + 2px)',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
   marginLeft: -1,
   marginBottom: -1,
   '& .fc': {
+    height: '75%',
     '--fc-list-event-dot-width': '8px',
     '--fc-border-color': theme.palette.divider,
     '--fc-event-border-color': theme.palette.info.light,
@@ -128,6 +132,13 @@ const CalendarStyle = styled('div')(({ theme }) => ({
     ...theme.typography.caption,
     color: theme.palette.text.secondary,
   },
+  '& .fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events': {
+    marginBottom: 0,
+  },
+
+  '& .fc-scroller': {
+    overflowY: 'unset !important',
+  },
 
   // Week & Day View
   '& .fc .fc-timegrid-axis-cushion': {
@@ -136,6 +147,12 @@ const CalendarStyle = styled('div')(({ theme }) => ({
   },
   '& .fc .fc-timegrid-slot-label-cushion': {
     ...theme.typography.body2,
+  },
+
+  '& .fc-daygrid-day-bottom': {
+    padding: 0,
+    display: 'flex',
+    justifyContent: 'center',
   },
 
   // Agenda View
