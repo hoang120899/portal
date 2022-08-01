@@ -55,14 +55,10 @@ export const getAdminCandidateDetail = createAsyncThunk(
 export const convertDriverToBase64 = createAsyncThunk(
   'convertBase64/download',
   async ({ linkDrive }) => {
-    let base64 = ''
     const response = await _postApi(API_ADMIN_DOWNLOAD_CV_PDF, {
       linkDrive: linkDrive,
     })
-    if (response) {
-      base64 = response.data.base64
-    }
-    return base64
+    return response.data.base64
   }
 )
 
@@ -71,18 +67,30 @@ export const candidateSlice = createSlice({
   initialState: {
     candidateDetail: {},
     base64: '',
-    isLoadingPDF: true,
+    isLoadingPDF: false,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(getAdminCandidateDetail.pending, (state) => {
+        state.isLoadingPDF = false
+      })
       .addCase(getAdminCandidateDetail.fulfilled, (state, action) => {
         state.candidateDetail = action.payload.data
         state.base64 = ''
         state.isLoadingPDF = true
       })
+      .addCase(getAdminCandidateDetail.rejected, (state) => {
+        state.isLoadingPDF = false
+      })
+      .addCase(convertDriverToBase64.pending, (state) => {
+        state.isLoadingPDF = true
+      })
       .addCase(convertDriverToBase64.fulfilled, (state, action) => {
         state.base64 = action.payload
+        state.isLoadingPDF = false
+      })
+      .addCase(convertDriverToBase64.rejected, (state) => {
         state.isLoadingPDF = false
       })
   },

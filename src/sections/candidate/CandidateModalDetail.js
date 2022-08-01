@@ -208,12 +208,10 @@ export default function CandidateModalDetail({
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.candidates.jobName')}</Typography>
-
                 <RHFBasicSelect
                   name={DETAIL_FIELD.JOB_NAME}
                   label={'Job Name'}
                   options={jobArray}
-                  value={label}
                   onChange={handleChangeSelectJobs}
                 />
               </Stack>
@@ -224,7 +222,6 @@ export default function CandidateModalDetail({
                 <Typography>
                   {translate('pages.candidates.location')}
                 </Typography>
-
                 <RHFTextField
                   name={DETAIL_FIELD.LOCATION}
                   disabled={disabled}
@@ -359,12 +356,12 @@ export default function CandidateModalDetail({
                   loading={isLoadingPDF}
                   onClick={handleOpenPDF}
                 >
-                  Raw CV
+                  {translate('pages.candidates.rawCV')}
                 </LoadingButton>
               )}
 
               <Button variant='outlined' color='inherit' onClick={onClose}>
-                Cancel
+                {translate('pages.candidates.cancel')}
               </Button>
             </DialogActions>
           </Grid>

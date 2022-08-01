@@ -26,6 +26,8 @@ const candidates = {
   placeholderLink: 'Enter link or import cv',
   position: 'Position',
   notApproach: 'Not Approach',
+  rawCV: 'Raw CV',
+  cancel: 'Cancel',
 }
 
 export default candidates

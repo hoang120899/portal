@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 // @mui
 import { TableCell, TableRow, Typography, useTheme } from '@mui/material'
 
@@ -33,11 +35,13 @@ export default function CandidateTableRow({
     follower = [],
   } = row
 
-  const renderData = (listData) => (
-    <>
-      {listData?.map((data, id) => (
+  const renderData = useCallback(
+    (listData) => {
+      if (!listData.length && !Array.isArray(listData)) return
+      return listData?.map((data, id) => (
         <Typography
           variant='subtitle2'
+          key={id}
           sx={{
             fontWeight: 'normal',
             color: `${
@@ -45,38 +49,39 @@ export default function CandidateTableRow({
                 ? COLOR_THEME_DARK
                 : COLOR_THEME_LIGHT
             }`,
+            fontSize: 14,
           }}
-          key={id}
         >
           {data}
         </Typography>
-      ))}
-    </>
+      ))
+    },
+    [theme.palette.mode]
   )
 
-  const renderDataColumn = (listData) => (
-    <>
-      {listData?.map((data, id) => (
-        <Typography
-          width={110}
-          variant='subtitle2'
-          key={id}
-          noWrap
-          sx={{
-            backgroundColor: `${data.background}`,
-            color: COLOR_DATA_COLUMN,
-            py: 0.5,
-            px: 0.5,
-            mb: 0.6,
-            borderRadius: 0.6,
-            cursor: 'pointer',
-          }}
-        >
-          {data.nameColumn}
-        </Typography>
-      ))}
-    </>
-  )
+  const renderDataColumn = useCallback((listData) => {
+    if (!listData.length && !Array.isArray(listData)) return
+    return listData?.map((data, id) => (
+      <Typography
+        width={110}
+        variant='subtitle2'
+        key={id}
+        noWrap
+        sx={{
+          backgroundColor: `${data.background}`,
+          color: COLOR_DATA_COLUMN,
+          py: 0.5,
+          mb: 0.6,
+          px: 0.5,
+          borderRadius: 0.6,
+          textAlign: 'center',
+          cursor: 'pointer',
+        }}
+      >
+        {data.nameColumn}
+      </Typography>
+    ))
+  }, [])
   return (
     <TableRow hover>
       <TableCell align='left'>

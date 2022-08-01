@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 // @mui
 import {
@@ -9,6 +9,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material'
@@ -19,7 +20,9 @@ import PropTypes from 'prop-types'
 import Iconify from '@/components/Iconify'
 import Label from '@/components/Label'
 import TextMaxLine from '@/components/TextMaxLine'
+import { IconButtonAnimate } from '@/components/animate'
 import useLocales from '@/hooks/useLocales'
+import getColorPresets from '@/utils/getColorPresets'
 
 import {
   COLOR_DATA_COLUMN,
@@ -52,9 +55,29 @@ export default function CandidatesCollapsibleTableRow({
   const [open, setOpen] = useState(true)
   const theme = useTheme()
 
-  const renderData = (listData) => (
-    <>
-      {listData?.map((data, id) => (
+  const styles = {
+    message: {
+      fontWeight: 300,
+      transition: 'all 0.3s',
+      '&:hover': {
+        color: `${getColorPresets('yellow').main}`,
+      },
+    },
+    buttonDetail: {
+      p: 1,
+      ml: 0.5,
+      border: (theme) => `dashed 1px ${theme.palette.divider}`,
+      transition: 'all 0.15s',
+      '&:hover': {
+        color: `${getColorPresets('yellow').main}`,
+      },
+    },
+  }
+
+  const renderData = useCallback(
+    (listData) => {
+      if (!listData.length && !Array.isArray(listData)) return
+      return listData?.map((data, id) => (
         <Typography
           variant='subtitle2'
           key={id}
@@ -76,34 +99,34 @@ export default function CandidatesCollapsibleTableRow({
             {data}
           </TextMaxLine>
         </Typography>
-      ))}
-    </>
+      ))
+    },
+    [theme.palette.mode]
   )
 
-  const renderDataColumn = (listData) => (
-    <>
-      {listData?.map((data, id) => (
-        <Typography
-          width={110}
-          variant='subtitle2'
-          key={id}
-          noWrap
-          sx={{
-            backgroundColor: `${data.background}`,
-            color: COLOR_DATA_COLUMN,
-            py: 0.5,
-            mb: 0.6,
-            px: 0.5,
-            borderRadius: 0.6,
-            textAlign: 'center',
-            cursor: 'pointer',
-          }}
-        >
-          {data.nameColumn}
-        </Typography>
-      ))}
-    </>
-  )
+  const renderDataColumn = useCallback((listData) => {
+    if (!listData.length && !Array.isArray(listData)) return
+    return listData?.map((data, id) => (
+      <Typography
+        width={110}
+        variant='subtitle2'
+        key={id}
+        noWrap
+        sx={{
+          backgroundColor: `${data.background}`,
+          color: COLOR_DATA_COLUMN,
+          py: 0.5,
+          mb: 0.6,
+          px: 0.5,
+          borderRadius: 0.6,
+          textAlign: 'center',
+          cursor: 'pointer',
+        }}
+      >
+        {data.nameColumn}
+      </Typography>
+    ))
+  }, [])
   return (
     <>
       <TableRow>
@@ -205,6 +228,24 @@ export default function CandidatesCollapsibleTableRow({
                       <TableCell>{renderData(follower)}</TableCell>
                     </TableRow>
                   )}
+
+                  <TableRow>
+                    <TableCell>{translate('Detail')}</TableCell>
+                    <TableCell>
+                      <Tooltip title='Detail'>
+                        <IconButtonAnimate
+                          sx={styles.buttonDetail}
+                          onClick={handleGetCandidateDetail}
+                        >
+                          <Iconify
+                            icon={'eva:eye-fill'}
+                            width={20}
+                            height={20}
+                          />
+                        </IconButtonAnimate>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </Paper>

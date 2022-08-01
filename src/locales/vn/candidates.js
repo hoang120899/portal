@@ -26,6 +26,8 @@ const candidates = {
   placeholderLink: 'Nhập liên kết hoặc nhập cv',
   position: 'Chức vụ',
   notApproach: 'Không tiếp cận',
+  rawCV: 'Xem CV',
+  cancel: 'Đóng',
 }
 
 export default candidates
