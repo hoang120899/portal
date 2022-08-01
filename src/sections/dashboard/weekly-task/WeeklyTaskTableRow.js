@@ -9,6 +9,12 @@ import {
   Typography,
 } from '@mui/material'
 
+import PropTypes from 'prop-types'
+
+WeeklyTaskTableRow.propTypes = {
+  row: PropTypes.object,
+}
+
 export default function WeeklyTaskTableRow({ row }) {
   const {
     user: { linkAvatar, name, nameTeam },
