@@ -38,7 +38,7 @@ export default function CandidateTableRow({
   const renderData = useCallback(
     (listData) => {
       if (!listData.length && !Array.isArray(listData)) return
-      return listData?.map((data, id) => (
+      return listData.map((data, id) => (
         <Typography
           variant='subtitle2'
           key={id}
@@ -61,7 +61,7 @@ export default function CandidateTableRow({
 
   const renderDataColumn = useCallback((listData) => {
     if (!listData.length && !Array.isArray(listData)) return
-    return listData?.map((data, id) => (
+    return listData.map((data, id) => (
       <Typography
         width={110}
         variant='subtitle2'
