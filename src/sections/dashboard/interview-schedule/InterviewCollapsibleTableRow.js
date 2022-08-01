@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
+import { IconButtonAnimate } from '@/components/animate'
 // hooks
 import useLocales from '@/hooks/useLocales'
 import palette from '@/theme/palette'
@@ -56,7 +57,7 @@ export default function InterviewCollapsibleTableRow({
   return (
     <>
       <TableRow>
-        <TableCell sx={{ display: 'flex' }}>
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <IconButton
             size='small'
             color={open ? 'primary' : 'default'}
@@ -70,6 +71,7 @@ export default function InterviewCollapsibleTableRow({
               }
             />
           </IconButton>
+
           <TypographyRootStyle>
             <Typography
               variant='subtitle2'
@@ -81,6 +83,7 @@ export default function InterviewCollapsibleTableRow({
           </TypographyRootStyle>
         </TableCell>
       </TableRow>
+
       <TableRow>
         <TableCell sx={{ py: 0 }} colSpan={6}>
           <Collapse in={open} timeout='auto' unmountOnExit>
@@ -112,6 +115,19 @@ export default function InterviewCollapsibleTableRow({
                   <TableRow>
                     <TableCell>{translate('Time end')}</TableCell>
                     <TableCell>{timeInterviewEndStr}</TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell>{translate('View detail')}</TableCell>
+                    <TableCell>
+                      <IconButtonAnimate onClick={handleOpenInterviewDetail}>
+                        <Iconify
+                          icon={'eva:eye-outline'}
+                          width={20}
+                          height={20}
+                        />
+                      </IconButtonAnimate>
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
