@@ -1,7 +1,4 @@
-import React from 'react'
-
-// next
-import NextLink from 'next/link'
+import React, { useCallback, useState } from 'react'
 
 // @mui
 import { Button, Container } from '@mui/material'
@@ -14,11 +11,14 @@ import Page from '@/components/Page'
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import useRole from '@/hooks/useRole'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
+import ListJobTable from '@/sections/job/ListJobTable'
+import JobModal from '@/sections/job/jobform/JobModal'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -37,6 +37,18 @@ export async function getStaticProps() {
 export default function Jobs() {
   const { themeStretch } = useSettings()
   const { translate } = useLocales()
+  const [isOpen, setIsOpen] = useState(false)
+  const { isDirectorRole, isLeaderRole, isMemberRole } = useRole()
+
+  const hasPermission = isDirectorRole || isLeaderRole || isMemberRole
+
+  const handleOpenJobForm = useCallback(() => {
+    setIsOpen(true)
+  }, [])
+
+  const handleCloseJobForm = useCallback(() => {
+    setIsOpen(false)
+  }, [])
 
   return (
     <Page title={translate('nav.jobs')}>
@@ -51,16 +63,20 @@ export default function Jobs() {
             { name: translate('pages.jobs.heading') },
           ]}
           action={
-            <NextLink href={PATH_DASHBOARD.jobs.new} passHref>
-              <Button
-                variant='contained'
-                startIcon={<Iconify icon={'eva:plus-fill'} />}
-              >
-                New Job
-              </Button>
-            </NextLink>
+            <Button
+              variant='contained'
+              startIcon={<Iconify icon={'eva:plus-fill'} />}
+              onClick={handleOpenJobForm}
+            >
+              {translate('pages.jobs.newJob')}
+            </Button>
           }
         />
+        {hasPermission && <ListJobTable />}
+
+        {hasPermission && (
+          <JobModal isOpen={isOpen} onClose={handleCloseJobForm} />
+        )}
       </Container>
     </Page>
   )

@@ -13,7 +13,7 @@ import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
 // sections
-import JobNewEditForm from '@/sections/job/JobNewEditForm'
+// import JobNewEditForm from '@/sections/job/JobForm'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -43,7 +43,7 @@ export default function UserCreate() {
             { name: 'New job' },
           ]}
         />
-        <JobNewEditForm />
+        {/* <JobNewEditForm /> */}
       </Container>
     </Page>
   )

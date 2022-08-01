@@ -1,0 +1,23 @@
+const jobDetail = {
+  heading: 'List jobs',
+  downloadAsPdf: 'Download as PDF',
+  followers: 'Followers',
+  addToBoard: 'Add to board',
+  name: 'Name',
+  jobName: 'Job name',
+  location: 'Location',
+  clientName: 'Client name',
+  email: 'Email',
+  lane: 'Lane',
+  phone: 'Phone',
+  approachDate: 'Approach date',
+  linkCv: 'Link CV',
+  position: 'Position',
+  noteApproach: 'Note approach',
+  rawCv: 'Raw CV',
+  changeTo: 'change to',
+  activity: 'Activity',
+  click: 'Click',
+  candidate: 'Candidate',
+}
+export default jobDetail

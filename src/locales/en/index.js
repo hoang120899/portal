@@ -5,6 +5,7 @@ import candidates from './candidates'
 import clients from './clients'
 import dashboard from './dashboard'
 import interview from './interview'
+import jobDetail from './jobDetail'
 import jobs from './jobs'
 import login from './login'
 import notification from './notification'
@@ -24,6 +25,7 @@ const en = {
     notification: 'Notification',
     task: 'Task',
     jobs: 'Jobs',
+    jobDetail: 'Job detail',
     clients: 'Clients',
     candidates: 'Candidates',
     users: 'Users',
@@ -47,6 +49,18 @@ const en = {
     users,
     login,
     jobs,
+    jobDetail,
+  },
+  common: {
+    add: 'Add',
+    edit: 'Edit',
+    delete: 'Delete',
+    save: 'Save',
+    cancel: 'Cancel',
+    close: 'Close',
+    back: 'Back',
+    next: 'Next',
+    search: 'Search',
   },
 }
 

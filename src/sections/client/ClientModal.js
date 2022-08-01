@@ -17,6 +17,8 @@ ClientModal.propTypes = {
   onClose: PropTypes.func,
   handleType: PropTypes.string,
   client: PropTypes.object,
+  createClient: PropTypes.func,
+  updateClient: PropTypes.func,
 }
 
 const CustomLink = styled(Link)(() => ({
@@ -24,7 +26,14 @@ const CustomLink = styled(Link)(() => ({
   cursor: 'pointer',
 }))
 
-export default function ClientModal({ isOpen, onClose, handleType, client }) {
+export default function ClientModal({
+  isOpen,
+  onClose,
+  handleType,
+  client,
+  createClient,
+  updateClient,
+}) {
   const dispatch = useDispatch()
   const { shortLink = '' } = useSelector((state) => state.client)
   const isEditScreen = HANDLE_TYPE.EDIT === handleType
@@ -66,6 +75,8 @@ export default function ClientModal({ isOpen, onClose, handleType, client }) {
           canEdit={canEdit}
           client={client}
           onClose={onClose}
+          createClient={createClient}
+          updateClient={updateClient}
         />
       </Stack>
     </Drawer>
