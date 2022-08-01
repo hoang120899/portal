@@ -4,6 +4,8 @@ import { Divider, Drawer } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
+import Scrollbar from '@/components/Scrollbar'
+
 import JobForm from './JobForm'
 
 JobModal.propTypes = {
@@ -35,14 +37,16 @@ function JobModal({ isOpen, isEdit, onClose, job, onSubmit }) {
         onScroll: handleScroll,
       }}
     >
-      <Divider />
-      <JobForm
-        onClose={onClose}
-        isEdit={isEdit}
-        job={job}
-        onEditSubmit={onSubmit}
-        isScrolled={isScrolled}
-      />
+      <Scrollbar sx={{ zIndex: 9999, '& label': { zIndex: 0 } }}>
+        <Divider />
+        <JobForm
+          onClose={onClose}
+          isEdit={isEdit}
+          job={job}
+          onEditSubmit={onSubmit}
+          isScrolled={isScrolled}
+        />
+      </Scrollbar>
     </Drawer>
   )
 }

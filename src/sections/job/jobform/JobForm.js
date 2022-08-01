@@ -261,7 +261,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
           background: isLight
             ? JOB_FORM_STICKY_BAR_COLOR.light.color
             : JOB_FORM_STICKY_BAR_COLOR.dark.color,
-          zIndex: 1000,
+          zIndex: 1,
           borderBottom: `1px solid ${
             isLight
               ? JOB_FORM_STICKY_BAR_COLOR.light.color
