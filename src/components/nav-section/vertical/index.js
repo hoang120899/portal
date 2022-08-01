@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 // @mui
 import { Box, List, ListSubheader } from '@mui/material'
 import { styled } from '@mui/material/styles'
@@ -16,7 +18,7 @@ export const ListSubheaderStyle = styled((props) => (
 ))(({ theme }) => ({
   ...theme.typography.overline,
   paddingTop: theme.spacing(3),
-  paddingLeft: theme.spacing(2),
+  paddingLeft: theme.spacing(1),
   paddingBottom: theme.spacing(1),
   color: theme.palette.text.primary,
   transition: theme.transitions.create('opacity', {
@@ -36,9 +38,17 @@ export default function NavSectionVertical({
 }) {
   const { translate } = useLocales()
   const { checkAccessPermission } = useRole()
+  const navConfigBaseRole = useMemo(
+    () =>
+      navConfig.filter(({ items = [] }) =>
+        items.some(({ roles = [] }) => checkAccessPermission(roles))
+      ),
+    [checkAccessPermission, navConfig]
+  )
+
   return (
     <Box {...other}>
-      {navConfig.map((group, groupIndex) => (
+      {navConfigBaseRole.map((group, groupIndex) => (
         <List
           key={`${group.subheader}-${groupIndex}`}
           disablePadding
@@ -54,17 +64,13 @@ export default function NavSectionVertical({
             {translate(group.subheader) || ''}
           </ListSubheaderStyle>
 
-          {group.items.map((list) => {
-            const hasAccessPermission = checkAccessPermission(list?.roles)
-            if (!hasAccessPermission) return null
-            return (
-              <NavListRoot
-                key={list.title + list.path}
-                list={list}
-                isCollapse={isCollapse}
-              />
-            )
-          })}
+          {group.items.map((list) => (
+            <NavListRoot
+              key={list.title + list.path}
+              list={list}
+              isCollapse={isCollapse}
+            />
+          ))}
         </List>
       ))}
     </Box>

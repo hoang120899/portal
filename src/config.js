@@ -100,28 +100,21 @@ export const ROLE_BY_PAGES = [
     pageNames: [
       PAGES.Dashboard,
       PAGES.Notification,
+      PAGES.Jobs,
       PAGES.Candidates,
       PAGES.Interview,
       PAGES.Board,
       PAGES.Calculator,
-      PAGES.Recruiter,
+      // PAGES.Recruiter,
     ],
     roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
   },
+  // {
+  //   pageNames: [PAGES.Task],
+  //   roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.ADMIN],
+  // },
   {
-    pageNames: [PAGES.Jobs, PAGES.Clients],
-    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER],
-  },
-  {
-    pageNames: [PAGES.Task],
-    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.ADMIN],
-  },
-  {
-    pageNames: [PAGES.Blogs],
-    roles: [ROLE.DIRECTOR, ROLE.LEADER, ROLE.MEMBER, ROLE.BLOGER],
-  },
-  {
-    pageNames: [PAGES.Users],
+    pageNames: [PAGES.Users, PAGES.Clients],
     roles: [ROLE.DIRECTOR, ROLE.LEADER],
   },
 ]

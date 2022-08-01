@@ -35,9 +35,8 @@ const ICONS = {
 const ROLES = getListRoles()
 
 const sidebarConfig = [
-  // GENERAL
   {
-    subheader: 'general',
+    subheader: 'Overview',
     items: [
       {
         title: 'nav.dashboard',
@@ -51,12 +50,11 @@ const sidebarConfig = [
         icon: ICONS.notification,
         roles: ROLES[PAGES.Notification],
       },
-      // {
-      //   title: 'nav.task',
-      //   path: '/task',
-      //   icon: ICONS.calendar,
-      //   roles: ROLES[PAGES.Task],
-      // },
+    ],
+  },
+  {
+    subheader: 'Hiring',
+    items: [
       {
         title: 'nav.jobs',
         path: '/jobs',
@@ -64,22 +62,10 @@ const sidebarConfig = [
         roles: ROLES[PAGES.Jobs],
       },
       {
-        title: 'nav.clients',
-        path: '/clients',
-        icon: ICONS.client,
-        roles: ROLES[PAGES.Clients],
-      },
-      {
         title: 'nav.candidates',
         path: '/candidates',
         icon: ICONS.invoice,
         roles: ROLES[PAGES.Candidates],
-      },
-      {
-        title: 'nav.users',
-        path: '/users',
-        icon: ICONS.user,
-        roles: ROLES[PAGES.Users],
       },
       {
         title: 'nav.interview',
@@ -94,23 +80,33 @@ const sidebarConfig = [
         roles: ROLES[PAGES.Board],
       },
       {
+        title: 'nav.clients',
+        path: '/clients',
+        icon: ICONS.client,
+        roles: ROLES[PAGES.Clients],
+      },
+    ],
+  },
+  {
+    subheader: 'Team',
+    items: [
+      {
+        title: 'nav.users',
+        path: '/users',
+        icon: ICONS.user,
+        roles: ROLES[PAGES.Users],
+      },
+    ],
+  },
+  {
+    subheader: 'Tool',
+    items: [
+      {
         title: 'nav.calculator',
         path: '/calculator',
         icon: ICONS.calculator,
         roles: ROLES[PAGES.Calculator],
       },
-      // {
-      //   title: 'nav.recruiter',
-      //   path: '/recruiter',
-      //   icon: ICONS.recruiter,
-      //   roles: ROLES[PAGES.Recruiter],
-      // },
-      // {
-      //   title: 'nav.blogs',
-      //   path: '/blogs',
-      //   icon: ICONS.blog,
-      //   roles: ROLES[PAGES.Blogs],
-      // },
     ],
   },
 ]
