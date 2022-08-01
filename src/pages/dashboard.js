@@ -42,24 +42,28 @@ export default function Dashboard() {
   const { translate } = useLocales()
   const { isDirectorRole, isLeaderRole } = useRole()
 
+  const gridItemHeight = { sm: DASHBOARD_TABLE_HEIGHT }
+
   const dashboardConfigs = [
     {
       sx: {
-        height: isDirectorRole
-          ? { sm: DASHBOARD_TABLE_HEIGHT }
-          : DASHBOARD_TABLE_HEIGHT,
+        height: isDirectorRole ? gridItemHeight : DASHBOARD_TABLE_HEIGHT,
       },
       render: () => {
         if (isDirectorRole) return <Performance title='Performance' />
-        return <InterviewSchedule title='Interview Schedule' />
+        return (
+          <InterviewSchedule
+            title={translate('pages.dashboard.interviewSchedule.title')}
+          />
+        )
       },
     },
     {
-      sx: { height: { sm: DASHBOARD_TABLE_HEIGHT } },
+      sx: { height: gridItemHeight },
       render: () => <WeeklyTask title='Weekly Task' />,
     },
     {
-      sx: { height: { sm: DASHBOARD_TABLE_HEIGHT } },
+      sx: { height: gridItemHeight },
       render: () => {
         if (isDirectorRole) return <Applicants title='New Applicants' />
         if (isLeaderRole) return <Performance title='Performance' />
@@ -67,7 +71,7 @@ export default function Dashboard() {
       },
     },
     {
-      sx: { height: { sm: DASHBOARD_TABLE_HEIGHT } },
+      sx: { height: gridItemHeight },
       render: () => {
         if (isDirectorRole)
           return <MemberActivities title='Member Activities' />

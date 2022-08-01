@@ -2,6 +2,7 @@ import { Box, Stack, TextField, styled } from '@mui/material'
 
 import PropTypes from 'prop-types'
 
+import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 import { fDateTime } from '@/utils/formatTime'
 
@@ -10,27 +11,22 @@ InterviewDetail.propTypes = {
 }
 
 const TypographyRootStyle = styled('div')(({ theme }) => ({
-  '& .css-49xmlo-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled': {
+  '& .MuiInputBase-input.Mui-disabled': {
     color: `${theme.palette.text.primary}`,
-    opacity: 0.8,
-  },
-  '& .css-18woh4q-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled': {
     WebkitTextFillColor: `${theme.palette.text.primary}`,
     opacity: 0.8,
+    ...(theme.palette.mode === 'light' && {
+      backgroundColor: '#f3f6f9',
+      borderRadius: theme.spacing(1),
+    }),
   },
-  '& .css-upa6c1-MuiInputBase-input-MuiOutlinedInput-input.Mui-disabled': {
-    backgroundColor: '#f3f6f9',
-    borderRadius: '6px',
+  '& .MuiInputLabel-root.Mui-disabled': {
     WebkitTextFillColor: `${theme.palette.text.primary}`,
-    opacity: 0.8,
-  },
-  '& .css-xcpobr-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled': {
-    color: `${theme.palette.text.primary}`,
-    opacity: 0.8,
   },
 }))
 
 export default function InterviewDetail({ interviewDetail }) {
+  const { translate } = useLocales()
   const isSmallScreen = useResponsive('down', 'sm')
 
   const {
@@ -43,42 +39,50 @@ export default function InterviewDetail({ interviewDetail }) {
     locationName,
   } = interviewDetail
 
+  const { Job = {}, Candidate = {} } = CandidateJob || {}
+  const { title = '' } = Job || {}
+  const { email = '', phone = '' } = Candidate || {}
+
   return (
     <Box>
       <TypographyRootStyle>
         <Box px={3} py={1}>
-          <TextField disabled fullWidth value={candidateName} label='Name' />
+          <TextField
+            disabled
+            fullWidth
+            value={candidateName}
+            label={translate('pages.dashboard.interviewSchedule.name')}
+          />
         </Box>
+
         <Box px={3} py={1}>
           <TextField
             disabled
             fullWidth
-            value={CandidateJob?.Job?.title}
-            label='Name job'
+            value={title}
+            label={translate('pages.dashboard.interviewSchedule.nameJob')}
           />
         </Box>
+
+        <Box px={3} py={1}>
+          <TextField disabled fullWidth value={email} label='Email' />
+        </Box>
+
         <Box px={3} py={1}>
           <TextField
             disabled
             fullWidth
-            value={CandidateJob.Candidate.email}
-            label='Email'
+            value={phone}
+            label={translate('pages.dashboard.interviewSchedule.phone')}
           />
         </Box>
-        <Box px={3} py={1}>
-          <TextField
-            disabled
-            fullWidth
-            value={CandidateJob.Candidate.phone}
-            label='Phone'
-          />
-        </Box>
+
         <Box px={3} py={1}>
           <TextField
             disabled
             fullWidth
             value={linkZoom || ''}
-            label='Link Zoom'
+            label={translate('pages.dashboard.interviewSchedule.linkZoom')}
           />
         </Box>
 
@@ -88,8 +92,18 @@ export default function InterviewDetail({ interviewDetail }) {
           direction={isSmallScreen ? 'column' : 'row'}
           spacing={isSmallScreen ? 2 : 4}
         >
-          <TextField disabled fullWidth value={locationName} label='Location' />
-          <TextField disabled fullWidth value={type} label='Type' />
+          <TextField
+            disabled
+            fullWidth
+            value={locationName}
+            label={translate('pages.dashboard.interviewSchedule.location')}
+          />
+          <TextField
+            disabled
+            fullWidth
+            value={type}
+            label={translate('pages.dashboard.interviewSchedule.type')}
+          />
         </Stack>
 
         <Stack
@@ -102,13 +116,15 @@ export default function InterviewDetail({ interviewDetail }) {
             disabled
             fullWidth
             value={fDateTime(timeInterview)}
-            label='Time Interview'
+            label={translate('pages.dashboard.interviewSchedule.timeInterview')}
           />
           <TextField
             disabled
             fullWidth
             value={fDateTime(timeInterviewEnd)}
-            label='Time Interview End'
+            label={translate(
+              'pages.dashboard.interviewSchedule.timeInterviewEnd'
+            )}
           />
         </Stack>
       </TypographyRootStyle>

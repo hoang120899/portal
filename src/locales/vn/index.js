@@ -1,8 +1,9 @@
 import blogs from './ blogs'
-import calculator from './calculator'
 import board from './board'
+import calculator from './calculator'
 import candidates from './candidates'
 import clients from './clients'
+import dashboard from './dashboard'
 import interview from './interview'
 import jobs from './jobs'
 import login from './login'
@@ -33,6 +34,7 @@ const vn = {
     blogs: 'Blogs',
   },
   pages: {
+    dashboard,
     blogs,
     calculator,
     board,

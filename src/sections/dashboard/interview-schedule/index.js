@@ -201,7 +201,9 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
       </CalendarStyle>
 
       <DialogAnimate open={open} onClose={handleCloseDialog} maxWidth='md'>
-        <DialogTitle sx={{ mb: 1 }}>{translate('List Interviews')}</DialogTitle>
+        <DialogTitle sx={{ mb: 1 }}>
+          {translate('pages.dashboard.interviewSchedule.listInterviews')}
+        </DialogTitle>
 
         <BasicTable
           columns={columns}
@@ -215,7 +217,7 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
             color='inherit'
             onClick={handleCloseDialog}
           >
-            {translate('Cancel')}
+            {translate('pages.dashboard.interviewSchedule.cancel')}
           </Button>
         </DialogActions>
       </DialogAnimate>
@@ -226,7 +228,7 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
         maxWidth='md'
       >
         <DialogTitle sx={{ mb: 1 }}>
-          {translate('Interview Detail')}
+          {translate('pages.dashboard.interviewSchedule.interviewDetail')}
         </DialogTitle>
 
         <InterviewDetail interviewDetail={interviewDetail} />
@@ -237,7 +239,7 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
             color='inherit'
             onClick={handleCloseInterviewDetail}
           >
-            {translate('Cancel')}
+            {translate('pages.dashboard.interviewSchedule.cancel')}
           </Button>
         </DialogActions>
       </DialogAnimate>
