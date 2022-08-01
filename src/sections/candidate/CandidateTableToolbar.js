@@ -4,7 +4,7 @@ import { RHFAutocomplete, RHFTextField } from '@/components/hook-form'
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 import {
-  useGetListJobsQuery,
+  useGetAdminSearchListJobsQuery,
   useGetListSkillsQuery,
 } from '@/redux/api/apiSlice'
 
@@ -13,7 +13,7 @@ import { SEARCH_FIELD } from './config'
 export default function CandidateTableToolbar() {
   const { translate } = useLocales()
   const { currentRole } = useRole()
-  const { data: listJobsRes } = useGetListJobsQuery({ currentRole })
+  const { data: listJobsRes } = useGetAdminSearchListJobsQuery({ currentRole })
   const { data: listSkillsRes } = useGetListSkillsQuery({ currentRole })
 
   const listJobs = (listJobsRes?.data?.listJob || []).map(

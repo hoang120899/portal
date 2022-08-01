@@ -2,7 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import qs from 'query-string'
 
 import {
-  API_ADMIN_LIST_JOB,
+  API_ADMIN_SEARCH_LIST_JOB,
   API_ADMIN_USER_LIST,
   API_ALL_SKILL,
 } from '@/routes/api'
@@ -35,9 +35,9 @@ export const apiSlice = createApi({
         method: 'POST',
       }),
     }),
-    getListJobs: builder.query({
+    getAdminSearchListJobs: builder.query({
       query: (queries = {}) => ({
-        url: `${API_ADMIN_LIST_JOB}?${qs.stringify(queries)}`,
+        url: `${API_ADMIN_SEARCH_LIST_JOB}?${qs.stringify(queries)}`,
         method: 'GET',
       }),
     }),
@@ -52,6 +52,6 @@ export const apiSlice = createApi({
 
 export const {
   useGetAdminUserListQuery,
-  useGetListJobsQuery,
+  useGetAdminSearchListJobsQuery,
   useGetListSkillsQuery,
 } = apiSlice
