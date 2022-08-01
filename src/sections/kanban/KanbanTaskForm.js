@@ -68,6 +68,7 @@ KanbanTaskForm.propTypes = {
   setOpenHistory: PropTypes.func,
   isScrolled: PropTypes.bool,
   isLight: PropTypes.bool,
+  formRef: PropTypes.object,
 }
 
 function KanbanTaskForm({
@@ -81,6 +82,7 @@ function KanbanTaskForm({
   setOpenHistory,
   isScrolled,
   isLight,
+  formRef,
 }) {
   const AddTaskSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -224,6 +226,21 @@ function KanbanTaskForm({
       setValue('noteApproach', noteApproach)
     }
   }, [card, setValue])
+  // const formRef = useRef()
+  const [widthRef, setWidthRef] = useState(formRef?.current?.clientWidth)
+  useEffect(() => {
+    setWidthRef(formRef?.current?.clientWidth)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => {
+        setWidthRef(formRef?.current?.clientWidth)
+      })
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', () => {})
+      }
+    }
+  }, [formRef])
 
   useEffect(() => {
     if (!card && watchIdJob) {
@@ -245,7 +262,7 @@ function KanbanTaskForm({
   }
 
   const handleSubmitForm = async (data) => {
-    const reqData = { ...data }
+    const reqData = { ...data, cv: data.linkCv }
     reqData.approachDate = format(new Date(reqData.approachDate), 'yyyy-MM-dd')
     if (!reqData.laneId) {
       reqData.laneId = laneId
@@ -264,11 +281,11 @@ function KanbanTaskForm({
         }
         delete reqData.laneId
         await updateCard({ reqData, cardId: card.id }).unwrap()
-        enqueueSnackbar('Update card successfully!')
+        enqueueSnackbar(translate('pages.board.updateCardSuccess'))
         handleCloseUpdateTask()
       } else {
         await addCard(reqData).unwrap()
-        enqueueSnackbar('Create card successfully!')
+        enqueueSnackbar(translate('pages.board.createCardSuccess'))
         handleCloseAddTask()
       }
       dispatch(getBoard())
@@ -278,7 +295,7 @@ function KanbanTaskForm({
           variant: 'error',
         })
       } else {
-        enqueueSnackbar('Something went wrong! Please try again', {
+        enqueueSnackbar(translate('pages.board.somethingWentWrong'), {
           variant: 'error',
         })
       }
@@ -296,8 +313,11 @@ function KanbanTaskForm({
       <FormProvider onSubmit={handleSubmit(handleSubmitForm)} methods={methods}>
         <Box
           sx={{
-            position: 'sticky',
+            position: 'fixed',
             top: 0,
+            right: 0,
+            height: '60px',
+            width: `${widthRef}px`,
             background: isLight ? 'white' : '#212b36',
             zIndex: 1000,
             borderBottom: '1px solid #d8d8d8',
@@ -308,7 +328,6 @@ function KanbanTaskForm({
               height: 'fit-content',
             },
             padding: '12px 24px',
-            marginX: '-24px',
             boxShadow: isScrolled ? '0 1px 8px 0px #d8d8d8' : 'none',
           }}
         >
@@ -339,9 +358,9 @@ function KanbanTaskForm({
           </Stack>
         </Box>
 
-        <Box mt={2}>
+        <Box mt='76px'>
           <RHFTextField
-            label={'Name'}
+            label={translate('pages.board.name')}
             name='name'
             type='text'
             disabled={!hasAddPermission}
@@ -351,7 +370,7 @@ function KanbanTaskForm({
         {isAddTaskNoColumn && (
           <Box mt={2}>
             <RHFBasicSelect
-              label={'Column Name'}
+              label={translate('pages.board.columnName')}
               name='laneId'
               options={listColumnName}
               disabled={!hasAddPermission}
@@ -361,7 +380,7 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <RHFBasicSelect
-            label={'Name Job'}
+            label={translate('pages.board.nameJob')}
             name='idJob'
             options={activeJobOptions}
             disabled={!hasAddPermission}
@@ -372,7 +391,7 @@ function KanbanTaskForm({
           <Grid container spacing={1}>
             <Grid item xs={6}>
               <RHFTextField
-                label={'Location'}
+                label={translate('pages.board.location')}
                 name='location'
                 type='text'
                 disabled
@@ -380,7 +399,7 @@ function KanbanTaskForm({
             </Grid>
             <Grid item xs={6}>
               <RHFTextField
-                label={'Client Name'}
+                label={translate('pages.board.nameClient')}
                 name='clientName'
                 type='text'
                 disabled
@@ -392,7 +411,7 @@ function KanbanTaskForm({
         <Box mt={2}>
           {card ? (
             <RHFTextField
-              label='Email'
+              label={translate('pages.board.email')}
               name='email'
               disabled={!hasAddPermission}
             />
@@ -427,7 +446,7 @@ function KanbanTaskForm({
                 },
                 inputValue: keyEmailSearch,
               }}
-              label='Email'
+              label={translate('pages.board.email')}
               name='email'
               options={emailOptions}
               disabled={!hasAddPermission}
@@ -501,7 +520,7 @@ function KanbanTaskForm({
             <Grid item xs={6}>
               {card ? (
                 <RHFTextField
-                  label={'Phone'}
+                  label={translate('pages.board.phone')}
                   name='phone'
                   fullWidth
                   disabled={!hasAddPermission}
@@ -537,7 +556,7 @@ function KanbanTaskForm({
                     },
                     inputValue: keyPhoneSearch,
                   }}
-                  label='Phone'
+                  label={translate('pages.board.phone')}
                   name='phone'
                   options={phoneOptions}
                   disabled={!hasAddPermission}
@@ -546,7 +565,7 @@ function KanbanTaskForm({
             </Grid>
             <Grid item xs={6}>
               <RHFDatePicker
-                label={'Approach Date'}
+                label={translate('pages.board.approachDate')}
                 name='approachDate'
                 disabled={!hasAddPermission}
               />
@@ -557,7 +576,7 @@ function KanbanTaskForm({
         {card && (
           <Box mt={2}>
             <RHFDateTimePicker
-              label={'Expected Date'}
+              label={translate('pages.board.expectedDate')}
               name='expectedDate'
               disabled={!hasAddPermission}
             />
@@ -566,7 +585,7 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <RHFTextField
-            label={'Position'}
+            label={translate('pages.board.position')}
             name='position'
             disabled={!hasAddPermission}
           />
@@ -574,7 +593,7 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <KanbanFileUpload
-            label={'Upload CV to link'}
+            label={translate('pages.board.uploadCV')}
             nameTextField='linkCv'
             watch={watch}
             idJob={watchIdJob}
@@ -585,7 +604,7 @@ function KanbanTaskForm({
         {card && (
           <Box mt={2}>
             <KanbanFileUpload
-              label={'Upload CV to Link Refine'}
+              label={translate('pages.board.uploadCVToLinkRefine')}
               nameTextField='refineCv'
               watch={watch}
               idJob={watchIdJob}
@@ -597,7 +616,7 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <RHFTextField
-            label={'Approach Point'}
+            label={translate('pages.board.approachPoint')}
             name='noteApproach'
             multiline
             InputProps={{
@@ -634,7 +653,7 @@ function KanbanTaskForm({
           )}
           {card && (
             <Button type='button' variant='contained'>
-              {translate('Create Interview')}
+              {translate('pages.board.createInterview')}
             </Button>
           )}
         </Stack>

@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 // components
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
+import { PATH_DASHBOARD } from '@/routes/paths'
 import { fDate } from '@/utils/formatTime'
 import getColorPresets from '@/utils/getColorPresets'
 
@@ -52,7 +53,9 @@ export default function NotificationTableRow({ row }) {
         <Typography
           variant='body2'
           sx={styles.message}
-          onClick={() => router.push(`board?cardId=${content?.id}`)}
+          onClick={() =>
+            router.push(`${PATH_DASHBOARD.board.root}?cardId=${content?.id}`)
+          }
         >
           {content?.message}
           <strong> {content?.title}</strong>

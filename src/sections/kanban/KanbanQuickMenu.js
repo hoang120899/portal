@@ -13,6 +13,7 @@ import useLocales from '@/hooks/useLocales'
 import KanbanActionCreateLabel from './KanbanActionCreateLabel'
 import KanbanActionMove from './KanbanActionMove'
 import KanbanActionStorage from './KanbanActionStorage'
+import { ACTION_STATUS } from './config'
 
 KanbanQuickMenu.propTypes = {
   laneId: PropTypes.string,
@@ -32,11 +33,11 @@ export default function KanbanQuickMenu({
 
   const configAction = () => {
     switch (actions) {
-      case 'move':
+      case ACTION_STATUS.move:
         return (
           <KanbanActionMove laneId={laneId} sourceId={laneId} cardId={cardId} />
         )
-      case 'label':
+      case ACTION_STATUS.label:
         return (
           <KanbanActionCreateLabel
             cardId={cardId}
@@ -45,7 +46,7 @@ export default function KanbanQuickMenu({
             laneId={laneId}
           />
         )
-      case 'storage':
+      case ACTION_STATUS.storage:
         return <KanbanActionStorage cardId={cardId} laneId={laneId} />
       default:
         return (
@@ -53,7 +54,7 @@ export default function KanbanQuickMenu({
             {hasAddPermission && (
               <MenuItem
                 onClick={() => {
-                  setActions('move')
+                  setActions(ACTION_STATUS.move)
                 }}
               >
                 {translate('pages.board.moveCard')}
@@ -61,7 +62,7 @@ export default function KanbanQuickMenu({
             )}
             <MenuItem
               onClick={() => {
-                setActions('storage')
+                setActions(ACTION_STATUS.storage)
               }}
             >
               {translate('pages.board.storageCard')}
@@ -69,7 +70,7 @@ export default function KanbanQuickMenu({
             {hasAddPermission && (
               <MenuItem
                 onClick={() => {
-                  setActions('label')
+                  setActions(ACTION_STATUS.label)
                 }}
               >
                 {translate('pages.board.createLabel')}

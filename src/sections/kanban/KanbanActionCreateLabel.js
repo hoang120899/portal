@@ -64,7 +64,7 @@ function KanbanActionCreateLabel({
   const dispatch = useDispatch()
   const onSubmit = async () => {
     if (!labelWatch || !background) {
-      enqueueSnackbar('You must select label', {
+      enqueueSnackbar(translate('pages.board.selectLabel'), {
         variant: 'error',
       })
       return
@@ -82,7 +82,7 @@ function KanbanActionCreateLabel({
         item.title === data.title
     )
     if (isExist) {
-      enqueueSnackbar('label is exist', {
+      enqueueSnackbar(translate('pages.board.labelExist'), {
         variant: 'error',
       })
       return

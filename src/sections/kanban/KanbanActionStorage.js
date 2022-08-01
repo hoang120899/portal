@@ -22,7 +22,7 @@ function KanbanActionStorage({ cardId, laneId }) {
   const handleStorage = async () => {
     const data = { cardId: cardId, laneId: laneId }
     await dispatch(storageCard(data))
-    enqueueSnackbar('Storage success')
+    enqueueSnackbar(translate('pages.board.storageSuccess'))
   }
   return (
     <Stack sx={{ alignItems: 'center', textAlign: 'center' }}>

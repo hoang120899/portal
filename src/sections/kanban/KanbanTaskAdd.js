@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 // @mui
 import { Box, Button, Drawer, Stack, Typography, useTheme } from '@mui/material'
@@ -58,13 +58,9 @@ function KanbanTaskAdd({
   const isLight = theme.palette.mode === 'light'
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop <= 10) {
-      setIsScrolled(false)
-    } else {
-      setIsScrolled(true)
-    }
+    setIsScrolled(e.target.scrollTop > 10)
   }
-
+  const formRef = useRef()
   return (
     <Drawer
       open={open}
@@ -74,82 +70,77 @@ function KanbanTaskAdd({
       anchor='right'
       PaperProps={{ sx: { width: { xs: 1, sm: 640 } }, onScroll: handleScroll }}
     >
-      <Box pb={3} pl={3} pr={3}>
-        <Box>
-          <KanbanTaskForm
-            card={card}
-            hasAddPermission={hasAddPermission}
-            isAddTaskNoColumn={isAddTaskNoColumn}
-            activeJobOptions={activeJobOptions}
-            laneId={laneId}
-            onClose={onClose}
-            onCloseUpdate={onCloseUpdate}
-            setOpenHistory={setOpenHistory}
-            isScrolled={isScrolled}
-            isLight={isLight}
-          />
+      <Box pb={3} pl={3} pr={3} ref={formRef}>
+        <KanbanTaskForm
+          card={card}
+          hasAddPermission={hasAddPermission}
+          isAddTaskNoColumn={isAddTaskNoColumn}
+          activeJobOptions={activeJobOptions}
+          laneId={laneId}
+          onClose={onClose}
+          onCloseUpdate={onCloseUpdate}
+          setOpenHistory={setOpenHistory}
+          isScrolled={isScrolled}
+          isLight={isLight}
+          formRef={formRef}
+        />
 
-          {card && (
-            <Box mt={3}>
-              <Stack
-                direction='row'
-                alignItems='center'
-                justifyContent='space-between'
-              >
-                <Stack direction='row'>
-                  <Iconify
-                    icon='dashicons:calendar-alt'
-                    width={20}
-                    height={20}
-                  />
-                  <Typography variant='span' sx={{ ml: 1 }}>
-                    {translate('History')}
-                  </Typography>
-                </Stack>
-                <Button
-                  type='button'
-                  variant='outlined'
-                  onClick={handleOpenHistory}
-                >
-                  {openHistory ? translate('Hide') : translate('Show')}
-                </Button>
+        {card && (
+          <Box mt={3}>
+            <Stack
+              direction='row'
+              alignItems='center'
+              justifyContent='space-between'
+            >
+              <Stack direction='row'>
+                <Iconify icon='dashicons:calendar-alt' width={20} height={20} />
+                <Typography variant='span' sx={{ ml: 1 }}>
+                  {translate('History')}
+                </Typography>
               </Stack>
-            </Box>
-          )}
-          {openHistory && card && (
+              <Button
+                type='button'
+                variant='outlined'
+                onClick={handleOpenHistory}
+              >
+                {openHistory ? translate('Hide') : translate('Show')}
+              </Button>
+            </Stack>
+          </Box>
+        )}
+        {openHistory && card && (
+          <Box mt={2}>
+            <KanbanUpdateHistory
+              title={translate('News Update')}
+              cardId={card.id}
+              isLight={isLight}
+            />
+          </Box>
+        )}
+
+        {card && (
+          <Box mt={3}>
+            <Stack direction='row' mb={2}>
+              <Iconify
+                icon='ant-design:comment-outlined'
+                width={20}
+                height={20}
+              />
+              <Typography variant='span' sx={{ ml: 1 }}>
+                {translate('Comment')}
+              </Typography>
+            </Stack>
+
+            <KanbanTaskCommentInput cardId={card.id} />
             <Box mt={2}>
-              <KanbanUpdateHistory
-                title={translate('News Update')}
+              <KanbanTaskCommentList
+                title={translate('List Comment')}
                 cardId={card.id}
                 isLight={isLight}
               />
             </Box>
-          )}
-
-          {card && (
-            <Box mt={3}>
-              <Stack direction='row' mb={2}>
-                <Iconify
-                  icon='ant-design:comment-outlined'
-                  width={20}
-                  height={20}
-                />
-                <Typography variant='span' sx={{ ml: 1 }}>
-                  {translate('Comment')}
-                </Typography>
-              </Stack>
-
-              <KanbanTaskCommentInput cardId={card.id} />
-              <Box mt={2}>
-                <KanbanTaskCommentList
-                  title={translate('List Comment')}
-                  cardId={card.id}
-                  isLight={isLight}
-                />
-              </Box>
-            </Box>
-          )}
-        </Box>
+          </Box>
+        )}
       </Box>
     </Drawer>
   )

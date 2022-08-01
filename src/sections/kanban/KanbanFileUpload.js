@@ -7,8 +7,11 @@ import PropTypes from 'prop-types'
 import CopyClipboard from '@/components/CopyClipboard'
 import Iconify from '@/components/Iconify'
 import { RHFTextField } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
 import { API_UPLOAD_LINK } from '@/routes/api'
 import { _postApi } from '@/utils/axios'
+
+import { MAXSIZE } from './config'
 
 KanbanFileUpload.propTypes = {
   label: PropTypes.string,
@@ -31,34 +34,39 @@ export default function KanbanFileUpload({
   watch,
 }) {
   const { enqueueSnackbar } = useSnackbar()
+  const { translate } = useLocales()
   const handleUploadFile = async (e) => {
     const name = watch('name')
     const nameJob = watch('nameJob')
-    if (name === '' || nameJob === '') {
-      enqueueSnackbar('Please fill in the form before uploading', {
+
+    if (!name || !nameJob) {
+      enqueueSnackbar(translate('pages.board.warningFill'), {
         variant: 'info',
       })
       return
-    } else {
-      const file = e.target.files[0]
-      if (file.size > 5145728) {
-        enqueueSnackbar('File is too big!', {
-          variant: 'info',
-        })
-        return
-      }
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('nameFile', `${name} ${nameJob}`)
-      formData.append('idJob', `${idJob}`)
-      try {
-        const res = await _postApi(API_UPLOAD_LINK, formData)
-        setValue(nameTextField, res.fileName)
-      } catch (error) {
-        enqueueSnackbar('Failed to upload! Please try again.', {
-          variant: 'error',
-        })
-      }
+    }
+
+    const file = e.target.files[0]
+
+    if (file.size > MAXSIZE) {
+      enqueueSnackbar(`${translate('pages.board.fileTooBig')}!`, {
+        variant: 'info',
+      })
+      return
+    }
+    const formData = new FormData()
+
+    formData.append('file', file)
+    formData.append('nameFile', `${name} ${nameJob}`)
+    formData.append('idJob', `${idJob}`)
+
+    try {
+      const res = await _postApi(API_UPLOAD_LINK, formData)
+      setValue(nameTextField, res.fileName)
+    } catch (error) {
+      enqueueSnackbar(translate('pages.board.failedUpload'), {
+        variant: 'error',
+      })
     }
   }
 

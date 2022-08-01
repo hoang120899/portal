@@ -117,17 +117,17 @@ function KanbanTaskCard({
                     Job={Job}
                   />
                   <Box
-                    display={'Grid'}
-                    alignItems={'center'}
+                    display='Grid'
+                    alignItems='center'
                     gridTemplateColumns='60px 1fr'
                   >
                     {configUserInfo.map((item, index) => (
                       <React.Fragment key={`label${index}`}>
-                        <Typography variant='subtitle2' fontWeight={'bold'}>
+                        <Typography variant='subtitle2' fontWeight='bold'>
                           {item?.label}:
                         </Typography>
                         <Typography
-                          fontWeight={'normal'}
+                          fontWeight='normal'
                           variant='subtitle2'
                           align='right'
                           sx={{

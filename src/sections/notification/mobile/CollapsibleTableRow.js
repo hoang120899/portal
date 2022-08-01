@@ -22,6 +22,7 @@ import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import { PATH_DASHBOARD } from '@/routes/paths'
 // utils
 import { fDate } from '@/utils/formatTime'
 import getColorPresets from '@/utils/getColorPresets'
@@ -107,7 +108,9 @@ function CollapsibleTableRow({ row }) {
                         variant='body2'
                         sx={styles.message}
                         onClick={() =>
-                          router.push(`board?cardId=${content?.id}`)
+                          router.push(
+                            `${PATH_DASHBOARD.board.root}?cardId=${content?.id}`
+                          )
                         }
                       >
                         {content?.message} <strong>{content?.title}</strong>

@@ -13,6 +13,8 @@ import useLocales from '@/hooks/useLocales'
 import { useGetUpdateHistoryQuery } from '@/sections/kanban/kanbanSlice'
 import { fDateTime } from '@/utils/formatTime'
 
+import { HISTORY_STATUS } from './config'
+
 // ----------------------------------------------------------------------
 
 KanbanUpdateHistory.propTypes = {
@@ -32,7 +34,7 @@ export default function KanbanUpdateHistory({
     if (historyData && historyData.data.historyCard) {
       return historyData.data.historyCard.map((history) => {
         let historyContent
-        if (history.type === 'update_card') {
+        if (history.type === HISTORY_STATUS.update) {
           historyContent = JSON.parse(history.content)
         } else {
           historyContent = history.content
@@ -103,10 +105,10 @@ function KanbanHistoryItem({ historyItem, isLight }) {
             <Typography mr={1} sx={{ fontWeight: 'bold' }} component='span'>
               {User.name}
             </Typography>
-            {type === 'update_card' && (
+            {type === HISTORY_STATUS.update && (
               <span>{translate('has update this card')}</span>
             )}
-            {type === 'update_card' ? (
+            {type === HISTORY_STATUS.update ? (
               content.map((e, i) => (
                 <Typography key={i}>
                   <span>{`${e.path}: `}</span>
