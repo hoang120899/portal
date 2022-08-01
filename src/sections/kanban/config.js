@@ -20,3 +20,14 @@ export const HISTORY_STATUS = {
   update: 'update_card',
   delete: 'delete_card',
 }
+
+export const JOB_FORM_STICKY_BAR_COLOR = {
+  light: {
+    color: '#fff',
+    shadow: '#d8d8d8',
+  },
+  dark: {
+    color: '#212b36',
+    shadow: '#3e474f',
+  },
+}

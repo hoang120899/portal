@@ -110,6 +110,7 @@ function KanbanTaskCard({
                     Job={Job}
                     Labels={Labels}
                     handleDeleteLabel={handleDeleteLabel}
+                    hasAddPermission={hasAddPermission}
                   />
                   <KanbanBasicInfo
                     Candidate={Candidate}

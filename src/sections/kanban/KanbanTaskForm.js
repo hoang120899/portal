@@ -49,7 +49,7 @@ import {
 
 import KanbanAssignee from './KanbanAssignee'
 import KanbanFileUpload from './KanbanFileUpload'
-import { socialOptions } from './config'
+import { JOB_FORM_STICKY_BAR_COLOR, socialOptions } from './config'
 
 const CheckboxRootStyle = styled('div')(() => ({
   '& .MuiFormGroup-root': {
@@ -318,7 +318,9 @@ function KanbanTaskForm({
             right: 0,
             height: '60px',
             width: `${widthRef}px`,
-            background: isLight ? 'white' : '#212b36',
+            background: isLight
+              ? JOB_FORM_STICKY_BAR_COLOR.light.color
+              : JOB_FORM_STICKY_BAR_COLOR.dark.color,
             zIndex: 1000,
             borderBottom: '1px solid #d8d8d8',
             display: 'flex',
@@ -328,7 +330,13 @@ function KanbanTaskForm({
               height: 'fit-content',
             },
             padding: '12px 24px',
-            boxShadow: isScrolled ? '0 1px 8px 0px #d8d8d8' : 'none',
+            boxShadow: isScrolled
+              ? `0 1px 8px 0px ${
+                  isLight
+                    ? JOB_FORM_STICKY_BAR_COLOR.light.shadow
+                    : JOB_FORM_STICKY_BAR_COLOR.dark.shadow
+                }`
+              : 'none',
           }}
         >
           <Box component='header'>
