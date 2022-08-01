@@ -1,7 +1,11 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import qs from 'query-string'
 
-import { API_ADMIN_USER_LIST } from '@/routes/api'
+import {
+  API_ADMIN_LIST_JOB,
+  API_ADMIN_USER_LIST,
+  API_ALL_SKILL,
+} from '@/routes/api'
 import axiosInstance from '@/utils/axios'
 
 const axiosBaseQuery =
@@ -31,7 +35,23 @@ export const apiSlice = createApi({
         method: 'POST',
       }),
     }),
+    getListJobs: builder.query({
+      query: (queries = {}) => ({
+        url: `${API_ADMIN_LIST_JOB}?${qs.stringify(queries)}`,
+        method: 'GET',
+      }),
+    }),
+    getListSkills: builder.query({
+      query: (queries = {}) => ({
+        url: `${API_ALL_SKILL}?${qs.stringify(queries)}`,
+        method: 'GET',
+      }),
+    }),
   }),
 })
 
-export const { useGetAdminUserListQuery } = apiSlice
+export const {
+  useGetAdminUserListQuery,
+  useGetListJobsQuery,
+  useGetListSkillsQuery,
+} = apiSlice
