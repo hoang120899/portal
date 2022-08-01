@@ -35,6 +35,7 @@ const board = {
   uploadCVToLinkRefine: 'Upload CV to Link Refine',
   approachPoint: 'Approach Point',
   createInterview: 'Create Interview',
+  downloadCV: 'Download CV',
 }
 
 export default board

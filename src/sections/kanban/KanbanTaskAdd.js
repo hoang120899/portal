@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
+import Scrollbar from '@/components/Scrollbar'
 import useLocales from '@/hooks/useLocales'
 
 import KanbanTaskCommentInput from './KanbanTaskCommentInput'
@@ -70,78 +71,88 @@ function KanbanTaskAdd({
       anchor='right'
       PaperProps={{ sx: { width: { xs: 1, sm: 640 } }, onScroll: handleScroll }}
     >
-      <Box pb={3} pl={3} pr={3} ref={formRef}>
-        <KanbanTaskForm
-          card={card}
-          hasAddPermission={hasAddPermission}
-          isAddTaskNoColumn={isAddTaskNoColumn}
-          activeJobOptions={activeJobOptions}
-          laneId={laneId}
-          onClose={onClose}
-          onCloseUpdate={onCloseUpdate}
-          setOpenHistory={setOpenHistory}
-          isScrolled={isScrolled}
-          isLight={isLight}
-          formRef={formRef}
-        />
+      <Scrollbar sx={{ zIndex: 999, '& label': { zIndex: 0 } }}>
+        <Box pb={3} pl={3} pr={3} ref={formRef}>
+          <KanbanTaskForm
+            card={card}
+            hasAddPermission={hasAddPermission}
+            isAddTaskNoColumn={isAddTaskNoColumn}
+            activeJobOptions={activeJobOptions}
+            laneId={laneId}
+            onClose={onClose}
+            onCloseUpdate={onCloseUpdate}
+            setOpenHistory={setOpenHistory}
+            isScrolled={isScrolled}
+            isLight={isLight}
+            formRef={formRef}
+          />
 
-        {card && (
-          <Box mt={3}>
-            <Stack
-              direction='row'
-              alignItems='center'
-              justifyContent='space-between'
-            >
-              <Stack direction='row'>
-                <Iconify icon='dashicons:calendar-alt' width={20} height={20} />
-                <Typography variant='span' sx={{ ml: 1 }}>
-                  {translate('History')}
-                </Typography>
-              </Stack>
-              <Button
-                type='button'
-                variant='outlined'
-                onClick={handleOpenHistory}
+          {card && (
+            <Box mt={3}>
+              <Stack
+                direction='row'
+                alignItems='center'
+                justifyContent='space-between'
               >
-                {openHistory ? translate('Hide') : translate('Show')}
-              </Button>
-            </Stack>
-          </Box>
-        )}
-        {openHistory && card && (
-          <Box mt={2}>
-            <KanbanUpdateHistory
-              title={translate('News Update')}
-              cardId={card.id}
-              isLight={isLight}
-            />
-          </Box>
-        )}
+                <Stack direction='row'>
+                  <Iconify
+                    icon='dashicons:calendar-alt'
+                    width={20}
+                    height={20}
+                  />
+                  <Typography variant='span' sx={{ ml: 1 }}>
+                    {translate('History')}
+                  </Typography>
+                </Stack>
 
-        {card && (
-          <Box mt={3}>
-            <Stack direction='row' mb={2}>
-              <Iconify
-                icon='ant-design:comment-outlined'
-                width={20}
-                height={20}
-              />
-              <Typography variant='span' sx={{ ml: 1 }}>
-                {translate('Comment')}
-              </Typography>
-            </Stack>
+                <Button
+                  type='button'
+                  variant='outlined'
+                  onClick={handleOpenHistory}
+                >
+                  {openHistory ? translate('Hide') : translate('Show')}
+                </Button>
+              </Stack>
+            </Box>
+          )}
 
-            <KanbanTaskCommentInput cardId={card.id} />
+          {openHistory && card && (
             <Box mt={2}>
-              <KanbanTaskCommentList
-                title={translate('List Comment')}
+              <KanbanUpdateHistory
+                title={translate('News Update')}
                 cardId={card.id}
                 isLight={isLight}
               />
             </Box>
-          </Box>
-        )}
-      </Box>
+          )}
+
+          {card && (
+            <Box mt={3}>
+              <Stack direction='row' mb={2}>
+                <Iconify
+                  icon='ant-design:comment-outlined'
+                  width={20}
+                  height={20}
+                />
+
+                <Typography variant='span' sx={{ ml: 1 }}>
+                  {translate('Comment')}
+                </Typography>
+              </Stack>
+
+              <KanbanTaskCommentInput cardId={card.id} />
+
+              <Box mt={2}>
+                <KanbanTaskCommentList
+                  title={translate('List Comment')}
+                  cardId={card.id}
+                  isLight={isLight}
+                />
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </Scrollbar>
     </Drawer>
   )
 }

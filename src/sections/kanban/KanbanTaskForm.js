@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { LoadingButton } from '@mui/lab'
 // @mui
 import {
   Box,
   Button,
   CircularProgress,
   Grid,
+  Link,
   Modal,
   Stack,
   TextareaAutosize,
@@ -26,6 +28,7 @@ import * as Yup from 'yup'
 
 // components
 import Iconify from '@/components/Iconify'
+import PreviewPdf from '@/components/PreviewPdf'
 import {
   FormProvider,
   RHFAutocomplete,
@@ -47,6 +50,8 @@ import {
   useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
 
+import { convertDriverToBase64 } from '../candidate/candidateSlice'
+import { URL_DOWNLOAD_CV } from '../candidate/config'
 import KanbanAssignee from './KanbanAssignee'
 import KanbanFileUpload from './KanbanFileUpload'
 import { JOB_FORM_STICKY_BAR_COLOR, socialOptions } from './config'
@@ -155,79 +160,74 @@ function KanbanTaskForm({
   const [updateCard, { isLoading: isUpdating }] = useUpdateCardMutation()
 
   const phoneOptions = useMemo(() => {
-    if (phoneData && phoneData.data.candidate.length > 0) {
-      const candidates = phoneData.data.candidate
-      return candidates.map((candidate) => ({
-        label: candidate.phone,
-        value: candidate.id,
-        name: candidate.name,
-        email: candidate.email,
-      }))
-    } else return []
+    if (!phoneData || phoneData.data.candidate.length <= 0) return []
+    const candidates = phoneData.data.candidate
+    return candidates.map((candidate) => ({
+      label: candidate.phone,
+      value: candidate.id,
+      name: candidate.name,
+      email: candidate.email,
+    }))
   }, [phoneData])
 
   const emailOptions = useMemo(() => {
-    if (emailData && emailData.data.candidate.length > 0) {
-      const candidates = emailData.data.candidate
-      return candidates.map((candidate) => ({
-        label: candidate.email,
-        value: candidate.id,
-        name: candidate.name,
-        phone: candidate.phone,
-      }))
-    } else return []
+    if (!emailData || emailData.data.candidate.length <= 0) return []
+    const candidates = emailData.data.candidate
+    return candidates.map((candidate) => ({
+      label: candidate.email,
+      value: candidate.id,
+      name: candidate.name,
+      phone: candidate.phone,
+    }))
   }, [emailData])
 
   const cardByColumns = useMemo(() => {
-    if (card) {
-      return columns?.[card.laneId]?.CandidateJobs?.find(
-        (item) => item.id === card.id
-      )
-    }
+    if (!card) return
+    return columns?.[card.laneId]?.CandidateJobs?.find(
+      (item) => item.id === card.id
+    )
   }, [columns, card])
 
   useEffect(() => {
-    if (card) {
-      const {
-        Candidate,
-        laneId,
-        Job,
-        approachDate,
-        expectedDate,
-        position,
-        cv,
-        refineCv = '',
-        noteApproach,
-      } = card
-      setValue('name', Candidate?.name || '')
-      setValue('laneId', laneId)
-      setValue('idJob', Job.id)
-      setValue('nameJob', Job.title)
-      setValue('email', Candidate.email)
-      setValue('location', Job.Location?.name || '')
-      setValue('clientName', Job.Client?.name || '')
-      setValue('social', ['facebook', 'linkedin', 'skype'])
-      setValue(
-        'facebook',
-        Candidate.facebook
-          ? `https://www.facebook.com/${Candidate.facebook}`
-          : ''
-      )
-      setValue('linkedin', Candidate.linkedin || '')
-      setValue('skype', Candidate.skype || '')
-      setValue('phone', Candidate.phone)
-      setValue('approachDate', format(new Date(approachDate), 'yyyy-MM-dd'))
-      if (expectedDate) {
-        setValue('expectedDate', expectedDate)
-      }
-      setValue('position', position || '')
-      setValue('linkCv', cv || '')
-      setValue('refineCv', refineCv || '')
-      setValue('noteApproach', noteApproach)
+    if (!card) return
+    const {
+      Candidate,
+      laneId,
+      Job,
+      approachDate,
+      expectedDate,
+      position,
+      cv,
+      refineCv = '',
+      noteApproach,
+    } = card
+    setValue('name', Candidate?.name || '')
+    setValue('laneId', laneId)
+    setValue('idJob', Job.id)
+    setValue('nameJob', Job.title)
+    setValue('email', Candidate.email)
+    setValue('location', Job.Location?.name || '')
+    setValue('clientName', Job.Client?.name || '')
+    setValue('social', ['facebook', 'linkedin', 'skype'])
+    setValue(
+      'facebook',
+      Candidate.facebook ? `https://www.facebook.com/${Candidate.facebook}` : ''
+    )
+    setValue('linkedin', Candidate.linkedin || '')
+    setValue('skype', Candidate.skype || '')
+    setValue('phone', Candidate.phone)
+    setValue('approachDate', format(new Date(approachDate), 'yyyy-MM-dd'))
+    if (expectedDate) {
+      setValue('expectedDate', expectedDate)
     }
+    setValue('position', position || '')
+    setValue('linkCv', cv || '')
+    setValue('refineCv', refineCv || '')
+    setValue('noteApproach', noteApproach)
   }, [card, setValue])
-  // const formRef = useRef()
+
   const [widthRef, setWidthRef] = useState(formRef?.current?.clientWidth)
+
   useEffect(() => {
     setWidthRef(formRef?.current?.clientWidth)
     if (typeof window !== 'undefined') {
@@ -260,6 +260,18 @@ function KanbanTaskForm({
     onCloseUpdate()
     setOpenHistory(false)
   }
+
+  const { base64, isLoadingPDF } = useSelector((state) => state.candidates)
+
+  const [isOpenPDF, setIsOpenPDF] = useState(false)
+
+  const handleOpenPDF = () => {
+    setIsOpenPDF(true)
+  }
+  useEffect(() => {
+    if (!card?.cv) return
+    dispatch(convertDriverToBase64({ linkDrive: card.cv }))
+  }, [card?.cv, dispatch])
 
   const handleSubmitForm = async (data) => {
     const reqData = { ...data, cv: data.linkCv }
@@ -310,6 +322,7 @@ function KanbanTaskForm({
       >
         <CircularProgress size={60} />
       </Modal>
+
       <FormProvider onSubmit={handleSubmit(handleSubmitForm)} methods={methods}>
         <Box
           sx={{
@@ -321,7 +334,7 @@ function KanbanTaskForm({
             background: isLight
               ? JOB_FORM_STICKY_BAR_COLOR.light.color
               : JOB_FORM_STICKY_BAR_COLOR.dark.color,
-            zIndex: 1000,
+            zIndex: 1,
             borderBottom: '1px solid #d8d8d8',
             display: 'flex',
             justifyContent: 'space-between',
@@ -344,6 +357,7 @@ function KanbanTaskForm({
               {card ? translate('Update Card') : translate('Add Card')}
             </Typography>
           </Box>
+
           <Stack direction='row' sx={{ flexShrink: 0, maxHeight: '48px' }}>
             {hasAddPermission && (
               <Button
@@ -354,6 +368,7 @@ function KanbanTaskForm({
                 {card ? translate('Update') : translate('Save')}
               </Button>
             )}
+
             <Button
               type='button'
               sx={{ marginLeft: '8px' }}
@@ -405,6 +420,7 @@ function KanbanTaskForm({
                 disabled
               />
             </Grid>
+
             <Grid item xs={6}>
               <RHFTextField
                 label={translate('pages.board.nameClient')}
@@ -468,6 +484,7 @@ function KanbanTaskForm({
               <RHFMultiCheckbox name='social' options={socialOptions} />
             </CheckboxRootStyle>
           )}
+
           {watchSocial.includes('facebook') && (
             <Box mt={2}>
               <RHFTextField
@@ -571,6 +588,7 @@ function KanbanTaskForm({
                 />
               )}
             </Grid>
+
             <Grid item xs={6}>
               <RHFDatePicker
                 label={translate('pages.board.approachDate')}
@@ -609,6 +627,7 @@ function KanbanTaskForm({
             setValue={setValue}
           />
         </Box>
+
         {card && (
           <Box mt={2}>
             <KanbanFileUpload
@@ -635,6 +654,7 @@ function KanbanTaskForm({
             }}
           />
         </Box>
+
         <Stack
           mt={2}
           spacing={isSmall ? 2 : 0}
@@ -659,13 +679,54 @@ function KanbanTaskForm({
               hasAddPermission={hasAddPermission}
             />
           )}
-          {card && (
-            <Button type='button' variant='contained'>
-              {translate('pages.board.createInterview')}
-            </Button>
-          )}
+          <Stack direction='row' spacing={1}>
+            {card && (
+              <Button type='button' variant='contained' size='small'>
+                {translate('pages.board.createInterview')}
+              </Button>
+            )}
+
+            {base64 && (
+              <Button
+                variant='contained'
+                type='button'
+                size='medium'
+                sx={{
+                  '& a': { color: 'white' },
+                  '& a:hover': { textDecoration: 'none' },
+                }}
+              >
+                <Link
+                  download={`${
+                    card?.Candidate?.name ? card.Candidate.name : ''
+                  }.pdf`}
+                  href={`${URL_DOWNLOAD_CV},${base64}`}
+                >
+                  {translate('pages.board.downloadCV')}
+                </Link>
+              </Button>
+            )}
+
+            {card?.cv && (
+              <LoadingButton
+                variant='contained'
+                size='small'
+                loading={isLoadingPDF}
+                onClick={handleOpenPDF}
+              >
+                {translate('pages.candidates.rawCV')}
+              </LoadingButton>
+            )}
+          </Stack>
         </Stack>
       </FormProvider>
+      {base64 && (
+        <PreviewPdf
+          isOpen={isOpenPDF}
+          onClose={() => setIsOpenPDF(false)}
+          base64={base64}
+        />
+      )}
     </>
   )
 }
