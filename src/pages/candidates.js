@@ -276,12 +276,14 @@ export default function Candidates() {
             onChangePage={onChangePage}
             onChangeRowsPerPage={onChangeRowsPerPage}
           />
-          <CandidateModalDetail
-            isOpen={isOpen}
-            onClose={handleCloseCandidateDetail}
-            disabled={isOpen}
-            detailCandidate={detailCandidate}
-          />
+          {isOpen && (
+            <CandidateModalDetail
+              isOpen
+              onClose={handleCloseCandidateDetail}
+              disabled
+              detailCandidate={detailCandidate}
+            />
+          )}
         </Card>
       </Container>
     </Page>

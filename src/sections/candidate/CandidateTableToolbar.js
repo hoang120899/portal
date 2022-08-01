@@ -85,6 +85,7 @@ export default function CandidateTableToolbar() {
             label={translate('pages.candidates.selectJob')}
             AutocompleteProps={{
               size: 'small',
+              isOptionEqualToValue: (option, value) => option.id === value.id,
               renderOption: (props, option) => {
                 // fix error duplicate key
                 const newProps = {
@@ -109,6 +110,19 @@ export default function CandidateTableToolbar() {
             AutocompleteProps={{
               multiple: true,
               size: 'small',
+              isOptionEqualToValue: (option, value) => option.id === value.id,
+              renderOption: (props, option) => {
+                // fix error duplicate key
+                const newProps = {
+                  ...props,
+                  key: option.id,
+                }
+                return (
+                  <Box key={newProps.key} component='li' {...newProps}>
+                    {option.label}
+                  </Box>
+                )
+              },
               renderTags: (value, getTagProps) =>
                 value.map(({ label, id }, index) => (
                   <Chip

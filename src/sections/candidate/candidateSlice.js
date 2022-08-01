@@ -69,7 +69,11 @@ export const candidateSlice = createSlice({
     base64: '',
     isLoadingPDF: false,
   },
-  reducers: {},
+  reducers: {
+    resetCandidateDetail(state) {
+      state.candidateDetail = {}
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAdminCandidateDetail.pending, (state) => {
@@ -96,5 +100,8 @@ export const candidateSlice = createSlice({
   },
 })
 
+export const { resetCandidateDetail } = candidateSlice.actions
+
 export const { useGetAdminSearchCandidateQuery } = candidateApiSlice
+
 export default candidateSlice.reducer

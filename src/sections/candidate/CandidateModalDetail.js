@@ -25,6 +25,7 @@ import {
   RHFTextField,
 } from '@/components/hook-form'
 import { DATE_YEAR_MONTH_DAY_FORMAT } from '@/config'
+import useIsMountedRef from '@/hooks/useIsMountedRef'
 import useLocales from '@/hooks/useLocales'
 import { useDispatch, useSelector } from '@/redux/store'
 import { fDate, fDateCalendar } from '@/utils/formatTime'
@@ -32,6 +33,7 @@ import { fDate, fDateCalendar } from '@/utils/formatTime'
 import {
   convertDriverToBase64,
   getAdminCandidateDetail,
+  resetCandidateDetail,
 } from './candidateSlice'
 import { DETAIL_FIELD, URL_DOWNLOAD_CV } from './config'
 
@@ -49,6 +51,7 @@ export default function CandidateModalDetail({
   detailCandidate,
 }) {
   const copyLinkCVRef = useRef()
+  const isMountedRef = useIsMountedRef()
   const { translate } = useLocales()
 
   const defaultValues = {
@@ -67,6 +70,14 @@ export default function CandidateModalDetail({
     defaultValues: defaultValues,
   })
   const { setValue, watch } = methods
+
+  useEffect(
+    () => () => {
+      if (isMountedRef.current) return
+      dispatch(resetCandidateDetail())
+    },
+    [isMountedRef, dispatch]
+  )
 
   const { id } = detailCandidate
 
