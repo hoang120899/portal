@@ -171,6 +171,7 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
   return (
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
+
       <CalendarStyle>
         <CalendarToolbar
           date={date}
@@ -200,12 +201,22 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
         />
       </CalendarStyle>
 
-      <DialogAnimate open={open} onClose={handleCloseDialog} maxWidth='md'>
+      <DialogAnimate
+        open={open}
+        onClose={handleCloseDialog}
+        maxWidth='md'
+        sx={{
+          '& > div': {
+            overflowY: 'auto',
+          },
+        }}
+      >
         <DialogTitle sx={{ mb: 1 }}>
           {translate('pages.dashboard.interviewSchedule.listInterviews')}
         </DialogTitle>
 
         <BasicTable
+          tableStyle={{ padding: '24px 16px' }}
           columns={columns}
           dataSource={selectedInterviews}
           TableRowComp={tableRowComp}
