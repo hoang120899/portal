@@ -48,15 +48,15 @@ function KanbanTaskCard({
 
   const configUserInfo = [
     {
-      label: translate('Email'),
+      label: translate('pages.board.email'),
       value: Candidate?.email,
     },
     {
-      label: translate('Phone'),
+      label: translate('pages.board.phone'),
       value: Candidate?.phone,
     },
     {
-      label: translate('Position'),
+      label: translate('pages.board.position'),
       value: card?.position,
     },
   ]

@@ -3,6 +3,9 @@ const board = {
   storageCard: 'Storage Card',
   createLabel: 'Create Label',
   save: 'Save',
+  cancel: 'Cancel',
+  edit: 'Edit',
+  editComment: 'Edit Comment',
   background: 'Background',
   confirmStorage: 'Do you want to storage this card',
   waiting: 'Waiting',
@@ -36,6 +39,14 @@ const board = {
   approachPoint: 'Approach Point',
   createInterview: 'Create Interview',
   downloadCV: 'Download CV',
+  addCommentFailed: 'Add comment failed! Please try again.',
+  history: 'History',
+  hide: 'Hide',
+  listComment: 'List Comment',
+  comment: 'Comment',
+  newsUpdate: 'News Update',
+  show: 'Show',
+  typeAMessage: 'Type a message',
 }
 
 export default board

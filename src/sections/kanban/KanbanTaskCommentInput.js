@@ -54,7 +54,7 @@ export default function KanbanTaskCommentInput({ cardId }) {
               minRows: 1,
             },
           }}
-          placeholder={translate('Type a message')}
+          placeholder={translate('pages.board.typeAMessage')}
           sx={{ '& fieldset': { display: 'none' } }}
           value={comment}
           onChange={handleChangeComment}
@@ -62,7 +62,7 @@ export default function KanbanTaskCommentInput({ cardId }) {
 
         <Stack direction='row' justifyContent='flex-end'>
           <Button variant='contained' onClick={handleCommentChange}>
-            {translate('Comment')}
+            {translate('pages.board.comment')}
           </Button>
         </Stack>
       </Paper>

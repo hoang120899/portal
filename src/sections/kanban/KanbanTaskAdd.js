@@ -102,7 +102,7 @@ function KanbanTaskAdd({
                     height={20}
                   />
                   <Typography variant='span' sx={{ ml: 1 }}>
-                    {translate('History')}
+                    {translate('pages.board.history')}
                   </Typography>
                 </Stack>
 
@@ -111,7 +111,9 @@ function KanbanTaskAdd({
                   variant='outlined'
                   onClick={handleOpenHistory}
                 >
-                  {openHistory ? translate('Hide') : translate('Show')}
+                  {openHistory
+                    ? translate('pages.board.hide')
+                    : translate('pages.board.show')}
                 </Button>
               </Stack>
             </Box>
@@ -120,7 +122,7 @@ function KanbanTaskAdd({
           {openHistory && card && (
             <Box mt={2}>
               <KanbanUpdateHistory
-                title={translate('News Update')}
+                title={translate('pages.board.newsUpdate')}
                 cardId={card.id}
                 isLight={isLight}
               />
@@ -137,7 +139,7 @@ function KanbanTaskAdd({
                 />
 
                 <Typography variant='span' sx={{ ml: 1 }}>
-                  {translate('Comment')}
+                  {translate('pages.board.comment')}
                 </Typography>
               </Stack>
 
@@ -145,7 +147,7 @@ function KanbanTaskAdd({
 
               <Box mt={2}>
                 <KanbanTaskCommentList
-                  title={translate('List Comment')}
+                  title={translate('pages.board.listComment')}
                   cardId={card.id}
                   isLight={isLight}
                 />

@@ -12,8 +12,9 @@ import {
   Stack,
   TextareaAutosize,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 // @date-fns
@@ -39,8 +40,8 @@ import {
 } from '@/components/hook-form'
 import { DATE_YEAR_MONTH_DAY_FORMAT } from '@/config'
 import { useDebounce } from '@/hooks/useDebounce'
+import useIsMountedRef from '@/hooks/useIsMountedRef'
 import useLocales from '@/hooks/useLocales'
-import useResponsive from '@/hooks/useResponsive'
 import { convertDriverToBase64 } from '@/sections/candidate/candidateSlice'
 import { URL_DOWNLOAD_CV } from '@/sections/candidate/config'
 import {
@@ -54,7 +55,12 @@ import {
 
 import KanbanAssignee from './KanbanAssignee'
 import KanbanFileUpload from './KanbanFileUpload'
-import { JOB_FORM_STICKY_BAR_COLOR, socialOptions } from './config'
+import {
+  FACEBOOK_URL,
+  JOB_FORM_STICKY_BAR_COLOR,
+  SOCIAL_LIST,
+  SOCIAL_OPTIONS,
+} from './config'
 
 const CheckboxRootStyle = styled('div')(() => ({
   '& .MuiFormGroup-root': {
@@ -141,7 +147,8 @@ function KanbanTaskForm({
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
   const { enqueueSnackbar } = useSnackbar()
-  const isSmall = useResponsive('between', null, 'xs', 480)
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const dispatch = useDispatch()
   const listColumnName = useSelector((state) => state.kanban.listColumnName)
   const columns = useSelector((state) => state.kanban.board.columns)
@@ -160,36 +167,38 @@ function KanbanTaskForm({
   const [updateCard, { isLoading: isUpdating }] = useUpdateCardMutation()
 
   const phoneOptions = useMemo(() => {
-    if (!phoneData || phoneData.data.candidate.length <= 0) return []
-    const candidates = phoneData.data.candidate
-    return candidates.map((candidate) => ({
-      label: candidate.phone,
-      value: candidate.id,
-      name: candidate.name,
-      email: candidate.email,
-    }))
+    const candidates = phoneData?.data?.candidate || []
+    return candidates.map(
+      ({ name, email, phone: label = '', id: value = '' }) => ({
+        label,
+        value,
+        name,
+        email,
+      })
+    )
   }, [phoneData])
 
   const emailOptions = useMemo(() => {
-    if (!emailData || emailData.data.candidate.length <= 0) return []
-    const candidates = emailData.data.candidate
-    return candidates.map((candidate) => ({
-      label: candidate.email,
-      value: candidate.id,
-      name: candidate.name,
-      phone: candidate.phone,
-    }))
+    const candidates = emailData?.data?.candidate || []
+    return candidates.map(
+      ({ name, phone, email: label = '', id: value = '' }) => ({
+        label,
+        value,
+        name,
+        phone,
+      })
+    )
   }, [emailData])
 
   const cardByColumns = useMemo(() => {
-    if (!card) return
-    return columns?.[card.laneId]?.CandidateJobs?.find(
-      (item) => item.id === card.id
-    )
+    const { laneId, id } = card || {}
+    const { CandidateJobs } = columns?.[laneId] || []
+    return (CandidateJobs || []).find((item) => item.id === id)
   }, [columns, card])
 
   useEffect(() => {
     if (!card) return
+
     const {
       Candidate,
       laneId,
@@ -201,6 +210,7 @@ function KanbanTaskForm({
       refineCv = '',
       noteApproach,
     } = card
+
     setValue('name', Candidate?.name || '')
     setValue('laneId', laneId)
     setValue('idJob', Job.id)
@@ -208,10 +218,10 @@ function KanbanTaskForm({
     setValue('email', Candidate.email)
     setValue('location', Job.Location?.name || '')
     setValue('clientName', Job.Client?.name || '')
-    setValue('social', ['facebook', 'linkedin', 'skype'])
+    setValue('social', SOCIAL_LIST)
     setValue(
       'facebook',
-      Candidate.facebook ? `https://www.facebook.com/${Candidate.facebook}` : ''
+      Candidate.facebook ? `${FACEBOOK_URL}${Candidate.facebook}` : ''
     )
     setValue('linkedin', Candidate.linkedin || '')
     setValue('skype', Candidate.skype || '')
@@ -230,24 +240,29 @@ function KanbanTaskForm({
   }, [card, setValue])
 
   const [widthRef, setWidthRef] = useState(formRef?.current?.clientWidth)
+  const isMountedRef = useIsMountedRef()
 
   useEffect(() => {
-    setWidthRef(formRef?.current?.clientWidth)
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', () => {
-        setWidthRef(formRef?.current?.clientWidth)
-      })
+    const handleClientWidthRef = () => {
+      if (!isMountedRef.current) return
+      setWidthRef(formRef?.current?.clientWidth)
     }
+
+    handleClientWidthRef()
+
+    if (typeof window === 'undefined') return
+    window.addEventListener('resize', handleClientWidthRef)
     return () => {
       if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', () => {})
+        window.removeEventListener('resize', handleClientWidthRef)
       }
     }
-  }, [formRef])
+  }, [formRef, isMountedRef])
 
   useEffect(() => {
     if (!card && watchIdJob) {
       const job = activeJobOptions.find((job) => job.value === watchIdJob)
+
       setValue('location', job?.location)
       setValue('clientName', job?.clientName)
       setValue('nameJob', job?.label)
@@ -271,23 +286,28 @@ function KanbanTaskForm({
   const handleOpenPDF = () => {
     setIsOpenPDF(true)
   }
+
   useEffect(() => {
     if (!card?.cv) return
+
     dispatch(convertDriverToBase64({ linkDrive: card.cv }))
   }, [card?.cv, dispatch])
 
   const handleSubmitForm = async (data) => {
-    const reqData = { ...data, cv: data.linkCv }
-    reqData.approachDate = format(
-      new Date(reqData.approachDate),
-      DATE_YEAR_MONTH_DAY_FORMAT
-    )
+    const { linkCv: cv, approachDate } = data || {}
+    const reqData = {
+      ...data,
+      cv,
+      approachDate: format(new Date(approachDate), DATE_YEAR_MONTH_DAY_FORMAT),
+    }
+
     if (!reqData.laneId) {
       reqData.laneId = laneId
     }
     if (!card) {
       delete reqData.refineCv
     }
+
     reqData.email = data.email.label
     reqData.phone = data.phone.label
     delete reqData.social
@@ -413,9 +433,9 @@ function KanbanTaskForm({
                 ),
                 onChange: (field) => (event, newValue) => {
                   field.onChange(newValue)
-                  if (newValue) {
-                    setValue('laneId', newValue.value)
-                  }
+                  if (!newValue) return
+
+                  setValue('laneId', newValue.value)
                 },
               }}
               label={translate('pages.board.columnName')}
@@ -442,9 +462,9 @@ function KanbanTaskForm({
               ),
               onChange: (field) => (event, newValue) => {
                 field.onChange(newValue)
-                if (newValue) {
-                  setValue('idJob', newValue.value)
-                }
+                if (!newValue) return
+
+                setValue('idJob', newValue.value)
               },
             }}
             label={translate('pages.board.nameJob')}
@@ -525,7 +545,7 @@ function KanbanTaskForm({
         <Box mt={2}>
           {!card && (
             <CheckboxRootStyle>
-              <RHFMultiCheckbox name='social' options={socialOptions} />
+              <RHFMultiCheckbox name='social' options={SOCIAL_OPTIONS} />
             </CheckboxRootStyle>
           )}
 
@@ -701,8 +721,8 @@ function KanbanTaskForm({
 
         <Stack
           mt={2}
-          spacing={isSmall ? 2 : 0}
-          direction={isSmall ? 'column-reverse' : 'row'}
+          spacing={isMobile ? 2 : 0}
+          direction={isMobile ? 'column-reverse' : 'row'}
           justifyContent={cardByColumns || card ? 'space-between' : 'right'}
         >
           {cardByColumns && (
@@ -723,6 +743,7 @@ function KanbanTaskForm({
               hasAddPermission={hasAddPermission}
             />
           )}
+
           <Stack direction='row' spacing={1} sx={{ height: 'fit-content' }}>
             {card && (
               <Button
@@ -737,42 +758,42 @@ function KanbanTaskForm({
               </Button>
             )}
 
-            {base64 && (
-              <Button
-                variant='contained'
-                type='button'
-                size='medium'
-                sx={{
-                  '& a': { color: 'white' },
-                  '& a:hover': { textDecoration: 'none' },
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <Link
-                  download={`${
-                    card?.Candidate?.name ? card.Candidate.name : ''
-                  }.pdf`}
-                  href={`${URL_DOWNLOAD_CV},${base64}`}
-                >
-                  {translate('pages.board.downloadCV')}
-                </Link>
-              </Button>
-            )}
-
             {card?.cv && (
-              <LoadingButton
-                sx={{
-                  '& a': { color: 'white' },
-                  '& a:hover': { textDecoration: 'none' },
-                  whiteSpace: 'nowrap',
-                }}
-                variant='contained'
-                size='small'
-                loading={isLoadingPDF}
-                onClick={handleOpenPDF}
-              >
-                {translate('pages.candidates.rawCV')}
-              </LoadingButton>
+              <>
+                <Button
+                  variant='contained'
+                  type='button'
+                  size='medium'
+                  sx={{
+                    '& a': { color: 'white' },
+                    '& a:hover': { textDecoration: 'none' },
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Link
+                    download={`${
+                      card?.Candidate?.name ? card.Candidate.name : ''
+                    }.pdf`}
+                    href={`${URL_DOWNLOAD_CV},${base64}`}
+                  >
+                    {translate('pages.board.downloadCV')}
+                  </Link>
+                </Button>
+
+                <LoadingButton
+                  sx={{
+                    '& a': { color: 'white' },
+                    '& a:hover': { textDecoration: 'none' },
+                    whiteSpace: 'nowrap',
+                  }}
+                  variant='contained'
+                  size='small'
+                  loading={isLoadingPDF}
+                  onClick={handleOpenPDF}
+                >
+                  {translate('pages.candidates.rawCV')}
+                </LoadingButton>
+              </>
             )}
           </Stack>
         </Stack>

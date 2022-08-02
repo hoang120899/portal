@@ -1,7 +1,15 @@
 import { useMemo } from 'react'
 
 // @mui
-import { Avatar, Box, Card, CardHeader, Stack, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Card,
+  CardHeader,
+  CircularProgress,
+  Stack,
+  Typography,
+} from '@mui/material'
 
 import PropTypes from 'prop-types'
 
@@ -27,45 +35,64 @@ export default function KanbanUpdateHistory({
   isLight,
   ...other
 }) {
-  const { data: historyData } = useGetUpdateHistoryQuery({ cardId })
-  const historyList = useMemo(() => {
-    if (!historyData || !historyData?.data?.historyCard) return []
-    return historyData.data.historyCard.map((history) => {
-      let historyContent
-      if (history.type === HISTORY_STATUS.UPDATE) {
-        historyContent = JSON.parse(history.content)
-      } else {
-        historyContent = history.content
-      }
-      return {
-        User: history.User,
-        content: historyContent,
-        createdAt: history.createdAt,
-        id: history.id,
-        type: history.type,
-      }
-    })
-  }, [historyData])
+  const { data: historyData, isLoading } = useGetUpdateHistoryQuery({ cardId })
+
+  const historyList = useMemo(
+    () =>
+      (historyData?.data?.historyCard || []).map((history) => {
+        try {
+          let historyContent =
+            history.type === HISTORY_STATUS.UPDATE
+              ? JSON.parse(history.content)
+              : history.content
+          const { User, createdAt, id, type } = history || {}
+          return {
+            User,
+            content: historyContent,
+            createdAt,
+            id,
+            type,
+          }
+        } catch (e) {
+          return null
+        }
+      }),
+    [historyData]
+  )
 
   return (
     <Card sx={{ maxHeight: '25rem', overflowY: 'auto' }} {...other}>
       <CardHeader title={title} sx={{ p: 2, pb: 0 }} />
 
-      <Scrollbar>
-        <Stack spacing={2} sx={{ p: 2 }}>
-          {historyList.map((historyItem) => {
-            if (historyItem.content) {
-              return (
-                <KanbanHistoryItem
-                  key={historyItem.id}
-                  historyItem={historyItem}
-                  isLight={isLight}
-                />
-              )
-            }
-          })}
-        </Stack>
-      </Scrollbar>
+      {isLoading ? (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            py: 2,
+            px: 2.5,
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Scrollbar>
+          <Stack spacing={2} sx={{ p: 2 }}>
+            {historyList.map((historyItem) => {
+              if (historyItem.content) {
+                return (
+                  <KanbanHistoryItem
+                    key={historyItem.id}
+                    historyItem={historyItem}
+                    isLight={isLight}
+                  />
+                )
+              }
+            })}
+          </Stack>
+        </Scrollbar>
+      )}
     </Card>
   )
 }
@@ -100,9 +127,11 @@ function KanbanHistoryItem({ historyItem, isLight }) {
             <Typography mr={1} sx={{ fontWeight: 'bold' }} component='span'>
               {User.name}
             </Typography>
+
             {type === HISTORY_STATUS.UPDATE && (
               <span>{translate('has update this card')}</span>
             )}
+
             {type === HISTORY_STATUS.UPDATE ? (
               content.map((e, i) => (
                 <Typography key={i}>
@@ -114,6 +143,7 @@ function KanbanHistoryItem({ historyItem, isLight }) {
               <span>{translate(content)}</span>
             )}
           </Box>
+
           <Typography variant='caption' sx={{ opacity: '0.5 !important' }}>
             {fDateTime(createdAt)}
           </Typography>

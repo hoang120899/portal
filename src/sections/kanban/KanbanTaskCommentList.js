@@ -16,8 +16,6 @@ import {
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 
-// components
-// utils
 import Scrollbar from '@/components/Scrollbar'
 import { DOMAIN_SERVER_API } from '@/config'
 import useAuth from '@/hooks/useAuth'
@@ -42,17 +40,17 @@ export default function KanbanCommentList({
   const { data: commentData } = useGetListCommentQuery(cardId)
 
   const commentList = useMemo(() => {
-    if (commentData && commentData.data.list) {
-      return commentData.data.list.map((comment) => ({
-        id: comment.id,
-        User: comment.User,
-        content: comment.content,
-        userId: comment.userId,
-        updatedAt: comment.updatedAt,
-      }))
-    } else {
-      return []
-    }
+    if (!commentData?.data?.list) return []
+
+    return commentData.data.list.map(
+      ({ id, User, content, userId, updatedAt }) => ({
+        id,
+        User,
+        content,
+        userId,
+        updatedAt,
+      })
+    )
   }, [commentData])
 
   return (
@@ -104,7 +102,7 @@ function KanbanCommentItem({ commentItem, isLight }) {
       setComment('')
       setIsEdit(false)
     } catch (error) {
-      enqueueSnackbar('Add comment failed! Please try again.', {
+      enqueueSnackbar(translate('pages.board.addCommentFailed'), {
         variant: 'error',
       })
     }
@@ -121,7 +119,7 @@ function KanbanCommentItem({ commentItem, isLight }) {
         <Box ml={2} sx={{ flex: '1' }}>
           {isEdit ? (
             <TextField
-              label={translate('Edit Comment')}
+              label={translate('pages.board.editComment')}
               value={comment}
               fullWidth
               multiline
@@ -156,11 +154,15 @@ function KanbanCommentItem({ commentItem, isLight }) {
 
           {user.userId === userId && (
             <Button onClick={handleOpenEditCommentInput}>
-              {isEdit ? translate('Cancel') : translate('Edit')}
+              {isEdit
+                ? translate('pages.board.cancel')
+                : translate('pages.board.edit')}
             </Button>
           )}
           {isEdit && (
-            <Button onClick={handleEditComment}>{translate('Save')}</Button>
+            <Button onClick={handleEditComment}>
+              {translate('pages.board.save')}
+            </Button>
           )}
         </Box>
       </Box>

@@ -3,6 +3,9 @@ const board = {
   storageCard: 'lưu thẻ',
   createLabel: 'Tạo nhãn',
   save: 'Lưu',
+  cancel: 'Hủy',
+  edit: 'Sửa',
+  editComment: 'Chỉnh sửa bình luận',
   background: 'Màu nền',
   confirmStorage: 'Bạn có muốn lưu thẻ này',
   waiting: 'Waiting',
@@ -35,6 +38,14 @@ const board = {
   approachPoint: 'Approach Point',
   createInterview: 'Create Interview',
   downloadCV: 'Download CV',
+  addCommentFailed: 'Add comment failed! Please try again.',
+  history: 'History',
+  hide: 'Hide',
+  listComment: 'List Comment',
+  comment: 'Comment',
+  newsUpdate: 'News Update',
+  show: 'Show',
+  typeAMessage: 'Type a message',
 }
 
 export default board

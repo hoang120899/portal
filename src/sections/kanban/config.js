@@ -1,4 +1,4 @@
-export const socialOptions = [
+export const SOCIAL_OPTIONS = [
   { label: 'Facebook', value: 'facebook' },
   { label: 'Linkedin', value: 'linkedin' },
   { label: 'Skype', value: 'skype' },
@@ -29,3 +29,7 @@ export const JOB_FORM_STICKY_BAR_COLOR = {
     SHADOW: '#3e474f',
   },
 }
+
+export const SOCIAL_LIST = ['facebook', 'linkedin', 'skype']
+
+export const FACEBOOK_URL = 'https://www.facebook.com/'
