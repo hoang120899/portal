@@ -40,17 +40,15 @@ export default function KanbanCommentList({
   const { data: commentData } = useGetListCommentQuery(cardId)
 
   const commentList = useMemo(() => {
-    if (!commentData?.data?.list) return []
-
-    return commentData.data.list.map(
-      ({ id, User, content, userId, updatedAt }) => ({
-        id,
-        User,
-        content,
-        userId,
-        updatedAt,
-      })
-    )
+    const listCommentData = commentData?.data?.list || []
+    if (!listCommentData.length) return []
+    return listCommentData.map(({ id, User, content, userId, updatedAt }) => ({
+      id,
+      User,
+      content,
+      userId,
+      updatedAt,
+    }))
   }, [commentData])
 
   return (
@@ -86,6 +84,11 @@ function KanbanCommentItem({ commentItem, isLight }) {
   const [comment, setComment] = useState('')
 
   const [editComment] = useEditCommentMutation()
+
+  const saveText = useMemo(() => {
+    if (isEdit) return translate('pages.board.cancel')
+    return translate('pages.board.edit')
+  }, [isEdit, translate])
 
   const handleOpenEditCommentInput = () => {
     setIsEdit((prev) => !prev)
@@ -153,11 +156,7 @@ function KanbanCommentItem({ commentItem, isLight }) {
           )}
 
           {user.userId === userId && (
-            <Button onClick={handleOpenEditCommentInput}>
-              {isEdit
-                ? translate('pages.board.cancel')
-                : translate('pages.board.edit')}
-            </Button>
+            <Button onClick={handleOpenEditCommentInput}>{saveText}</Button>
           )}
           {isEdit && (
             <Button onClick={handleEditComment}>

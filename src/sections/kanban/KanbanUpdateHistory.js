@@ -37,28 +37,34 @@ export default function KanbanUpdateHistory({
 }) {
   const { data: historyData, isLoading } = useGetUpdateHistoryQuery({ cardId })
 
-  const historyList = useMemo(
-    () =>
-      (historyData?.data?.historyCard || []).map((history) => {
+  const historyList = useMemo(() => {
+    const historyCard = historyData?.data?.historyCard || []
+    if (!historyCard.length) return []
+
+    return historyCard
+      .filter(({ type, content }) => {
         try {
-          let historyContent =
-            history.type === HISTORY_STATUS.UPDATE
-              ? JSON.parse(history.content)
-              : history.content
-          const { User, createdAt, id, type } = history || {}
-          return {
-            User,
-            content: historyContent,
-            createdAt,
-            id,
-            type,
-          }
-        } catch (e) {
-          return null
+          const historyContent =
+            type === HISTORY_STATUS.UPDATE ? JSON.parse(content) : content
+
+          return !!historyContent
+        } catch (error) {
+          return false
         }
-      }),
-    [historyData]
-  )
+      })
+      .map(({ type, content, createdAt, User, id }) => {
+        const historyContent =
+          type === HISTORY_STATUS.UPDATE ? JSON.parse(content) : content
+
+        return {
+          User,
+          content: historyContent,
+          createdAt,
+          id,
+          type,
+        }
+      })
+  }, [historyData])
 
   return (
     <Card sx={{ maxHeight: '25rem', overflowY: 'auto' }} {...other}>
@@ -79,17 +85,13 @@ export default function KanbanUpdateHistory({
       ) : (
         <Scrollbar>
           <Stack spacing={2} sx={{ p: 2 }}>
-            {historyList.map((historyItem) => {
-              if (historyItem.content) {
-                return (
-                  <KanbanHistoryItem
-                    key={historyItem.id}
-                    historyItem={historyItem}
-                    isLight={isLight}
-                  />
-                )
-              }
-            })}
+            {historyList.map((historyItem) => (
+              <KanbanHistoryItem
+                key={historyItem.id}
+                historyItem={historyItem}
+                isLight={isLight}
+              />
+            ))}
           </Stack>
         </Scrollbar>
       )}

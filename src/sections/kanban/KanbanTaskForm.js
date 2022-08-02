@@ -193,7 +193,7 @@ function KanbanTaskForm({
   const cardByColumns = useMemo(() => {
     const { laneId, id } = card || {}
     const { CandidateJobs } = columns?.[laneId] || []
-    return (CandidateJobs || []).find((item) => item.id === id)
+    return CandidateJobs?.find((item) => item.id === id)
   }, [columns, card])
 
   useEffect(() => {
@@ -252,10 +252,10 @@ function KanbanTaskForm({
 
     if (typeof window === 'undefined') return
     window.addEventListener('resize', handleClientWidthRef)
+
     return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', handleClientWidthRef)
-      }
+      if (typeof window === 'undefined') return
+      window.removeEventListener('resize', handleClientWidthRef)
     }
   }, [formRef, isMountedRef])
 
@@ -288,28 +288,36 @@ function KanbanTaskForm({
   }
 
   useEffect(() => {
-    if (!card?.cv) return
+    const { cv, candidateId } = card || {}
+    if (!cv || !candidateId) return
 
-    dispatch(convertDriverToBase64({ linkDrive: card.cv }))
-  }, [card?.cv, dispatch])
+    dispatch(convertDriverToBase64({ linkDrive: cv, candidateId }))
+  }, [dispatch, card])
 
   const handleSubmitForm = async (data) => {
-    const { linkCv: cv, approachDate } = data || {}
+    const {
+      linkCv: cv,
+      approachDate,
+      email,
+      phone,
+      laneId: laneDataId,
+    } = data || {}
+    const { label: phoneLabel } = phone || {}
+    const { label: emailLabel } = email || {}
+
     const reqData = {
       ...data,
       cv,
       approachDate: format(new Date(approachDate), DATE_YEAR_MONTH_DAY_FORMAT),
+      laneId: laneDataId || laneId,
+      phone: phoneLabel,
+      email: emailLabel,
     }
 
-    if (!reqData.laneId) {
-      reqData.laneId = laneId
-    }
     if (!card) {
       delete reqData.refineCv
     }
 
-    reqData.email = data.email.label
-    reqData.phone = data.phone.label
     delete reqData.social
 
     try {
