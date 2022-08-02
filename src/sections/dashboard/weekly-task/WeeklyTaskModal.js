@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
 // mui
 import {
@@ -10,7 +10,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -36,7 +36,7 @@ import {
   fDateStartOfWeek,
 } from '@/utils/formatTime'
 
-import { HANDLE_TYPE } from './config'
+import { HANDLE_TYPE, TOTAL_TYPE } from './config'
 import {
   useCreateWeeklyTaskMutation,
   useGetTaskUserListQuery,
@@ -52,8 +52,14 @@ WeeklyTaskModal.propTypes = {
   isReloading: PropTypes.bool,
 }
 
-const styleAsterisk = {
-  color: '#F64E60',
+const AsteriskStyle = styled('span')(({ theme }) => ({
+  color: theme.palette.error.main,
+}))
+
+const defaultContentTask = {
+  content: '',
+  percent: '',
+  target: '',
 }
 
 export default function WeeklyTaskModal({
@@ -64,9 +70,11 @@ export default function WeeklyTaskModal({
   setIsReloading = {},
   isReloading = false,
 }) {
-  const { startDate, endDate } = task
+  const { startDate, endDate, content: taskContents = [] } = task
   const { currentRole } = useRole()
-  const [contentTask, setContentTask] = useState([])
+  const [contentTask, setContentTask] = useState(
+    isEditScreen ? taskContents : [].concat(defaultContentTask)
+  )
   const { enqueueSnackbar } = useSnackbar()
   const { translate } = useLocales()
   const theme = useTheme()
@@ -114,7 +122,7 @@ export default function WeeklyTaskModal({
 
   const defaultValuesAdd = {
     ...task,
-    content: [{ content: '', percent: '', target: '' }],
+    content: [defaultContentTask],
     userId: '',
     startDate: startDateFormat,
     endDate: endDateFormat,
@@ -124,22 +132,21 @@ export default function WeeklyTaskModal({
     resolver: yupResolver(WeeklyTaskFormSchema),
     defaultValues: isEditScreen ? defaultValuesEdit : defaultValuesAdd,
   })
+
   const { handleSubmit, reset, control, watch, setValue } = methods
   const { remove } = useFieldArray({
     control,
     name: 'content',
   })
+  const contentField = watch('content')
 
   const calcTotal = (arr, type) => {
-    if (type === 'percent') {
-      const reducer = (accumulator, currentValue) =>
-        accumulator + Number(currentValue.percent)
-      return arr.reduce(reducer, 0)
-    } else {
-      const reducer = (accumulator, currentValue) =>
-        accumulator + Number(currentValue.target)
-      return arr.reduce(reducer, 0)
-    }
+    if (!Array.isArray(arr) || !arr.length) return 0
+
+    return arr.reduce((prev, { percent, target }) => {
+      const value = type === TOTAL_TYPE.PERCENT ? percent : target
+      return prev + Number(value)
+    }, 0)
   }
 
   const onSubmit = async (data) => {
@@ -147,60 +154,70 @@ export default function WeeklyTaskModal({
       if (isEditScreen) {
         data.startDate = fDateCalendar(fDate(data.startDate))
         data.endDate = fDateCalendar(fDate(data.endDate))
+
         delete data.id
         delete data.user
+
         const payload = {
           id: String(task?.id),
           body: data,
         }
+
         setContentTask(data?.content)
         await updateWeeklyTask(payload)
+
         enqueueSnackbar(translate('Update task success!'))
         onClose()
         setIsReloading(!isReloading)
-      } else {
-        data.startDate = fDateCalendar(fDate(data.startDate))
-        data.endDate = fDateCalendar(fDate(data.endDate))
-        const payload = {
-          body: data,
-        }
-        setContentTask(data?.content)
-        await createWeeklyTask(payload)
-        enqueueSnackbar(translate('Create task success!'))
-        onClose()
-        setIsReloading(!isReloading)
+        return
       }
+
+      data.startDate = fDateCalendar(fDate(data.startDate))
+      data.endDate = fDateCalendar(fDate(data.endDate))
+      const payload = {
+        body: data,
+      }
+
+      setContentTask(data?.content)
+      await createWeeklyTask(payload)
+
+      enqueueSnackbar(translate('Create task success!'))
+      onClose()
+      setIsReloading(!isReloading)
     } catch (error) {
       enqueueSnackbar(error.message, { variant: 'error' })
     }
   }
 
   const handleAddContentTask = () => {
-    setContentTask([...contentTask, { content: '', percent: '', target: '' }])
+    setContentTask([...contentTask, defaultContentTask])
   }
 
   const handleRemoveContentTask = (index) => {
-    let newContentTask = [...contentTask]
-    if (newContentTask.length > 1) {
-      newContentTask.splice(index, 1)
-      setContentTask([...newContentTask])
-      remove(index)
-      reset({
-        ...task,
-        startDate: fDateCalendar(startDate),
-        endDate: fDateCalendar(endDate),
-        content: [...newContentTask],
-      })
-    } else {
-      return
-    }
+    if (contentTask.length <= 1) return
+
+    const newContentTask = [...contentTask]
+
+    newContentTask.splice(index, 1)
+    setContentTask([...newContentTask])
+    remove(index)
+    reset({
+      ...task,
+      startDate: fDateCalendar(startDate),
+      endDate: fDateCalendar(endDate),
+      content: [...newContentTask],
+    })
   }
 
-  useEffect(() => {
-    isEditScreen
-      ? setContentTask(task?.content)
-      : setContentTask([{ content: '', percent: '', target: '' }])
-  }, [task, isEditScreen])
+  const formTitle = useMemo(() => {
+    if (isEditScreen) return translate('pages.dashboard.weeklyTask.editTask')
+    return translate('pages.dashboard.weeklyTask.createNewTask')
+  }, [isEditScreen, translate])
+
+  const saveText = useMemo(() => {
+    if (isEditScreen) return translate('Update')
+    return translate('Save')
+  }, [isEditScreen, translate])
 
   return (
     <Dialog fullWidth maxWidth='sm' open={isOpen} onClose={onClose}>
@@ -209,15 +226,11 @@ export default function WeeklyTaskModal({
           variant='h6'
           sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          {translate(
-            `${
-              isEditScreen
-                ? `${translate('pages.dashboard.weeklyTask.editTask')}`
-                : `${translate('pages.dashboard.weeklyTask.createNewTask')}`
-            }`
-          )}
+          {formTitle}
         </Typography>
+
         <Divider />
+
         <Box>
           <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Scrollbar sx={{ maxHeight: '380px' }}>
@@ -225,7 +238,7 @@ export default function WeeklyTaskModal({
                 <Grid item sm={3} xs={12} alignSelf='center'>
                   <Typography>
                     {translate('pages.dashboard.weeklyTask.deadline')}
-                    <span style={styleAsterisk}>*</span>
+                    <AsteriskStyle>*</AsteriskStyle>
                   </Typography>
                 </Grid>
 
@@ -250,7 +263,7 @@ export default function WeeklyTaskModal({
                 <Grid item sm={3} xs={12} alignSelf='center'>
                   <Typography>
                     {translate('pages.dashboard.weeklyTask.name')}
-                    <span style={styleAsterisk}>*</span>
+                    <AsteriskStyle>*</AsteriskStyle>
                   </Typography>
                 </Grid>
 
@@ -281,8 +294,9 @@ export default function WeeklyTaskModal({
                   <Stack direction='row' columnGap={2} alignItems='center'>
                     <Typography>
                       {translate('Task')}
-                      <span style={styleAsterisk}>*</span>
+                      <AsteriskStyle>*</AsteriskStyle>
                     </Typography>
+
                     <IconButtonAnimate onClick={handleAddContentTask}>
                       <Iconify
                         icon='akar-icons:circle-plus'
@@ -355,25 +369,35 @@ export default function WeeklyTaskModal({
               </Grid>
             </Scrollbar>
 
-            {watch('content') && (
+            {contentField && (
               <Box sx={{ mt: 1.5 }}>
-                <Typography>{`${translate(
-                  'pages.dashboard.weeklyTask.totalTarget'
-                )}: ${
-                  calcTotal(watch('content'), 'target') || 0
-                }% `}</Typography>
-                <Typography>{`${translate(
-                  'pages.dashboard.weeklyTask.totalAchievement'
-                )}: ${
-                  calcTotal(watch('content'), 'percent') || 0
-                }% `}</Typography>
+                <Stack direction='row' spacing={1}>
+                  <Typography>
+                    {translate('pages.dashboard.weeklyTask.totalTarget')}:
+                  </Typography>
+
+                  <Typography>
+                    {calcTotal(contentField, TOTAL_TYPE.TARGET)}%
+                  </Typography>
+                </Stack>
+
+                <Stack direction='row' spacing={1}>
+                  <Typography>
+                    {translate('pages.dashboard.weeklyTask.totalAchievement')}:
+                  </Typography>
+
+                  <Typography>
+                    {calcTotal(contentField, TOTAL_TYPE.PERCENT)}%
+                  </Typography>
+                </Stack>
               </Box>
             )}
 
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
               <Button type='submit' variant='contained' sx={{ mr: 1 }}>
-                {translate(`${isEditScreen ? 'Update' : 'Save'}`)}
+                {saveText}
               </Button>
+
               <Button
                 onClick={onClose}
                 variant='outlined'

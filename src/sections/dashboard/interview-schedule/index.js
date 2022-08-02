@@ -54,9 +54,10 @@ export default function InterviewSchedule({ title, subheader, ...other }) {
   const [selectedInterviews, setSelectedInterviews] = useState([])
   const [interviewDetail, setInterviewDetail] = useState({})
 
-  const columns = isMobileScreen
-    ? TABLE_MOBILE_HEAD({ translate })
-    : TABLE_DESKTOP_HEAD({ translate })
+  const columns = useMemo(() => {
+    if (isMobileScreen) return TABLE_MOBILE_HEAD({ translate })
+    return TABLE_DESKTOP_HEAD({ translate })
+  }, [isMobileScreen, translate])
 
   const startDate = useMemo(
     () => fDate(fStartOfMonth(date || new Date()), CALANDER_DATE_FORMAT),

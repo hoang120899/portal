@@ -74,6 +74,11 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
     [isMobileScreen]
   )
 
+  const columns = useMemo(() => {
+    if (isMobileScreen) return []
+    return TABLE_HEAD({ translate })
+  }, [isMobileScreen, translate])
+
   return (
     <Card {...other}>
       <Stack {...tabContainerStyle}>
@@ -113,7 +118,7 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
       <Box sx={{ mb: 2 }}>{!isMobileScreen && <Divider />}</Box>
 
       <BasicTable
-        columns={isMobileScreen ? [] : TABLE_HEAD({ translate })}
+        columns={columns}
         dataSource={dataJobs}
         page={page}
         rowsPerPage={rowsPerPage}

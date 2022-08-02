@@ -123,7 +123,9 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       const { data: dataTasks } = res
       setList(dataTasks?.tasks)
     } catch (error) {
-      enqueueSnackbar('Get weekly tasks failed!', { variant: 'error' })
+      enqueueSnackbar(translate('Get weekly tasks failed!'), {
+        variant: 'error',
+      })
     }
   }
 
@@ -143,6 +145,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
         <Box>
           <CardHeader title={title} subheader={subheader} />
         </Box>
+
         {isLeaderRole && (
           <Box sx={{ pr: 3 }}>
             <Button
@@ -155,9 +158,11 @@ export default function WeeklyTask({ title, subheader, ...other }) {
           </Box>
         )}
       </Stack>
+
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <WeeklyTaskTableToolbar ref={tableToolbarRef} />
       </FormProvider>
+
       {list.length > 0 ? (
         isMedium || isLarge ? (
           <WeeklyTaskCollapsibleTable
@@ -183,12 +188,14 @@ export default function WeeklyTask({ title, subheader, ...other }) {
           }}
         />
       )}
+
       <WeeklyTaskDetailModal
         isOpen={isOpenDetail}
         onClose={handleCloseDetailModal}
         task={chosenTask}
         handleOpenEdit={handleOpenEditModal}
       />
+
       {isOpen && (
         <WeeklyTaskModal
           isOpen={isOpen}
