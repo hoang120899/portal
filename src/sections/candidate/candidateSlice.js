@@ -95,9 +95,10 @@ export const candidateSlice = createSlice({
         state.isLoadingPDF = true
       })
       .addCase(convertDriverToBase64.fulfilled, (state, action) => {
-        const { base64 = '', candidateId = '' } = action.payload
-        const { id: candidateDetailId = '' } = state.candidateDetail
-        if (candidateDetailId !== candidateId) return
+        const { base64 = '', candidateId: originalCandidateId = '' } =
+          action.payload
+        const { id: candidateId = '' } = state.candidateDetail
+        if (originalCandidateId !== candidateId) return
 
         state.base64 = base64
         state.isLoadingPDF = false

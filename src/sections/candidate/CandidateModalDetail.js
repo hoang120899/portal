@@ -127,6 +127,7 @@ export default function CandidateModalDetail({
 
   useEffect(() => {
     if (!cvJob) return
+
     setCopyLinkCVText(copyLinkCVRef.current?.value)
     dispatch(convertDriverToBase64({ linkDrive: cvJob, candidateId }))
   }, [cvJob, dispatch, candidateId])
@@ -219,10 +220,8 @@ export default function CandidateModalDetail({
                     },
                     onChange: (field) => (event, newValue) => {
                       field.onChange(newValue)
-                      if (!newValue) return
-
-                      const jobItem = (jobs || []).find(
-                        (item) => item.candidateJobId === newValue.id
+                      const jobItem = jobs?.find(
+                        ({ candidateJobId }) => candidateJobId === newValue.id
                       )
                       if (!jobItem) return
 
@@ -233,7 +232,8 @@ export default function CandidateModalDetail({
                         location = '',
                         candidateJob = {},
                       } = jobItem
-                      const { position = '', noteApproach = '' } = candidateJob
+                      const { position = '', noteApproach = '' } =
+                        candidateJob || {}
 
                       setValue(DETAIL_FIELD.JOB_NAME, label)
                       setValue(DETAIL_FIELD.CLIENT_ID, value)
