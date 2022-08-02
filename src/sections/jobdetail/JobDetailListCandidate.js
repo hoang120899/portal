@@ -20,22 +20,13 @@ import useTable from '@/hooks/useTable'
 
 import CandidateModalDetail from './CandidateModalDetail'
 import ListCandidateRow from './ListCandidateRow'
+import { TABLE_DESKTOP, TABLE_MOBILE } from './config'
 import { useGetLaneQuery, useUpdateCandidateMutation } from './jobDetailSlice'
 
 JobDetailListCandidate.propTypes = {
   listCandidate: PropTypes.array,
   assignListUser: PropTypes.array,
 }
-const TABLE_DESKTOP = [
-  { id: 'name', label: 'NAME', align: 'left' },
-  { id: 'fllower', label: 'FOLLOWER', align: 'left' },
-  { id: 'actions', label: 'ACTIONS', align: 'right' },
-]
-const TABLE_MOBILE = [
-  {},
-  { id: 'name', label: 'NAME', align: 'left' },
-  { id: 'actions', label: 'ACTIONS', align: 'right' },
-]
 
 function JobDetailListCandidate({ listCandidate, assignListUser }) {
   const { page, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
@@ -50,15 +41,15 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
   const theme = useTheme()
   const smDown = useMediaQuery(theme.breakpoints.down('sm'))
   const { data: laneData } = useGetLaneQuery()
-  const laneSelected = useMemo(() => {
-    if (laneData) {
-      return laneData?.data?.lane?.map((item) => ({
+
+  const laneSelected = useMemo(
+    () =>
+      (laneData?.data?.lane || []).map((item) => ({
         value: item.id,
         label: item.nameColumn,
-      }))
-    }
-    return []
-  }, [laneData])
+      })),
+    [laneData]
+  )
 
   const defaultValues = {
     status: '',
@@ -70,6 +61,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
 
   const { watch } = methods
   const watchStatus = watch('status')
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     if (!watchStatus) {
@@ -82,6 +74,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
     let rs = listCandidate.filter((item) => columnName === item.nameColumn)
     setData(rs)
   }, [watchStatus, listCandidate, laneData?.data?.lane])
+
   useEffect(() => {
     setPage(0)
   }, [setPage])
@@ -90,13 +83,13 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
   useEffect(() => {
     setData(listCandidate)
   }, [listCandidate])
+
   const handleClick = (id) => {
     const candidate = data?.find((item) => item.id === id)
     setCandidateSelected(candidate)
     setIsOpenCandidateDetail(true)
   }
 
-  const { enqueueSnackbar } = useSnackbar()
   const handleUpdateCandidate = async (data) => {
     try {
       await updateCard({ ...data })
@@ -133,6 +126,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
             />
           </FormProvider>
         </Box>
+
         {data && (
           <BasicTable
             columns={smDown ? TABLE_MOBILE : TABLE_DESKTOP}
@@ -152,6 +146,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
             )}
           />
         )}
+
         <Pagination
           totalRecord={data?.length}
           page={page}
@@ -159,6 +154,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
           onChangePage={onChangePage}
           onChangeRowsPerPage={onChangeRowsPerPage}
         />
+
         {candidateSelected && (
           <CandidateModalDetail
             isOpen={isOpenCandidateDetail}

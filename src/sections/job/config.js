@@ -53,12 +53,12 @@ export const JOB_EDITOR_DEFAULT_TEXT = (primaryColor = '#FCCC4B') => ({
 })
 
 export const JOB_FORM_STICKY_BAR_COLOR = {
-  light: {
-    color: '#fff',
-    shadow: '#d8d8d8',
+  LIGHT: {
+    COLOR: '#fff',
+    SHADOW: '#d8d8d8',
   },
-  dark: {
-    color: '#212b36',
-    shadow: '#3e474f',
+  DARK: {
+    COLOR: '#212b36',
+    SHADOW: '#3e474f',
   },
 }

@@ -5,7 +5,6 @@ import candidates from './candidates'
 import clients from './clients'
 import dashboard from './dashboard'
 import interview from './interview'
-import jobDetail from './jobDetail'
 import jobs from './jobs'
 import login from './login'
 import notification from './notification'
@@ -49,7 +48,6 @@ const en = {
     users,
     login,
     jobs,
-    jobDetail,
   },
   common: {
     add: 'Add',

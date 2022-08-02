@@ -123,7 +123,7 @@ function ListCandidateRow({ row, handleClick, smDown }) {
                 paddingX: '0px',
               }}
             >
-              {translate('pages.jobDetail.addToBoard')}
+              {translate('pages.jobs.addToBoard')}
             </Button>
           )}
         </TableCell>
@@ -138,7 +138,7 @@ function ListCandidateRow({ row, handleClick, smDown }) {
           <TableCell align='left' width='50%' colSpan={3}>
             <Stack direction='row' spacing={1} alignItems='center'>
               <Typography fontWeight='bold' sx={{ opacity: '0.5' }}>
-                {translate('pages.jobDetail.followers')}:
+                {translate('pages.jobs.followers')}:
               </Typography>
               <Box
                 sx={{

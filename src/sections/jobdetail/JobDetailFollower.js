@@ -40,19 +40,23 @@ function JobDetailFollower({ listFollower }) {
 const ListFollowerRow = ({ row }) => {
   const { User, urlShort, totalClick, numberCandidate } = row || {}
   const { translate } = useLocales()
+
   return (
     <>
       <TableRow>
         <TableCell align='left' width='40%'>
           <b>{User?.name}</b>
         </TableCell>
+
         <TableCell align='left' width='25%'>
-          <b>{translate('pages.jobDetail.click')}</b>
+          <b>{translate('pages.jobs.click')}</b>
         </TableCell>
+
         <TableCell align='left' width='25%'>
-          <b>{translate('pages.jobDetail.candidate')}</b>
+          <b>{translate('pages.jobs.candidate')}</b>
         </TableCell>
       </TableRow>
+
       <TableRow
         sx={{
           '& p': {
@@ -71,9 +75,11 @@ const ListFollowerRow = ({ row }) => {
             </Typography>
           </CopyClipboard>
         </TableCell>
+
         <TableCell align='left' width='25%'>
           <Typography variant='body1'>{totalClick}</Typography>
         </TableCell>
+
         <TableCell align='left' width='25%'>
           <Typography variant='body1'>{numberCandidate}</Typography>
         </TableCell>

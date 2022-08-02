@@ -31,6 +31,7 @@ import {
   RHFTextField,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
+import useIsMountedRef from '@/hooks/useIsMountedRef'
 import useLocales from '@/hooks/useLocales'
 import {
   useCreateJobMutation,
@@ -207,19 +208,24 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
     }
   }, [skillKeyword, searchSkill, enqueueSnackbar])
   const [widthRef, setWidthRef] = useState(ref?.current?.clientWidth)
+  const isMountedRef = useIsMountedRef()
+
   useEffect(() => {
-    setWidthRef(ref?.current?.clientWidth)
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', () => {
-        setWidthRef(ref?.current?.clientWidth)
-      })
+    const handleClientWidthRef = () => {
+      if (!isMountedRef.current) return
+      setWidthRef(ref?.current?.clientWidth)
     }
+
+    handleClientWidthRef()
+
+    if (typeof window === 'undefined') return
+    window.addEventListener('resize', handleClientWidthRef)
     return () => {
       if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', () => {})
+        window.removeEventListener('resize', handleClientWidthRef)
       }
     }
-  }, [])
+  }, [isMountedRef])
 
   const onSubmit = async (data) => {
     const reqData = { ...data }
@@ -259,19 +265,19 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
           right: 0,
           width: `${widthRef}px`,
           background: isLight
-            ? JOB_FORM_STICKY_BAR_COLOR.light.color
-            : JOB_FORM_STICKY_BAR_COLOR.dark.color,
+            ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.COLOR
+            : JOB_FORM_STICKY_BAR_COLOR.DARK.COLOR,
           zIndex: 1,
           borderBottom: `1px solid ${
             isLight
-              ? JOB_FORM_STICKY_BAR_COLOR.light.color
-              : JOB_FORM_STICKY_BAR_COLOR.dark.color
+              ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.COLOR
+              : JOB_FORM_STICKY_BAR_COLOR.DARK.COLOR
           }`,
           paddingRight: '24px',
           boxShadow: `0 1px ${isScrolled ? '8px' : '1px'} 0px ${
             isLight
-              ? JOB_FORM_STICKY_BAR_COLOR.light.shadow
-              : JOB_FORM_STICKY_BAR_COLOR.dark.shadow
+              ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.SHADOW
+              : JOB_FORM_STICKY_BAR_COLOR.DARK.SHADOW
           }`,
           height: '60px',
         }}

@@ -19,8 +19,10 @@ import PropTypes from 'prop-types'
 
 import Iconify from '@/components/Iconify'
 import Markdown from '@/components/Markdown'
-import { AMPM_DATETIME_FORMAT } from '@/config'
+import { AMPM_DATETIME_FORMAT, DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
+
+import { ACTIVITY_STATUS } from './config'
 
 JobDetailActivityDialog.propTypes = {
   open: PropTypes.bool,
@@ -33,7 +35,6 @@ export default function JobDetailActivityDialog({
   onClose,
   jobActivity,
 }) {
-  const domain = process.env.NEXT_PUBLIC_HOST_API_KEY
   const { translate } = useLocales()
 
   const theme = useTheme()
@@ -42,7 +43,7 @@ export default function JobDetailActivityDialog({
   const activityContent = jobActivity?.map((activity) => {
     try {
       const content =
-        activity.type === 'update_job'
+        activity.type === ACTIVITY_STATUS.UPDATE_JOB
           ? JSON.parse(activity?.content)
           : activity?.content
       return { ...activity, content }
@@ -61,8 +62,9 @@ export default function JobDetailActivityDialog({
         }}
       >
         <Iconify icon={'bx:calendar'} width={24} height={24} />
-        {translate('pages.jobDetail.activity')}
+        {translate('pages.jobs.activity')}
       </DialogTitle>
+
       <DialogContent dividers>
         {activityContent?.map((activity) => (
           <Stack
@@ -72,9 +74,10 @@ export default function JobDetailActivityDialog({
           >
             <Avatar
               alt={activity.User.name}
-              src={`${domain}/${activity.User.linkAvatar}`}
+              src={`${DOMAIN_SERVER_API}/${activity.User.linkAvatar}`}
               sx={{ m: 0.5, width: 36, height: 36 }}
             />
+
             <Stack direction='column'>
               <Typography
                 variant='body2'
@@ -83,11 +86,12 @@ export default function JobDetailActivityDialog({
                   fontSize: '12px',
                 }}
               >
-                <b>{activity.User.name}</b>{' '}
-                {activity.type === 'update_job'
+                <b>{activity.User.name}</b>&nbsp;
+                {activity.type === ACTIVITY_STATUS.UPDATE_JOB
                   ? 'has update this job:'
                   : activity.content}
               </Typography>
+
               {typeof activity.content === 'object' &&
                 activity.content?.map((e, i) => (
                   <Typography
@@ -111,11 +115,13 @@ export default function JobDetailActivityDialog({
                     <b>{`${e.path}: `}</b>
                     <Markdown components={{}} children={e.lhs} />
                     <span className='redColor'>
-                      {translate('pages.jobDetail.changeTo')}
-                    </span>{' '}
+                      {translate('pages.jobs.changeTo')}
+                    </span>
+                    &nbsp;
                     <Markdown components={{}} children={e.rhs} />
                   </Typography>
                 ))}
+
               <Typography
                 variant='body2'
                 color='textSecondary'
@@ -127,6 +133,7 @@ export default function JobDetailActivityDialog({
           </Stack>
         ))}
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose}>{translate('common.close')}</Button>
       </DialogActions>

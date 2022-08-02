@@ -18,6 +18,7 @@ import PropTypes from 'prop-types'
 import Assignee from '@/components/Assignee'
 import CopyClipboard from '@/components/CopyClipboard'
 import Iconify from '@/components/Iconify'
+import { DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
 import { API_DOWNLOAD_JOB } from '@/routes/api'
 
@@ -63,9 +64,7 @@ function JobDetailDescription({
 
   const getAbout = () => {
     let about = aboutFetch || ''
-    if (client) {
-      about += client.about
-    }
+    about += client?.about || ''
     return about + responsibilities + requirement + niceToHave + benefit
   }
 
@@ -73,10 +72,7 @@ function JobDetailDescription({
     token: token,
   })
   const { translate } = useLocales()
-  const urlDownLoadPDF = () => {
-    const domain = process.env.NEXT_PUBLIC_HOST_API_KEY
-    return `${domain}${API_DOWNLOAD_JOB}/${id}`
-  }
+  const urlDownLoadPDF = () => `${DOMAIN_SERVER_API}${API_DOWNLOAD_JOB}/${id}`
 
   return (
     <Card sx={{ height: 'fit-content' }}>
@@ -113,6 +109,7 @@ function JobDetailDescription({
                 {name}
               </Typography>
             </Box>
+
             <Box
               sx={{
                 display: 'flex',
@@ -136,6 +133,7 @@ function JobDetailDescription({
                   {shortLink?.data?.url}
                 </Typography>
               </CopyClipboard>
+
               <Stack direction='row'>
                 {hasPermission && (
                   <Button
@@ -147,6 +145,7 @@ function JobDetailDescription({
                     {translate('common.edit')}
                   </Button>
                 )}
+
                 <Button
                   color='primary'
                   variant='contained'
@@ -157,12 +156,13 @@ function JobDetailDescription({
                   }}
                 >
                   <Link href={urlDownLoadPDF()}>
-                    <a>{translate('pages.jobDetail.downloadAsPdf')}</a>
+                    <a>{translate('pages.jobs.downloadAsPdf')}</a>
                   </Link>
                 </Button>
               </Stack>
             </Box>
           </Box>
+
           <Box
             sx={{
               display: 'flex',
@@ -178,14 +178,17 @@ function JobDetailDescription({
               <Iconify icon='carbon:currency-dollar' />
               {salary}
             </Typography>
+
             <Typography variant='body1' color='#f64e60'>
               <Iconify icon='entypo:location-pin' /> {location}
             </Typography>
+
             <Typography variant='body1' color='#3699ff'>
               <Iconify icon='bxs:time-five' /> {time}
             </Typography>
           </Box>
         </Box>
+
         <Box
           sx={{
             marginTop: '12px',

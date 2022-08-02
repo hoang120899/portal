@@ -30,3 +30,19 @@ export const TABLE_DESKTOP_HEAD = [
 ]
 
 export const TABLE_MOBILE_HEAD = [{ id: 'name', label: 'Name', align: 'left' }]
+
+export const ACTIVITY_STATUS = {
+  UPDATE_JOB: 'update_job',
+}
+
+export const TABLE_DESKTOP = [
+  { id: 'name', label: 'NAME', align: 'left' },
+  { id: 'fllower', label: 'FOLLOWER', align: 'left' },
+  { id: 'actions', label: 'ACTIONS', align: 'right' },
+]
+
+export const TABLE_MOBILE = [
+  {},
+  { id: 'name', label: 'NAME', align: 'left' },
+  { id: 'actions', label: 'ACTIONS', align: 'right' },
+]
