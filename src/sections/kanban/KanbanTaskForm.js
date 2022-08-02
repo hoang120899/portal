@@ -12,9 +12,8 @@ import {
   Stack,
   TextareaAutosize,
   Typography,
-  useMediaQuery,
 } from '@mui/material'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 // @date-fns
@@ -42,6 +41,7 @@ import { DATE_YEAR_MONTH_DAY_FORMAT } from '@/config'
 import { useDebounce } from '@/hooks/useDebounce'
 import useIsMountedRef from '@/hooks/useIsMountedRef'
 import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
 import { convertDriverToBase64 } from '@/sections/candidate/candidateSlice'
 import { URL_DOWNLOAD_CV } from '@/sections/candidate/config'
 import {
@@ -147,8 +147,8 @@ function KanbanTaskForm({
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
   const { enqueueSnackbar } = useSnackbar()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
+  const isMobile = useResponsive('down', 'sm')
   const dispatch = useDispatch()
   const listColumnName = useSelector((state) => state.kanban.listColumnName)
   const columns = useSelector((state) => state.kanban.board.columns)
