@@ -723,9 +723,16 @@ function KanbanTaskForm({
               hasAddPermission={hasAddPermission}
             />
           )}
-          <Stack direction='row' spacing={1}>
+          <Stack direction='row' spacing={1} sx={{ height: 'fit-content' }}>
             {card && (
-              <Button type='button' variant='contained' size='small'>
+              <Button
+                type='button'
+                variant='contained'
+                size='large'
+                sx={{
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {translate('pages.board.createInterview')}
               </Button>
             )}
@@ -738,6 +745,7 @@ function KanbanTaskForm({
                 sx={{
                   '& a': { color: 'white' },
                   '& a:hover': { textDecoration: 'none' },
+                  whiteSpace: 'nowrap',
                 }}
               >
                 <Link
@@ -753,6 +761,11 @@ function KanbanTaskForm({
 
             {card?.cv && (
               <LoadingButton
+                sx={{
+                  '& a': { color: 'white' },
+                  '& a:hover': { textDecoration: 'none' },
+                  whiteSpace: 'nowrap',
+                }}
                 variant='contained'
                 size='small'
                 loading={isLoadingPDF}
