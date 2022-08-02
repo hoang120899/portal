@@ -30,6 +30,7 @@ Applicants.propTypes = {
 export default function Applicants({ title, subheader, ...other }) {
   const { page, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
     useTable({ defaultRowsPerPage: DEFAULT_ROWS_PER_PAGE })
+
   const { currentRole } = useRole()
   const isMobileScreen = useResponsive('down', 'sm')
   const [isOpen, setIsOpen] = useState(false)
@@ -42,6 +43,7 @@ export default function Applicants({ title, subheader, ...other }) {
   })
   const { list: listNewApplicants = [], total: totalRecord = 0 } =
     data?.data || {}
+
   const columns = isMobileScreen ? TABLE_MOBILE_HEAD : TABLE_DESKTOP_HEAD
 
   const tableRowComp = useCallback(
@@ -83,7 +85,7 @@ export default function Applicants({ title, subheader, ...other }) {
       <CardHeader title={title} subheader={subheader} />
 
       <BasicTable
-        columns={isLoading || isFetching ? columns : []}
+        columns={columns}
         page={page}
         rowsPerPage={rowsPerPage}
         dataSource={listNewApplicants}

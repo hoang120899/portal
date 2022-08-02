@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import {
   Collapse,
@@ -33,16 +33,13 @@ export default function ApplicantsCollapsibleTableRow({
     Job: { title: jobTitle = '' },
     createdAt = '',
   } = row || {}
+
   const { translate } = useLocales()
   const [isOpenDropdown, setIsOpenDropdown] = useState(true)
 
   const handleToggleDropdown = () => {
     setIsOpenDropdown(!isOpenDropdown)
   }
-
-  useEffect(() => {
-    setIsOpenDropdown(true)
-  }, [row])
 
   return (
     <>
@@ -61,6 +58,7 @@ export default function ApplicantsCollapsibleTableRow({
               }
             />
           </IconButton>
+
           <Typography
             variant='subtitle2'
             sx={{ cursor: 'pointer', fontWeight: 'bold' }}
@@ -69,6 +67,7 @@ export default function ApplicantsCollapsibleTableRow({
           </Typography>
         </TableCell>
       </TableRow>
+
       <TableRow>
         <TableCell sx={{ pl: '16px !important' }}>
           <Collapse in={isOpenDropdown} timeout='auto' unmountOnExit>
@@ -86,10 +85,12 @@ export default function ApplicantsCollapsibleTableRow({
                     <TableCell sx={{ width: '30%' }}>
                       {translate('Applied for')}
                     </TableCell>
+
                     <TableCell sx={{ width: 644 }}>
                       <Typography variant='subtitle2'>{jobTitle}</Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow>
                     <TableCell>{translate('Date')}</TableCell>
                     <TableCell>{fDate(createdAt)}</TableCell>
@@ -97,6 +98,7 @@ export default function ApplicantsCollapsibleTableRow({
 
                   <TableRow>
                     <TableCell>{translate('Detail')}</TableCell>
+
                     <TableCell>
                       <Tooltip title='Detail'>
                         <IconButtonAnimate

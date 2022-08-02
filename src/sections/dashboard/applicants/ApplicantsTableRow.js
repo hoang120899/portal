@@ -20,8 +20,10 @@ export default function ApplicantsTableRow({ row, handleOpenDetail }) {
     Job: { title: jobTitle = '' },
     createdAt = '',
   } = row || {}
+
   const theme = useTheme()
   const { translate } = useLocales()
+
   return (
     <TableRow hover sx={{ height: `${APPLICANT_TABLE_ROW_HEIGHT}px` }}>
       <TableCell align='left' sx={{ py: '2px', width: '100%' }}>
@@ -41,6 +43,7 @@ export default function ApplicantsTableRow({ row, handleOpenDetail }) {
               {candidateName}
             </TextMaxLine>
           </Box>
+
           <Stack direction='row' alignItems='flex-start'>
             <Typography
               variant='body2'
@@ -63,6 +66,7 @@ export default function ApplicantsTableRow({ row, handleOpenDetail }) {
           </Stack>
         </Box>
       </TableCell>
+
       <TableCell align='left' sx={{ py: '2px', width: '45%' }}>
         <TextMaxLine
           variant='subtitle2'

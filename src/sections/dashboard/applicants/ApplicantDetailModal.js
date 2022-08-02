@@ -1,4 +1,5 @@
 import { Box, Button, Dialog, Divider, Stack, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
@@ -18,10 +19,10 @@ ApplicantDetailModal.propTypes = {
   row: PropTypes.object,
 }
 
-const styleAsterisk = {
-  color: '#F64E60',
+const AsteriskStyle = styled('span')(({ theme }) => ({
+  color: theme.palette.error.main,
   fontWeight: 700,
-}
+}))
 
 export default function ApplicantDetailModal({ isOpen, onClose, row }) {
   const {
@@ -63,7 +64,9 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
         >
           {candidateName}
         </Typography>
+
         <Divider />
+
         <Box>
           <FormProvider methods={methods}>
             <Scrollbar
@@ -78,7 +81,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                 <Box sx={{ mb: 2, mt: 1 }}>
                   <Typography>
                     {translate('Name')}
-                    <span style={styleAsterisk}> *</span>
+                    <AsteriskStyle> *</AsteriskStyle>
                   </Typography>
                   <RHFTextField name='candidateName' disabled />
                 </Box>
@@ -86,7 +89,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                 <Box sx={{ mb: 2 }}>
                   <Typography>
                     {translate('Name job')}
-                    <span style={styleAsterisk}> *</span>
+                    <AsteriskStyle> *</AsteriskStyle>
                   </Typography>
                   <RHFTextField name='jobTitle' disabled />
                 </Box>
@@ -99,10 +102,11 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                   <Box sx={{ width: '100%', mb: 1 }}>
                     <Typography>
                       {translate('Location')}
-                      <span style={styleAsterisk}> *</span>
+                      <AsteriskStyle> *</AsteriskStyle>
                     </Typography>
                     <RHFTextField name='locationName' disabled />
                   </Box>
+
                   <Box sx={{ width: '100%', mb: 1 }}>
                     <Typography>{translate('Client Name')}</Typography>
                     <RHFTextField name='clientName' disabled />
@@ -112,7 +116,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                 <Box sx={{ mb: 2 }}>
                   <Typography>
                     {translate('Email')}
-                    <span style={styleAsterisk}> *</span>
+                    <AsteriskStyle> *</AsteriskStyle>
                   </Typography>
                   <RHFTextField name='email' disabled />
                 </Box>
@@ -125,14 +129,15 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                   <Box sx={{ width: '100%', mb: 1 }}>
                     <Typography>
                       {translate('Phone')}
-                      <span style={styleAsterisk}> *</span>
+                      <AsteriskStyle> *</AsteriskStyle>
                     </Typography>
                     <RHFTextField name='phone' disabled />
                   </Box>
+
                   <Box sx={{ width: '100%', mb: 1 }}>
                     <Typography>
                       {translate('Approach Date')}
-                      <span style={styleAsterisk}> *</span>
+                      <AsteriskStyle> *</AsteriskStyle>
                     </Typography>
                     <RHFDatePicker
                       name='approachDate'
@@ -146,6 +151,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                     <Typography>{translate('Link CV')}</Typography>
                     <RHFTextField name='linkCV' disabled />
                   </Box>
+
                   <Box
                     sx={{
                       ml: '0 !important',
@@ -180,6 +186,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                 </Box>
               </Stack>
             </Scrollbar>
+
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
               <Button
                 onClick={onClose}
