@@ -46,3 +46,4 @@ export const API_ADMIN_DETAIL_CANDIDATE = '/api/admin/candidate/detail'
 export const API_ADMIN_DOWNLOAD_CV_PDF = '/api/v1/download/pdf/private'
 export const API_ADMIN_PREVIEW_PDF_CANDIDATEJOB =
   '/api/v1/admin/preview/pdf/candidateJob'
+export const API_ADMIN_LIST_NEW_APPLICANTS = '/api/admin/applicants/candidate'
