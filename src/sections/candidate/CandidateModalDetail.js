@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { LoadingButton } from '@mui/lab'
 import {
+  Box,
   Button,
   DialogActions,
   Divider,
@@ -20,7 +21,7 @@ import Iconify from '@/components/Iconify'
 import PreviewPdf from '@/components/PreviewPdf'
 import {
   FormProvider,
-  RHFBasicSelect,
+  RHFAutocomplete,
   RHFDateTimePicker,
   RHFTextField,
 } from '@/components/hook-form'
@@ -79,8 +80,8 @@ export default function CandidateModalDetail({
     [isMountedRef, dispatch]
   )
 
-  const { id } = detailCandidate
-
+  const { id: candidateId = '', titleJob = [] } = detailCandidate
+  const [jobArrayZeroIndex] = titleJob
   const { base64, candidateDetail, isLoadingPDF } = useSelector(
     (state) => state.candidates
   )
@@ -110,26 +111,26 @@ export default function CandidateModalDetail({
 
   const { position = '', noteApproach = '' } = candidateJob || {}
 
-  const jobArray = (jobs || []).map(({ label }) => ({
+  const jobArray = (jobs || []).map(({ label, candidateJobId }) => ({
     label,
-    value: label,
+    id: candidateJobId,
   }))
   useEffect(() => {
-    if (!id) return
+    if (!candidateId) return
 
     dispatch(
       getAdminCandidateDetail({
-        candidateId: id,
+        candidateId,
       })
     )
-  }, [dispatch, id])
+  }, [dispatch, candidateId])
 
   useEffect(() => {
     if (!cvJob) return
 
     setCopyLinkCVText(copyLinkCVRef.current?.value)
-    dispatch(convertDriverToBase64({ linkDrive: cvJob }))
-  }, [cvJob, dispatch])
+    dispatch(convertDriverToBase64({ linkDrive: cvJob, candidateId }))
+  }, [cvJob, dispatch, candidateId])
 
   useEffect(() => {
     setValue(DETAIL_FIELD.NAME, name)
@@ -139,14 +140,13 @@ export default function CandidateModalDetail({
       fDate(fDateCalendar(date), DATE_YEAR_MONTH_DAY_FORMAT)
     )
     setValue(DETAIL_FIELD.PHONE, phone)
-    setValue(DETAIL_FIELD.JOB_NAME, label)
     setValue(DETAIL_FIELD.LINK_CV, cv)
     setValue(DETAIL_FIELD.CLIENT_ID, value)
     setValue(DETAIL_FIELD.LOCATION, location)
     setValue(DETAIL_FIELD.POSITION, position || '')
     setValue(DETAIL_FIELD.NOT_APPROACH, noteApproach || '')
   }, [
-    id,
+    candidateId,
     setValue,
     name,
     email,
@@ -162,28 +162,6 @@ export default function CandidateModalDetail({
 
   const handleOpenPDF = () => {
     setIsOpenPDF(true)
-  }
-
-  const handleChangeSelectJobs = (event) => {
-    const valueSelect = event.target.value
-    const jobItem = (jobs || []).find((item) => item.label === valueSelect)
-    if (!jobItem) return
-
-    const {
-      label = '',
-      value = '',
-      cv = '',
-      location = '',
-      candidateJob = {},
-    } = jobItem
-    const { position = '', noteApproach = '' } = candidateJob
-
-    setValue(DETAIL_FIELD.JOB_NAME, label)
-    setValue(DETAIL_FIELD.CLIENT_ID, value)
-    setValue(DETAIL_FIELD.LOCATION, location)
-    setValue(DETAIL_FIELD.POSITION, position)
-    setValue(DETAIL_FIELD.LINK_CV, cv)
-    setValue(DETAIL_FIELD.NOT_APPROACH, noteApproach)
   }
 
   return (
@@ -219,11 +197,52 @@ export default function CandidateModalDetail({
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.candidates.jobName')}</Typography>
-                <RHFBasicSelect
+                <RHFAutocomplete
                   name={DETAIL_FIELD.JOB_NAME}
-                  label={'Job Name'}
                   options={jobArray}
-                  onChange={handleChangeSelectJobs}
+                  label={translate('pages.candidates.selectJob')}
+                  AutocompleteProps={{
+                    size: 'small',
+                    defaultValue: { label: jobArrayZeroIndex, value: '' },
+                    isOptionEqualToValue: (option, value) =>
+                      option.label === value.label,
+                    renderOption: (props, option) => {
+                      // fix error duplicate key
+                      const newProps = {
+                        ...props,
+                        key: option.id,
+                      }
+                      return (
+                        <Box component='li' {...newProps} key={newProps.key}>
+                          {option.label}
+                        </Box>
+                      )
+                    },
+                    onChange: (field) => (event, newValue) => {
+                      field.onChange(newValue)
+                      const jobItem = jobs?.find(
+                        ({ candidateJobId }) => candidateJobId === newValue.id
+                      )
+                      if (!jobItem) return
+
+                      const {
+                        label = '',
+                        value = '',
+                        cv = '',
+                        location = '',
+                        candidateJob = {},
+                      } = jobItem
+                      const { position = '', noteApproach = '' } =
+                        candidateJob || {}
+
+                      setValue(DETAIL_FIELD.JOB_NAME, label)
+                      setValue(DETAIL_FIELD.CLIENT_ID, value)
+                      setValue(DETAIL_FIELD.LOCATION, location)
+                      setValue(DETAIL_FIELD.POSITION, position)
+                      setValue(DETAIL_FIELD.LINK_CV, cv)
+                      setValue(DETAIL_FIELD.NOT_APPROACH, noteApproach)
+                    },
+                  }}
                 />
               </Stack>
             </Grid>
