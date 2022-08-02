@@ -1,5 +1,5 @@
 // @mui
-import { Link, TableCell, TableRow, Typography } from '@mui/material'
+import { Link, TableCell, TableRow } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
@@ -18,7 +18,6 @@ const TypographyRootStyle = styled('div')(() => ({
   '&:hover .MuiTypography-root': {
     color: `${palette.light.warning.main}`,
     textDecoration: 'underline',
-    cursor: 'pointer',
   },
 }))
 
@@ -37,15 +36,16 @@ export default function InterviewTableRow({ row = {}, onOpenInterviewDetail }) {
 
   return (
     <TableRow hover>
-      <TableCell align='left'>
+      <TableCell align='left' width='15%'>
         <TypographyRootStyle>
-          <Typography
+          <TextMaxLine
+            line={1}
             variant='subtitle2'
             sx={{ cursor: 'pointer', fontWeight: 'bold' }}
             onClick={handleOpenInterviewDetail}
           >
-            <TextMaxLine>{candidateName}</TextMaxLine>
-          </Typography>
+            {candidateName}
+          </TextMaxLine>
         </TypographyRootStyle>
       </TableCell>
 

@@ -50,7 +50,12 @@ export default function Dashboard() {
         height: isDirectorRole ? gridItemHeight : DASHBOARD_TABLE_HEIGHT,
       },
       render: () => {
-        if (isDirectorRole) return <Performance title='Performance' />
+        if (isDirectorRole)
+          return (
+            <Performance
+              title={translate('pages.dashboard.performance.title')}
+            />
+          )
         return (
           <InterviewSchedule
             title={translate('pages.dashboard.interviewSchedule.title')}
@@ -60,22 +65,42 @@ export default function Dashboard() {
     },
     {
       sx: { height: gridItemHeight },
-      render: () => <WeeklyTask title='Weekly Task' />,
+      render: () => (
+        <WeeklyTask title={translate('pages.dashboard.weeklyTask.title')} />
+      ),
     },
     {
       sx: { height: gridItemHeight },
       render: () => {
-        if (isDirectorRole) return <Applicants title='New Applicants' />
-        if (isLeaderRole) return <Performance title='Performance' />
-        return <RecruitementProgress title='Recruitment progress' />
+        if (isDirectorRole)
+          return (
+            <Applicants title={translate('pages.dashboard.applicants.title')} />
+          )
+        if (isLeaderRole)
+          return (
+            <Performance
+              title={translate('pages.dashboard.performance.title')}
+            />
+          )
+        return (
+          <RecruitementProgress
+            title={translate('pages.dashboard.recruitmentProgress.title')}
+          />
+        )
       },
     },
     {
       sx: { height: gridItemHeight },
       render: () => {
         if (isDirectorRole)
-          return <MemberActivities title='Member Activities' />
-        return <Applicants title='New Applicants' />
+          return (
+            <MemberActivities
+              title={translate('pages.dashboard.memberActivities.title')}
+            />
+          )
+        return (
+          <Applicants title={translate('pages.dashboard.applicants.title')} />
+        )
       },
     },
   ]
@@ -91,7 +116,9 @@ export default function Dashboard() {
             lg={8}
             sx={{ height: { sm: DASHBOARD_TABLE_HEIGHT } }}
           >
-            <DashboardActiveJob title='Active Jobs' />
+            <DashboardActiveJob
+              title={translate('pages.dashboard.activeJobs.title')}
+            />
           </Grid>
           {dashboardConfigs.map((config, key) => (
             <Grid item xs={12} md={6} lg={4} key={key} sx={config.sx}>

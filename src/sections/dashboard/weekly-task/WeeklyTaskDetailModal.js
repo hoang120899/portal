@@ -32,7 +32,7 @@ export default function WeeklyTaskDetailModal({
   const { isLeaderRole } = useRole()
   const theme = useTheme()
   const { startDate = '', endDate = '', user = {}, content = [] } = task || {}
-  const { linkAvatar, name, nameTeam } = user || {}
+  const { linkAvatar = '', name = '', nameTeam = '' } = user || {}
 
   return (
     <Dialog fullWidth maxWidth='xs' open={isOpen} onClose={onClose} task={task}>
@@ -62,22 +62,29 @@ export default function WeeklyTaskDetailModal({
           </Box>
         </Stack>
 
-        {content?.map(({ content, percent, target }, index) => {
-          if (task) {
-            return (
-              <Typography
-                variant='body2'
-                sx={{ color: 'text.secondary' }}
-                noWrap
-                key={index}
-              >
-                {`${content} (achievement: ${percent}%, target: ${
-                  target || '0'
-                }%)`}
-              </Typography>
-            )
-          }
-        })}
+        {(() => {
+          if (!Array.isArray(content) || !content.length || !task) return
+
+          return content.map(
+            ({ content = '', percent = 0, target = 0 }, index) => {
+              const achievementText = translate(
+                'pages.dashboard.weeklyTask.achievement'
+              )
+              const targetText = translate('pages.dashboard.weeklyTask.target')
+
+              return (
+                <Typography
+                  variant='body2'
+                  sx={{ color: 'text.secondary' }}
+                  noWrap
+                  key={index}
+                >
+                  {`${content} (${achievementText}: ${percent}%, ${targetText}: ${target}%)`}
+                </Typography>
+              )
+            }
+          )
+        })()}
 
         <Box
           sx={{
@@ -90,7 +97,7 @@ export default function WeeklyTaskDetailModal({
         >
           {isLeaderRole && (
             <Button variant='contained' sx={{ mr: 1 }} onClick={handleOpenEdit}>
-              {translate('Edit')}
+              {translate('pages.dashboard.weeklyTask.edit')}
             </Button>
           )}
 
@@ -106,7 +113,7 @@ export default function WeeklyTaskDetailModal({
             }}
             onClick={onClose}
           >
-            {translate('Cancel')}
+            {translate('pages.dashboard.weeklyTask.cancel')}
           </Button>
         </Box>
       </Stack>

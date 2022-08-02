@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
+import useLocales from '@/hooks/useLocales'
 
 import { DEFAULT_STATUS_COLOR, STATUS_COLOR } from './config'
 
@@ -26,6 +27,7 @@ ActiveJobCollapsibleTableRow.propTypes = {
 
 export default function ActiveJobCollapsibleTableRow({ row }) {
   const theme = useTheme()
+  const { translate } = useLocales()
   const [open, setOpen] = useState(true)
   const { title, salary, jobStatus, numberCandidate, follower, type } =
     row || {}
@@ -90,7 +92,7 @@ export default function ActiveJobCollapsibleTableRow({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Salary
+                        {translate(`pages.dashboard.activeJobs.salary`)}
                       </Typography>
                     </TableCell>
 
@@ -110,7 +112,7 @@ export default function ActiveJobCollapsibleTableRow({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Candidate
+                        {translate(`pages.dashboard.activeJobs.candidate`)}
                       </Typography>
                     </TableCell>
 
@@ -132,7 +134,7 @@ export default function ActiveJobCollapsibleTableRow({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Type
+                        {translate(`pages.dashboard.activeJobs.type`)}
                       </Typography>
                     </TableCell>
 
@@ -152,7 +154,7 @@ export default function ActiveJobCollapsibleTableRow({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Job Status
+                        {translate(`pages.dashboard.activeJobs.status`)}
                       </Typography>
                     </TableCell>
 
@@ -183,7 +185,7 @@ export default function ActiveJobCollapsibleTableRow({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        Follower
+                        {translate(`pages.dashboard.activeJobs.follower`)}
                       </Typography>
                     </TableCell>
 
@@ -203,7 +205,7 @@ export default function ActiveJobCollapsibleTableRow({ row }) {
                         }}
                         variant='subtitle1'
                       >
-                        View Detail
+                        {translate(`pages.dashboard.activeJobs.viewDetail`)}
                       </Typography>
                     </TableCell>
 

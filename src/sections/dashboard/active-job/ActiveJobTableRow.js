@@ -27,7 +27,7 @@ export default function ActiveJobTableRow({ row }) {
 
   return (
     <TableRow hover>
-      <TableCell width='40%'>
+      <TableCell width='30%'>
         <TextMaxLine line={1}>
           <Link
             sx={{
@@ -56,15 +56,13 @@ export default function ActiveJobTableRow({ row }) {
         {clientName}
       </TableCell>
 
-      <TableCell width='15%' align='left' sx={{ textTransform: 'capitalize' }}>
+      <TableCell align='left' sx={{ textTransform: 'capitalize' }}>
         {teamName}
       </TableCell>
 
-      <TableCell width='15%' align='center'>
-        {numberCandidate}
-      </TableCell>
+      <TableCell align='left'>{numberCandidate}</TableCell>
 
-      <TableCell width='10%' align='left'>
+      <TableCell align='left'>
         <Typography
           variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
           color={color}

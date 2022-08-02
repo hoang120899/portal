@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
+import useLocales from '@/hooks/useLocales'
 // hooks
 import useResponsive from '@/hooks/useResponsive'
 // utils
@@ -36,6 +37,7 @@ export default function CalendarToolbar({
   onPrevDate,
 }) {
   const isDesktop = useResponsive('up', 'sm')
+  const { translate } = useLocales()
 
   return (
     <RootStyle>
@@ -43,7 +45,7 @@ export default function CalendarToolbar({
         direction='row'
         alignItems='center'
         justifyContent='center'
-        width='100%'
+        flex={1}
         spacing={2}
       >
         <IconButton onClick={onPrevDate}>
@@ -64,7 +66,7 @@ export default function CalendarToolbar({
           variant='contained'
           onClick={onToday}
         >
-          Today
+          {translate('pages.dashboard.interviewSchedule.today')}
         </Button>
       )}
     </RootStyle>

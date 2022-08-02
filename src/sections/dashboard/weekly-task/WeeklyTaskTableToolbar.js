@@ -16,14 +16,14 @@ function WeeklyTaskTableToolbar(props, ref) {
         py: 2.5,
         px: 3,
         display: 'grid',
-        gridTemplateColumns: '5fr 5fr 2fr',
+        gridTemplateColumns: '4fr 4fr 3fr',
         gap: 1,
       }}
     >
       <RHFDatePicker name='startDate' />
       <RHFDatePicker name='endDate' />
       <Button type='submit' variant='contained'>
-        {translate('Apply')}
+        {translate('pages.dashboard.weeklyTask.apply')}
       </Button>
     </Box>
   )

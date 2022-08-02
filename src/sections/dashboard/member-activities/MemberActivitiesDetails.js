@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 // @mui
 import { useRouter } from 'next/router'
@@ -43,9 +43,23 @@ export default function MemberActivitiesDetails({
     return [...newList, ...listNull]
   }, [list])
 
-  const handleForwardToProfile = (id) => {
-    router.push(PATH_DASHBOARD.profile.view(id))
-  }
+  const handleForwardToProfile = useCallback(
+    (id) => () => {
+      router.push(PATH_DASHBOARD.profile.view(id))
+    },
+    [router]
+  )
+
+  const handleDisplayFormatLastLogin = useCallback(
+    (lastLogin) => {
+      if (!lastLogin) return
+
+      return `${translate(
+        'pages.dashboard.memberActivities.lastLogin'
+      )}: ${lastLogin}`
+    },
+    [translate]
+  )
 
   return (
     <Scrollbar sx={{ height: { xs: '600px', sm: `${height}px` } }}>
@@ -71,7 +85,7 @@ export default function MemberActivitiesDetails({
                       color: `${theme.palette.primary.main}`,
                     },
                   }}
-                  onClick={() => handleForwardToProfile(id)}
+                  onClick={handleForwardToProfile(id)}
                   noWrap
                 >
                   {name}
@@ -81,7 +95,7 @@ export default function MemberActivitiesDetails({
                   variant='body2'
                   sx={{ mb: 0.5, color: 'text.secondary' }}
                 >
-                  {translate(lastLogin ? `Last login: ${lastLogin}` : '')}
+                  {handleDisplayFormatLastLogin(lastLogin)}
                 </Typography>
               </Box>
             </Stack>
