@@ -58,7 +58,7 @@ export default function AccountGeneral() {
     setValue('email', email || '')
     setValue('role', Role?.name || '')
     setValue('team', Team?.name || '')
-    setValue('photoURL', linkAvatar || '')
+    setValue('photoURL', `${DOMAIN_SERVER_API}/${linkAvatar}` || '')
   }, [setValue, userName, email, Role, Team, linkAvatar])
 
   const dispatch = useDispatch()

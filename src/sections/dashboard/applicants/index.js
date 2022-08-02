@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // @mui
 import { Card, CardHeader } from '@mui/material'
@@ -44,7 +44,10 @@ export default function Applicants({ title, subheader, ...other }) {
   const { list: listNewApplicants = [], total: totalRecord = 0 } =
     data?.data || {}
 
-  const columns = isMobileScreen ? TABLE_MOBILE_HEAD : TABLE_DESKTOP_HEAD
+  const columns = useMemo(() => {
+    if (isLoading || isFetching || isMobileScreen) return TABLE_MOBILE_HEAD
+    return TABLE_DESKTOP_HEAD
+  }, [isMobileScreen, isLoading, isFetching])
 
   const tableRowComp = useCallback(
     (row, index) => {
