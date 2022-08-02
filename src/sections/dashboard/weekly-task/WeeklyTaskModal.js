@@ -72,13 +72,13 @@ export default function WeeklyTaskModal({
 }) {
   const { startDate, endDate, content: taskContents = [] } = task
   const { currentRole } = useRole()
+  const isEditScreen = HANDLE_TYPE.EDIT === handleType
   const [contentTask, setContentTask] = useState(
     isEditScreen ? taskContents : [].concat(defaultContentTask)
   )
   const { enqueueSnackbar } = useSnackbar()
   const { translate } = useLocales()
   const theme = useTheme()
-  const isEditScreen = HANDLE_TYPE.EDIT === handleType
 
   const { data = {} } = useGetTaskUserListQuery({
     currentRole,
