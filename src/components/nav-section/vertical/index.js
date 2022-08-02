@@ -52,15 +52,9 @@ export default function NavSectionVertical({
         <List
           key={`${group.subheader}-${groupIndex}`}
           disablePadding
-          sx={{ px: 2 }}
+          sx={{ px: isCollapse ? 1 : 2 }}
         >
-          <ListSubheaderStyle
-            sx={{
-              ...(isCollapse && {
-                opacity: 0,
-              }),
-            }}
-          >
+          <ListSubheaderStyle>
             {translate(group.subheader) || ''}
           </ListSubheaderStyle>
 
