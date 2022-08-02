@@ -81,7 +81,13 @@ export default function MemberActivitiesDetails({
                   variant='body2'
                   sx={{ mb: 0.5, color: 'text.secondary' }}
                 >
-                  {translate(lastLogin ? `Last login: ${lastLogin}` : '')}
+                  {translate(
+                    lastLogin
+                      ? `${translate(
+                          'pages.dashboard.memberActivities.lastLogin'
+                        )}: ${lastLogin}`
+                      : ''
+                  )}
                 </Typography>
               </Box>
             </Stack>

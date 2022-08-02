@@ -71,9 +71,11 @@ export default function WeeklyTaskDetailModal({
                 noWrap
                 key={index}
               >
-                {`${content} (achievement: ${percent}%, target: ${
-                  target || '0'
-                }%)`}
+                {`${content} (${translate(
+                  'pages.dashboard.weeklyTask.achievement'
+                )}: ${percent}%, ${translate(
+                  'pages.dashboard.weeklyTask.target'
+                )}: ${target || '0'}%)`}
               </Typography>
             )
           }
@@ -90,7 +92,7 @@ export default function WeeklyTaskDetailModal({
         >
           {isLeaderRole && (
             <Button variant='contained' sx={{ mr: 1 }} onClick={handleOpenEdit}>
-              {translate('Edit')}
+              {translate('pages.dashboard.weeklyTask.edit')}
             </Button>
           )}
 
@@ -106,7 +108,7 @@ export default function WeeklyTaskDetailModal({
             }}
             onClick={onClose}
           >
-            {translate('Cancel')}
+            {translate('pages.dashboard.weeklyTask.cancel')}
           </Button>
         </Box>
       </Stack>

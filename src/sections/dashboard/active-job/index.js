@@ -78,7 +78,9 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
     <Card {...other}>
       <Stack {...tabContainerStyle}>
         <CardHeader
-          title={`${filterStatus} Jobs`}
+          title={translate(
+            `pages.dashboard.activeJobs.${filterStatus.toLowerCase()}Jobs`
+          )}
           subheader={subheader}
           sx={{
             padding: {
@@ -99,7 +101,9 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
             <Tab
               disableRipple
               key={value}
-              label={translate(value)}
+              label={translate(
+                `pages.dashboard.activeJobs.${value.toLowerCase()}`
+              )}
               value={value}
             />
           ))}
@@ -109,7 +113,7 @@ const DashboardActiveJob = ({ subheader, ...other }) => {
       <Box sx={{ mb: 2 }}>{!isMobileScreen && <Divider />}</Box>
 
       <BasicTable
-        columns={isMobileScreen ? [] : TABLE_HEAD}
+        columns={isMobileScreen ? [] : TABLE_HEAD({ translate })}
         dataSource={dataJobs}
         page={page}
         rowsPerPage={rowsPerPage}

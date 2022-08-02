@@ -12,12 +12,32 @@ export const STATUS_COLOR = {
 export const DEFAULT_STATUS = ACTIVE_STATUS
 export const DEFAULT_STATUS_COLOR = STATUS_COLOR[PENDING_STATUS]
 
-export const TABLE_HEAD = [
-  { id: 'job', label: 'Jobs', align: 'left' },
-  { id: 'client', label: 'Clients', align: 'left' },
-  { id: 'team', label: 'Teams', align: 'left' },
-  { id: 'candidate', label: 'Candidates', align: 'left' },
-  { id: 'status', label: 'Status', align: 'left' },
+export const TABLE_HEAD = ({ translate }) => [
+  {
+    id: 'job',
+    label: translate('pages.dashboard.activeJobs.job'),
+    align: 'left',
+  },
+  {
+    id: 'client',
+    label: translate('pages.dashboard.activeJobs.client'),
+    align: 'left',
+  },
+  {
+    id: 'team',
+    label: translate('pages.dashboard.activeJobs.team'),
+    align: 'left',
+  },
+  {
+    id: 'candidate',
+    label: translate('pages.dashboard.activeJobs.candidate'),
+    align: 'left',
+  },
+  {
+    id: 'status',
+    label: translate('pages.dashboard.activeJobs.status'),
+    align: 'left',
+  },
 ]
 
 export const DEFAULT_ROW_PER_PAGE = 5

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Box, Button, Card, CardHeader, Stack } from '@mui/material'
 
 import { endOfWeek, startOfWeek } from 'date-fns'
+import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
@@ -38,6 +39,7 @@ const defaultValues = {
 export default function WeeklyTask({ title, subheader, ...other }) {
   const isMedium = useResponsive('down', 'md')
   const isLarge = useResponsive('between', '', 'lg', 'xl')
+  const { enqueueSnackbar } = useSnackbar()
   const [list, setList] = useState([])
   const { translate } = useLocales()
   const { page, rowsPerPage, setPage } = useTable()
@@ -121,7 +123,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
       const { data: dataTasks } = res
       setList(dataTasks?.tasks)
     } catch (error) {
-      // TODO
+      enqueueSnackbar('Get weekly tasks failed!', { variant: 'error' })
     }
   }
 
@@ -148,7 +150,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
               variant='contained'
               onClick={handleOpenAddModal}
             >
-              New Task
+              {translate(`pages.dashboard.weeklyTask.newTask`)}
             </Button>
           </Box>
         )}
@@ -174,7 +176,7 @@ export default function WeeklyTask({ title, subheader, ...other }) {
         )
       ) : (
         <EmptyContent
-          title={translate('No Data')}
+          title={translate('pages.dashboard.weeklyTask.noData')}
           sx={{
             height: 'auto',
             '& span.MuiBox-root': { height: 'auto' },

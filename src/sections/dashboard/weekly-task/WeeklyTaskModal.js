@@ -209,7 +209,13 @@ export default function WeeklyTaskModal({
           variant='h6'
           sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          {translate(`${isEditScreen ? 'Edit Task' : 'Create New Task'}`)}
+          {translate(
+            `${
+              isEditScreen
+                ? `${translate('pages.dashboard.weeklyTask.editTask')}`
+                : `${translate('pages.dashboard.weeklyTask.createNewTask')}`
+            }`
+          )}
         </Typography>
         <Divider />
         <Box>
@@ -218,7 +224,7 @@ export default function WeeklyTaskModal({
               <Grid container spacing={{ sm: 3, xs: 1.5 }}>
                 <Grid item sm={3} xs={12} alignSelf='center'>
                   <Typography>
-                    {translate('Deadline')}
+                    {translate('pages.dashboard.weeklyTask.deadline')}
                     <span style={styleAsterisk}>*</span>
                   </Typography>
                 </Grid>
@@ -226,12 +232,16 @@ export default function WeeklyTaskModal({
                 <Grid item sm={9} xs={12}>
                   <Stack direction='row' columnGap={5}>
                     <Stack spacing={0.5}>
-                      <Typography>{translate('From')}</Typography>
+                      <Typography>
+                        {translate('pages.dashboard.weeklyTask.from')}
+                      </Typography>
                       <RHFDatePicker name='startDate' />
                     </Stack>
 
                     <Stack spacing={0.5}>
-                      <Typography>{translate('To')}</Typography>
+                      <Typography>
+                        {translate('pages.dashboard.weeklyTask.to')}
+                      </Typography>
                       <RHFDatePicker name='endDate' />
                     </Stack>
                   </Stack>
@@ -239,7 +249,7 @@ export default function WeeklyTaskModal({
 
                 <Grid item sm={3} xs={12} alignSelf='center'>
                   <Typography>
-                    {translate('Name')}
+                    {translate('pages.dashboard.weeklyTask.name')}
                     <span style={styleAsterisk}>*</span>
                   </Typography>
                 </Grid>
@@ -261,7 +271,7 @@ export default function WeeklyTaskModal({
                         }
                       },
                     }}
-                    label='Name'
+                    label={translate('pages.dashboard.weeklyTask.name')}
                     name='userId'
                     options={listUserOptions}
                   />
@@ -284,17 +294,23 @@ export default function WeeklyTaskModal({
                 </Grid>
 
                 <Grid item sm={9} xs={12}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={5}>
-                      <Typography>{translate('Task content')}</Typography>
+                  <Grid container spacing={1}>
+                    <Grid item xs={4.5}>
+                      <Typography>
+                        {translate('pages.dashboard.weeklyTask.taskContent')}
+                      </Typography>
                     </Grid>
 
                     <Grid item xs={3}>
-                      <Typography>{translate('Achievement')}</Typography>
+                      <Typography>
+                        {translate('pages.dashboard.weeklyTask.achievement')}
+                      </Typography>
                     </Grid>
 
-                    <Grid item xs={2}>
-                      <Typography>{translate('Target')}</Typography>
+                    <Grid item xs={2.5}>
+                      <Typography>
+                        {translate('pages.dashboard.weeklyTask.target')}
+                      </Typography>
                     </Grid>
 
                     <Grid item xs={2}>
@@ -303,7 +319,7 @@ export default function WeeklyTaskModal({
 
                     {contentTask.map((_, index) => (
                       <React.Fragment key={index}>
-                        <Grid item xs={5}>
+                        <Grid item xs={4.5}>
                           <RHFTextField name={`content.${index}.content`} />
                         </Grid>
 
@@ -314,7 +330,7 @@ export default function WeeklyTaskModal({
                           />
                         </Grid>
 
-                        <Grid item xs={2}>
+                        <Grid item xs={2.5}>
                           <RHFTextField
                             name={`content.${index}.target`}
                             type='number'
@@ -341,10 +357,14 @@ export default function WeeklyTaskModal({
 
             {watch('content') && (
               <Box sx={{ mt: 1.5 }}>
-                <Typography>{`Total target: ${
+                <Typography>{`${translate(
+                  'pages.dashboard.weeklyTask.totalTarget'
+                )}: ${
                   calcTotal(watch('content'), 'target') || 0
                 }% `}</Typography>
-                <Typography>{`Total achievement: ${
+                <Typography>{`${translate(
+                  'pages.dashboard.weeklyTask.totalAchievement'
+                )}: ${
                   calcTotal(watch('content'), 'percent') || 0
                 }% `}</Typography>
               </Box>

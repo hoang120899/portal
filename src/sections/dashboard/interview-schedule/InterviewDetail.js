@@ -116,15 +116,13 @@ export default function InterviewDetail({ interviewDetail }) {
             disabled
             fullWidth
             value={fDateTime(timeInterview)}
-            label={translate('pages.dashboard.interviewSchedule.timeInterview')}
+            label={translate('pages.dashboard.interviewSchedule.timeStart')}
           />
           <TextField
             disabled
             fullWidth
             value={fDateTime(timeInterviewEnd)}
-            label={translate(
-              'pages.dashboard.interviewSchedule.timeInterviewEnd'
-            )}
+            label={translate('pages.dashboard.interviewSchedule.timeEnd')}
           />
         </Stack>
       </TypographyRootStyle>
