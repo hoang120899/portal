@@ -27,6 +27,7 @@ function KanbanAssignee({
   const { data: contactData } = useGetUserQuery()
   const [users, setUsers] = useState(Users)
   const dispatch = useDispatch()
+
   const onToggleAssignee = async (checked, userId) => {
     const user = contactData.data.list.find((item) => item.id === userId) || {}
     if (checked) {
@@ -49,6 +50,7 @@ function KanbanAssignee({
       )
     }
   }
+
   return (
     <Box onClick={(e) => e.stopPropagation()}>
       <Assignee

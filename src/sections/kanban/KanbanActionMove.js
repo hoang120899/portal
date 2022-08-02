@@ -23,11 +23,13 @@ KanbanActionMove.propTypes = {
 function KanbanActionMove({ laneId, sourceId, cardId }) {
   const listColumnName = useSelector((state) => state.kanban.listColumnName)
   const { translate } = useLocales()
+  const { enqueueSnackbar } = useSnackbar()
+  const dispatch = useDispatch()
+
   const defaultValues = {
     laneId: laneId,
   }
 
-  const { enqueueSnackbar } = useSnackbar()
   const methods = useForm({
     defaultValues,
   })
@@ -36,12 +38,13 @@ function KanbanActionMove({ laneId, sourceId, cardId }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods
-  const dispatch = useDispatch()
+
   const onSubmit = async (data) => {
     data = { ...data, sourceId: sourceId, cardId: cardId }
     await dispatch(moveCard(data))
     enqueueSnackbar('Move card success')
   }
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Box

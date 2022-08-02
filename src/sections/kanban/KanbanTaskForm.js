@@ -32,15 +32,17 @@ import PreviewPdf from '@/components/PreviewPdf'
 import {
   FormProvider,
   RHFAutocomplete,
-  RHFBasicSelect,
   RHFDatePicker,
   RHFDateTimePicker,
   RHFMultiCheckbox,
   RHFTextField,
 } from '@/components/hook-form'
+import { DATE_YEAR_MONTH_DAY_FORMAT } from '@/config'
 import { useDebounce } from '@/hooks/useDebounce'
 import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
+import { convertDriverToBase64 } from '@/sections/candidate/candidateSlice'
+import { URL_DOWNLOAD_CV } from '@/sections/candidate/config'
 import {
   getBoard,
   useAddCardMutation,
@@ -50,8 +52,6 @@ import {
   useUpdateLaneMutation,
 } from '@/sections/kanban/kanbanSlice'
 
-import { convertDriverToBase64 } from '../candidate/candidateSlice'
-import { URL_DOWNLOAD_CV } from '../candidate/config'
 import KanbanAssignee from './KanbanAssignee'
 import KanbanFileUpload from './KanbanFileUpload'
 import { JOB_FORM_STICKY_BAR_COLOR, socialOptions } from './config'
@@ -126,7 +126,7 @@ function KanbanTaskForm({
     linkedin: '',
     skype: '',
     phone: '',
-    approachDate: format(new Date(), 'yyyy-MM-dd'),
+    approachDate: format(new Date(), DATE_YEAR_MONTH_DAY_FORMAT),
     position: '',
     linkCv: '',
     refineCv: '',
@@ -216,7 +216,10 @@ function KanbanTaskForm({
     setValue('linkedin', Candidate.linkedin || '')
     setValue('skype', Candidate.skype || '')
     setValue('phone', Candidate.phone)
-    setValue('approachDate', format(new Date(approachDate), 'yyyy-MM-dd'))
+    setValue(
+      'approachDate',
+      format(new Date(approachDate), DATE_YEAR_MONTH_DAY_FORMAT)
+    )
     if (expectedDate) {
       setValue('expectedDate', expectedDate)
     }
@@ -275,7 +278,10 @@ function KanbanTaskForm({
 
   const handleSubmitForm = async (data) => {
     const reqData = { ...data, cv: data.linkCv }
-    reqData.approachDate = format(new Date(reqData.approachDate), 'yyyy-MM-dd')
+    reqData.approachDate = format(
+      new Date(reqData.approachDate),
+      DATE_YEAR_MONTH_DAY_FORMAT
+    )
     if (!reqData.laneId) {
       reqData.laneId = laneId
     }
@@ -332,8 +338,8 @@ function KanbanTaskForm({
             height: '60px',
             width: `${widthRef}px`,
             background: isLight
-              ? JOB_FORM_STICKY_BAR_COLOR.light.color
-              : JOB_FORM_STICKY_BAR_COLOR.dark.color,
+              ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.COLOR
+              : JOB_FORM_STICKY_BAR_COLOR.DARK.COLOR,
             zIndex: 1,
             borderBottom: '1px solid #d8d8d8',
             display: 'flex',
@@ -346,8 +352,8 @@ function KanbanTaskForm({
             boxShadow: isScrolled
               ? `0 1px 8px 0px ${
                   isLight
-                    ? JOB_FORM_STICKY_BAR_COLOR.light.shadow
-                    : JOB_FORM_STICKY_BAR_COLOR.dark.shadow
+                    ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.SHADOW
+                    : JOB_FORM_STICKY_BAR_COLOR.DARK.SHADOW
                 }`
               : 'none',
           }}
@@ -392,23 +398,69 @@ function KanbanTaskForm({
 
         {isAddTaskNoColumn && (
           <Box mt={2}>
-            <RHFBasicSelect
+            <RHFAutocomplete
+              AutocompleteProps={{
+                size: 'small',
+                defaultValue: card?.Lane?.nameColumn,
+                renderOption: (props, option) => (
+                  <Box component='li' {...props} key={option.value}>
+                    {option.label}
+                  </Box>
+                ),
+                onChange: (field) => (event, newValue) => {
+                  field.onChange(newValue)
+                  if (newValue) {
+                    setValue('laneId', newValue.value)
+                  }
+                },
+              }}
               label={translate('pages.board.columnName')}
               name='laneId'
               options={listColumnName}
               disabled={!hasAddPermission}
             />
           </Box>
+          // <Box mt={2}>
+          //   <RHFBasicSelect
+          //     label={translate('pages.board.columnName')}
+          //     name='laneId'
+          //     options={listColumnName}
+          //     disabled={!hasAddPermission}
+          //   />
+          // </Box>
         )}
 
         <Box mt={2}>
-          <RHFBasicSelect
+          <RHFAutocomplete
+            AutocompleteProps={{
+              size: 'small',
+              defaultValue: card?.Job.title,
+              renderOption: (props, option) => (
+                <Box component='li' {...props} key={option.value}>
+                  {option.label}
+                </Box>
+              ),
+              onChange: (field) => (event, newValue) => {
+                field.onChange(newValue)
+                if (newValue) {
+                  setValue('idJob', newValue.value)
+                }
+              },
+            }}
             label={translate('pages.board.nameJob')}
             name='idJob'
             options={activeJobOptions}
             disabled={!hasAddPermission}
           />
         </Box>
+        {/* <Box mt={2}>
+          <RHFBasicSelect
+            label={translate('pages.board.nameJob')}
+            name='idJob'
+            options={activeJobOptions}
+            disabled={!hasAddPermission}
+          />
+        </Box> */}
 
         <Box mt={2}>
           <Grid container spacing={1}>

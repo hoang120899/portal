@@ -17,6 +17,7 @@ KanbanBasicInfo.propTypes = {
 
 function KanbanBasicInfo({ Candidate, card, Job }) {
   const isAfterNow = (date) => compareAsc(parseISO(date), new Date()) === 1
+
   return (
     <Box>
       <Typography
@@ -31,6 +32,7 @@ function KanbanBasicInfo({ Candidate, card, Job }) {
       >
         {Candidate?.name}
       </Typography>
+
       <Stack spacing={1} sx={{ marginY: '8px', position: 'relative' }}>
         {card.Interviews.length > 0 && (
           <Box
@@ -51,6 +53,7 @@ function KanbanBasicInfo({ Candidate, card, Job }) {
             />
           </Box>
         )}
+
         {card.Interviews?.map((interview) => (
           <Button
             key={interview.id}
@@ -71,6 +74,7 @@ function KanbanBasicInfo({ Candidate, card, Job }) {
             {format(new Date(interview.timeInterview), DATE_FORMAT_DAY_MONTH)}
           </Button>
         ))}
+
         {card.expectedDate && (
           <Button
             variant='contained'

@@ -114,32 +114,38 @@ const KanbanTableToolbar = ({
           options={cardOptions}
           onChange={(e) => setKeySearch(e.target.value)}
         />
+
         <RHFBasicSelect
           hasBlankOption
           label={translate('pages.board.chooseLabel')}
           name='label'
           options={labelOptions}
         />
+
         <RHFBasicSelect
           hasBlankOption
           label={translate('pages.board.chooseClient')}
           name='clientId'
           options={clientOptions}
         />
+
         <RHFBasicSelect
           hasBlankOption
           label={translate('pages.board.chooseMember')}
           name='userId'
           options={memberOptions}
         />
+
         <RHFBasicSelect
           hasBlankOption
           label={translate('pages.board.chooseJob')}
           name='jobId'
           options={jobOptions}
         />
+
         <RHFDatePicker name='startDate' />
         <RHFDatePicker name='endDate' />
+
         <LoadingButton
           fullWidth
           type='submit'

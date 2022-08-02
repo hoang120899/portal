@@ -15,8 +15,6 @@ import { fDateTime } from '@/utils/formatTime'
 
 import { HISTORY_STATUS } from './config'
 
-// ----------------------------------------------------------------------
-
 KanbanUpdateHistory.propTypes = {
   title: PropTypes.string,
   cardId: PropTypes.string,
@@ -31,23 +29,22 @@ export default function KanbanUpdateHistory({
 }) {
   const { data: historyData } = useGetUpdateHistoryQuery({ cardId })
   const historyList = useMemo(() => {
-    if (historyData && historyData.data.historyCard) {
-      return historyData.data.historyCard.map((history) => {
-        let historyContent
-        if (history.type === HISTORY_STATUS.update) {
-          historyContent = JSON.parse(history.content)
-        } else {
-          historyContent = history.content
-        }
-        return {
-          User: history.User,
-          content: historyContent,
-          createdAt: history.createdAt,
-          id: history.id,
-          type: history.type,
-        }
-      })
-    } else return []
+    if (!historyData || !historyData?.data?.historyCard) return []
+    return historyData.data.historyCard.map((history) => {
+      let historyContent
+      if (history.type === HISTORY_STATUS.UPDATE) {
+        historyContent = JSON.parse(history.content)
+      } else {
+        historyContent = history.content
+      }
+      return {
+        User: history.User,
+        content: historyContent,
+        createdAt: history.createdAt,
+        id: history.id,
+        type: history.type,
+      }
+    })
   }, [historyData])
 
   return (
@@ -72,8 +69,6 @@ export default function KanbanUpdateHistory({
     </Card>
   )
 }
-
-// ----------------------------------------------------------------------
 
 KanbanHistoryItem.propTypes = {
   historyItem: PropTypes.object,
@@ -105,10 +100,10 @@ function KanbanHistoryItem({ historyItem, isLight }) {
             <Typography mr={1} sx={{ fontWeight: 'bold' }} component='span'>
               {User.name}
             </Typography>
-            {type === HISTORY_STATUS.update && (
+            {type === HISTORY_STATUS.UPDATE && (
               <span>{translate('has update this card')}</span>
             )}
-            {type === HISTORY_STATUS.update ? (
+            {type === HISTORY_STATUS.UPDATE ? (
               content.map((e, i) => (
                 <Typography key={i}>
                   <span>{`${e.path}: `}</span>

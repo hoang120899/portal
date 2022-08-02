@@ -27,8 +27,6 @@ import { fDateTime } from '@/utils/formatTime'
 
 import { useEditCommentMutation } from './kanbanSlice'
 
-// ----------------------------------------------------------------------
-
 KanbanCommentList.propTypes = {
   title: PropTypes.string,
   cardId: PropTypes.string,
@@ -75,8 +73,6 @@ export default function KanbanCommentList({
     </Card>
   )
 }
-
-// ----------------------------------------------------------------------
 
 KanbanCommentItem.propTypes = {
   commentItem: PropTypes.object,

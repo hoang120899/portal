@@ -46,7 +46,7 @@ export default function KanbanContactsDialog({ open, onClose }) {
     <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
       <Stack spacing={2} sx={{ p: 2.5, pb: 1 }}>
         <Typography variant='h6'>
-          {translate('pages.board.contacts')}{' '}
+          {translate('pages.board.contacts')}&nbsp;
           <Typography component='span'>({_contacts.length})</Typography>
         </Typography>
 

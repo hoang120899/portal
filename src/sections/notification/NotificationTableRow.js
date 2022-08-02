@@ -53,9 +53,7 @@ export default function NotificationTableRow({ row }) {
         <Typography
           variant='body2'
           sx={styles.message}
-          onClick={() =>
-            router.push(`${PATH_DASHBOARD.board.root}?cardId=${content?.id}`)
-          }
+          onClick={() => router.push(PATH_DASHBOARD.board.view(content?.id))}
         >
           {content?.message}
           <strong> {content?.title}</strong>

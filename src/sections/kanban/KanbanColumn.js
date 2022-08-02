@@ -156,6 +156,7 @@ function KanbanColumn({
               ))}
               {provided.placeholder}
             </Stack>
+
             {isScrollToBottom && isLoading && (
               <Box
                 sx={{

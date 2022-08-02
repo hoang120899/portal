@@ -30,14 +30,15 @@ export default function KanbanQuickMenu({
 }) {
   const [actions, setActions] = useState('actions')
   const { translate } = useLocales()
+  const [openMenu, setOpenMenuActions] = useState(null)
 
   const configAction = () => {
     switch (actions) {
-      case ACTION_STATUS.move:
+      case ACTION_STATUS.MOVE:
         return (
           <KanbanActionMove laneId={laneId} sourceId={laneId} cardId={cardId} />
         )
-      case ACTION_STATUS.label:
+      case ACTION_STATUS.LABEL:
         return (
           <KanbanActionCreateLabel
             cardId={cardId}
@@ -46,7 +47,7 @@ export default function KanbanQuickMenu({
             laneId={laneId}
           />
         )
-      case ACTION_STATUS.storage:
+      case ACTION_STATUS.STORAGE:
         return <KanbanActionStorage cardId={cardId} laneId={laneId} />
       default:
         return (
@@ -54,7 +55,7 @@ export default function KanbanQuickMenu({
             {hasAddPermission && (
               <MenuItem
                 onClick={() => {
-                  setActions(ACTION_STATUS.move)
+                  setActions(ACTION_STATUS.MOVE)
                 }}
               >
                 {translate('pages.board.moveCard')}
@@ -62,7 +63,7 @@ export default function KanbanQuickMenu({
             )}
             <MenuItem
               onClick={() => {
-                setActions(ACTION_STATUS.storage)
+                setActions(ACTION_STATUS.STORAGE)
               }}
             >
               {translate('pages.board.storageCard')}
@@ -70,7 +71,7 @@ export default function KanbanQuickMenu({
             {hasAddPermission && (
               <MenuItem
                 onClick={() => {
-                  setActions(ACTION_STATUS.label)
+                  setActions(ACTION_STATUS.LABEL)
                 }}
               >
                 {translate('pages.board.createLabel')}
@@ -81,7 +82,6 @@ export default function KanbanQuickMenu({
     }
   }
 
-  const [openMenu, setOpenMenuActions] = useState(null)
   const handleOpenMenu = (event) => {
     setOpenMenuActions(event.currentTarget)
     setActions('')
@@ -90,6 +90,7 @@ export default function KanbanQuickMenu({
   const handleCloseMenu = () => {
     setOpenMenuActions(null)
   }
+
   const handleOnback = () => {
     if (actions && actions !== 'actions') {
       setActions('actions')
@@ -97,6 +98,7 @@ export default function KanbanQuickMenu({
       setOpenMenuActions(null)
     }
   }
+
   return (
     <>
       <IconButton onClick={handleOpenMenu}>
@@ -133,6 +135,7 @@ export default function KanbanQuickMenu({
           >
             {actions || 'actions'}
           </Box>
+
           <IconButton
             onClick={handleOnback}
             sx={{

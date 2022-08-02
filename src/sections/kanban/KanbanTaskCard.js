@@ -112,11 +112,13 @@ function KanbanTaskCard({
                     handleDeleteLabel={handleDeleteLabel}
                     hasAddPermission={hasAddPermission}
                   />
+
                   <KanbanBasicInfo
                     Candidate={Candidate}
                     card={card}
                     Job={Job}
                   />
+
                   <Box
                     display='Grid'
                     alignItems='center'
@@ -142,6 +144,7 @@ function KanbanTaskCard({
                       </React.Fragment>
                     ))}
                   </Box>
+
                   <KanbanAssignee
                     Users={card?.Users}
                     laneId={laneId}

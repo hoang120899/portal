@@ -73,7 +73,9 @@ export default function KanbanFileUpload({
   return (
     <Stack direction='row' sx={{ alignItems: 'center' }}>
       <RHFTextField type='text' label={label} name={nameTextField} disabled />
+
       <input id='file-upload' type='file' hidden />
+
       <label>
         <Button component='div' disabled={!hasAddPermission}>
           <TextField
@@ -85,6 +87,7 @@ export default function KanbanFileUpload({
           <Iconify icon={'bxs:cloud-upload'} width={32} height={32} />
         </Button>
       </label>
+
       {watch(nameTextField) && (
         <CopyClipboard value={watch(nameTextField)} placement='top-start' arrow>
           <Button>
