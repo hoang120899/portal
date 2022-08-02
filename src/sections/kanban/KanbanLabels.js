@@ -11,9 +11,10 @@ KanbanLabels.propTypes = {
   Job: PropTypes.object,
   Labels: PropTypes.array,
   handleDeleteLabel: PropTypes.func,
+  hasAddPermission: PropTypes.bool,
 }
 
-function KanbanLabels({ Job, Labels, handleDeleteLabel }) {
+function KanbanLabels({ Job, Labels, handleDeleteLabel, hasAddPermission }) {
   return (
     <Box display='flex' flexWrap='wrap'>
       <CustomLabel
@@ -35,15 +36,17 @@ function KanbanLabels({ Job, Labels, handleDeleteLabel }) {
             margin: '2px',
           }}
           endIcon={
-            <Box width='10px'>
-              <IconDelete
-                fill='#fff'
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleDeleteLabel(label)
-                }}
-              />
-            </Box>
+            hasAddPermission ? (
+              <Box width='10px'>
+                <IconDelete
+                  fill='#fff'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDeleteLabel(label)
+                  }}
+                />
+              </Box>
+            ) : null
           }
         >
           {label?.title}

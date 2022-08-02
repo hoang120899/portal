@@ -1,13 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { LoadingButton } from '@mui/lab'
 // @mui
 import {
   Box,
   Button,
   CircularProgress,
   Grid,
+  Link,
   Modal,
   Stack,
+  TextareaAutosize,
+  Typography,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
@@ -24,18 +28,22 @@ import * as Yup from 'yup'
 
 // components
 import Iconify from '@/components/Iconify'
+import PreviewPdf from '@/components/PreviewPdf'
 import {
   FormProvider,
   RHFAutocomplete,
-  RHFBasicSelect,
   RHFDatePicker,
   RHFDateTimePicker,
   RHFMultiCheckbox,
   RHFTextField,
 } from '@/components/hook-form'
+import { DATE_YEAR_MONTH_DAY_FORMAT } from '@/config'
 import { useDebounce } from '@/hooks/useDebounce'
+import useIsMountedRef from '@/hooks/useIsMountedRef'
 import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
+import { convertDriverToBase64 } from '@/sections/candidate/candidateSlice'
+import { URL_DOWNLOAD_CV } from '@/sections/candidate/config'
 import {
   getBoard,
   useAddCardMutation,
@@ -47,7 +55,12 @@ import {
 
 import KanbanAssignee from './KanbanAssignee'
 import KanbanFileUpload from './KanbanFileUpload'
-import { socialOptions } from './config'
+import {
+  FACEBOOK_URL,
+  JOB_FORM_STICKY_BAR_COLOR,
+  SOCIAL_LIST,
+  SOCIAL_OPTIONS,
+} from './config'
 
 const CheckboxRootStyle = styled('div')(() => ({
   '& .MuiFormGroup-root': {
@@ -64,6 +77,9 @@ KanbanTaskForm.propTypes = {
   onClose: PropTypes.func,
   onCloseUpdate: PropTypes.func,
   setOpenHistory: PropTypes.func,
+  isScrolled: PropTypes.bool,
+  isLight: PropTypes.bool,
+  formRef: PropTypes.object,
 }
 
 function KanbanTaskForm({
@@ -75,6 +91,9 @@ function KanbanTaskForm({
   onClose,
   onCloseUpdate,
   setOpenHistory,
+  isScrolled,
+  isLight,
+  formRef,
 }) {
   const AddTaskSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -113,7 +132,7 @@ function KanbanTaskForm({
     linkedin: '',
     skype: '',
     phone: '',
-    approachDate: format(new Date(), 'yyyy-MM-dd'),
+    approachDate: format(new Date(), DATE_YEAR_MONTH_DAY_FORMAT),
     position: '',
     linkCv: '',
     refineCv: '',
@@ -128,7 +147,8 @@ function KanbanTaskForm({
   const watchSocial = watch('social')
   const watchIdJob = watch('idJob')
   const { enqueueSnackbar } = useSnackbar()
-  const isSmall = useResponsive('between', null, 'xs', 480)
+
+  const isMobile = useResponsive('down', 'sm')
   const dispatch = useDispatch()
   const listColumnName = useSelector((state) => state.kanban.listColumnName)
   const columns = useSelector((state) => state.kanban.board.columns)
@@ -147,81 +167,102 @@ function KanbanTaskForm({
   const [updateCard, { isLoading: isUpdating }] = useUpdateCardMutation()
 
   const phoneOptions = useMemo(() => {
-    if (phoneData && phoneData.data.candidate.length > 0) {
-      const candidates = phoneData.data.candidate
-      return candidates.map((candidate) => ({
-        label: candidate.phone,
-        value: candidate.id,
-        name: candidate.name,
-        email: candidate.email,
-      }))
-    } else return []
+    const candidates = phoneData?.data?.candidate || []
+    return candidates.map(
+      ({ name, email, phone: label = '', id: value = '' }) => ({
+        label,
+        value,
+        name,
+        email,
+      })
+    )
   }, [phoneData])
 
   const emailOptions = useMemo(() => {
-    if (emailData && emailData.data.candidate.length > 0) {
-      const candidates = emailData.data.candidate
-      return candidates.map((candidate) => ({
-        label: candidate.email,
-        value: candidate.id,
-        name: candidate.name,
-        phone: candidate.phone,
-      }))
-    } else return []
+    const candidates = emailData?.data?.candidate || []
+    return candidates.map(
+      ({ name, phone, email: label = '', id: value = '' }) => ({
+        label,
+        value,
+        name,
+        phone,
+      })
+    )
   }, [emailData])
 
   const cardByColumns = useMemo(() => {
-    if (card) {
-      return columns[card.laneId].CandidateJobs.find(
-        (item) => item.id === card.id
-      )
-    }
+    const { laneId, id } = card || {}
+    const { CandidateJobs } = columns?.[laneId] || []
+    return CandidateJobs?.find((item) => item.id === id)
   }, [columns, card])
 
   useEffect(() => {
-    if (card) {
-      const {
-        Candidate,
-        laneId,
-        Job,
-        approachDate,
-        expectedDate,
-        position,
-        cv,
-        refineCv = '',
-        noteApproach,
-      } = card
-      setValue('name', Candidate?.name || '')
-      setValue('laneId', laneId)
-      setValue('idJob', Job.id)
-      setValue('nameJob', Job.title)
-      setValue('email', Candidate.email)
-      setValue('location', Job.Location?.name || '')
-      setValue('clientName', Job.Client?.name || '')
-      setValue('social', ['facebook', 'linkedin', 'skype'])
-      setValue(
-        'facebook',
-        Candidate.facebook
-          ? `https://www.facebook.com/${Candidate.facebook}`
-          : ''
-      )
-      setValue('linkedin', Candidate.linkedin || '')
-      setValue('skype', Candidate.skype || '')
-      setValue('phone', Candidate.phone)
-      setValue('approachDate', format(new Date(approachDate), 'yyyy-MM-dd'))
-      if (expectedDate) {
-        setValue('expectedDate', expectedDate)
-      }
-      setValue('position', position || '')
-      setValue('linkCv', cv || '')
-      setValue('refineCv', refineCv || '')
-      setValue('noteApproach', noteApproach)
+    if (!card) return
+
+    const {
+      Candidate,
+      laneId,
+      Job,
+      approachDate,
+      expectedDate,
+      position,
+      cv,
+      refineCv = '',
+      noteApproach,
+    } = card
+
+    setValue('name', Candidate?.name || '')
+    setValue('laneId', laneId)
+    setValue('idJob', Job.id)
+    setValue('nameJob', Job.title)
+    setValue('email', Candidate.email)
+    setValue('location', Job.Location?.name || '')
+    setValue('clientName', Job.Client?.name || '')
+    setValue('social', SOCIAL_LIST)
+    setValue(
+      'facebook',
+      Candidate.facebook ? `${FACEBOOK_URL}${Candidate.facebook}` : ''
+    )
+    setValue('linkedin', Candidate.linkedin || '')
+    setValue('skype', Candidate.skype || '')
+    setValue('phone', Candidate.phone)
+    setValue(
+      'approachDate',
+      format(new Date(approachDate), DATE_YEAR_MONTH_DAY_FORMAT)
+    )
+    if (expectedDate) {
+      setValue('expectedDate', expectedDate)
     }
+    setValue('position', position || '')
+    setValue('linkCv', cv || '')
+    setValue('refineCv', refineCv || '')
+    setValue('noteApproach', noteApproach)
   }, [card, setValue])
+
+  const [widthRef, setWidthRef] = useState(formRef?.current?.clientWidth)
+  const isMountedRef = useIsMountedRef()
+
+  useEffect(() => {
+    const handleClientWidthRef = () => {
+      if (!isMountedRef.current) return
+      setWidthRef(formRef?.current?.clientWidth)
+    }
+
+    handleClientWidthRef()
+
+    if (typeof window === 'undefined') return
+    window.addEventListener('resize', handleClientWidthRef)
+
+    return () => {
+      if (typeof window === 'undefined') return
+      window.removeEventListener('resize', handleClientWidthRef)
+    }
+  }, [formRef, isMountedRef])
 
   useEffect(() => {
     if (!card && watchIdJob) {
       const job = activeJobOptions.find((job) => job.value === watchIdJob)
+
       setValue('location', job?.location)
       setValue('clientName', job?.clientName)
       setValue('nameJob', job?.label)
@@ -238,17 +279,45 @@ function KanbanTaskForm({
     setOpenHistory(false)
   }
 
+  const { base64, isLoadingPDF } = useSelector((state) => state.candidates)
+
+  const [isOpenPDF, setIsOpenPDF] = useState(false)
+
+  const handleOpenPDF = () => {
+    setIsOpenPDF(true)
+  }
+
+  useEffect(() => {
+    const { cv, candidateId } = card || {}
+    if (!cv || !candidateId) return
+
+    dispatch(convertDriverToBase64({ linkDrive: cv, candidateId }))
+  }, [dispatch, card])
+
   const handleSubmitForm = async (data) => {
-    const reqData = { ...data }
-    reqData.approachDate = format(new Date(reqData.approachDate), 'yyyy-MM-dd')
-    if (!reqData.laneId) {
-      reqData.laneId = laneId
+    const {
+      linkCv: cv,
+      approachDate,
+      email,
+      phone,
+      laneId: laneDataId,
+    } = data || {}
+    const { label: phoneLabel } = phone || {}
+    const { label: emailLabel } = email || {}
+
+    const reqData = {
+      ...data,
+      cv,
+      approachDate: format(new Date(approachDate), DATE_YEAR_MONTH_DAY_FORMAT),
+      laneId: laneDataId || laneId,
+      phone: phoneLabel,
+      email: emailLabel,
     }
+
     if (!card) {
       delete reqData.refineCv
     }
-    reqData.email = data.email.label
-    reqData.phone = data.phone.label
+
     delete reqData.social
 
     try {
@@ -258,11 +327,11 @@ function KanbanTaskForm({
         }
         delete reqData.laneId
         await updateCard({ reqData, cardId: card.id }).unwrap()
-        enqueueSnackbar('Update card successfully!')
+        enqueueSnackbar(translate('pages.board.updateCardSuccess'))
         handleCloseUpdateTask()
       } else {
         await addCard(reqData).unwrap()
-        enqueueSnackbar('Create card successfully!')
+        enqueueSnackbar(translate('pages.board.createCardSuccess'))
         handleCloseAddTask()
       }
       dispatch(getBoard())
@@ -272,7 +341,7 @@ function KanbanTaskForm({
           variant: 'error',
         })
       } else {
-        enqueueSnackbar('Something went wrong! Please try again', {
+        enqueueSnackbar(translate('pages.board.somethingWentWrong'), {
           variant: 'error',
         })
       }
@@ -287,10 +356,68 @@ function KanbanTaskForm({
       >
         <CircularProgress size={60} />
       </Modal>
+
       <FormProvider onSubmit={handleSubmit(handleSubmitForm)} methods={methods}>
-        <Box mt={2}>
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            height: '60px',
+            width: `${widthRef}px`,
+            background: isLight
+              ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.COLOR
+              : JOB_FORM_STICKY_BAR_COLOR.DARK.COLOR,
+            zIndex: 1,
+            borderBottom: '1px solid #d8d8d8',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            '& button': {
+              height: 'fit-content',
+            },
+            padding: '12px 24px',
+            boxShadow: isScrolled
+              ? `0 1px 8px 0px ${
+                  isLight
+                    ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.SHADOW
+                    : JOB_FORM_STICKY_BAR_COLOR.DARK.SHADOW
+                }`
+              : 'none',
+          }}
+        >
+          <Box component='header'>
+            <Typography variant='h5'>
+              {card ? translate('Update Card') : translate('Add Card')}
+            </Typography>
+          </Box>
+
+          <Stack direction='row' sx={{ flexShrink: 0, maxHeight: '48px' }}>
+            {hasAddPermission && (
+              <Button
+                type='submit'
+                variant='contained'
+                sx={{ marginLeft: '8px' }}
+              >
+                {card ? translate('Update') : translate('Save')}
+              </Button>
+            )}
+
+            <Button
+              type='button'
+              sx={{ marginLeft: '8px' }}
+              onClick={() => {
+                card ? handleCloseUpdateTask() : handleCloseAddTask()
+              }}
+            >
+              {translate('Cancel')}
+            </Button>
+          </Stack>
+        </Box>
+
+        <Box mt='76px'>
           <RHFTextField
-            label={'Name'}
+            label={translate('pages.board.name')}
             name='name'
             type='text'
             disabled={!hasAddPermission}
@@ -299,8 +426,27 @@ function KanbanTaskForm({
 
         {isAddTaskNoColumn && (
           <Box mt={2}>
-            <RHFBasicSelect
-              label={'Column Name'}
+            <RHFAutocomplete
+              AutocompleteProps={{
+                size: 'small',
+                defaultValue: card?.Lane?.nameColumn,
+                isOptionEqualToValue: (option, value) => {
+                  if (typeof value === 'string') return option.label === value
+                  return option.label === value.label
+                },
+                renderOption: (props, option) => (
+                  <Box component='li' {...props} key={option.value}>
+                    {option.label}
+                  </Box>
+                ),
+                onChange: (field) => (event, newValue) => {
+                  field.onChange(newValue)
+                  if (!newValue) return
+
+                  setValue('laneId', newValue.value)
+                },
+              }}
+              label={translate('pages.board.columnName')}
               name='laneId'
               options={listColumnName}
               disabled={!hasAddPermission}
@@ -309,8 +455,27 @@ function KanbanTaskForm({
         )}
 
         <Box mt={2}>
-          <RHFBasicSelect
-            label={'Name Job'}
+          <RHFAutocomplete
+            AutocompleteProps={{
+              size: 'small',
+              defaultValue: card?.Job.title,
+              isOptionEqualToValue: (option, value) => {
+                if (typeof value === 'string') return option.label === value
+                return option.label === value.label
+              },
+              renderOption: (props, option) => (
+                <Box component='li' {...props} key={option.value}>
+                  {option.label}
+                </Box>
+              ),
+              onChange: (field) => (event, newValue) => {
+                field.onChange(newValue)
+                if (!newValue) return
+
+                setValue('idJob', newValue.value)
+              },
+            }}
+            label={translate('pages.board.nameJob')}
             name='idJob'
             options={activeJobOptions}
             disabled={!hasAddPermission}
@@ -321,15 +486,16 @@ function KanbanTaskForm({
           <Grid container spacing={1}>
             <Grid item xs={6}>
               <RHFTextField
-                label={'Location'}
+                label={translate('pages.board.location')}
                 name='location'
                 type='text'
                 disabled
               />
             </Grid>
+
             <Grid item xs={6}>
               <RHFTextField
-                label={'Client Name'}
+                label={translate('pages.board.nameClient')}
                 name='clientName'
                 type='text'
                 disabled
@@ -341,7 +507,7 @@ function KanbanTaskForm({
         <Box mt={2}>
           {card ? (
             <RHFTextField
-              label='Email'
+              label={translate('pages.board.email')}
               name='email'
               disabled={!hasAddPermission}
             />
@@ -376,7 +542,7 @@ function KanbanTaskForm({
                 },
                 inputValue: keyEmailSearch,
               }}
-              label='Email'
+              label={translate('pages.board.email')}
               name='email'
               options={emailOptions}
               disabled={!hasAddPermission}
@@ -387,9 +553,10 @@ function KanbanTaskForm({
         <Box mt={2}>
           {!card && (
             <CheckboxRootStyle>
-              <RHFMultiCheckbox name='social' options={socialOptions} />
+              <RHFMultiCheckbox name='social' options={SOCIAL_OPTIONS} />
             </CheckboxRootStyle>
           )}
+
           {watchSocial.includes('facebook') && (
             <Box mt={2}>
               <RHFTextField
@@ -450,7 +617,7 @@ function KanbanTaskForm({
             <Grid item xs={6}>
               {card ? (
                 <RHFTextField
-                  label={'Phone'}
+                  label={translate('pages.board.phone')}
                   name='phone'
                   fullWidth
                   disabled={!hasAddPermission}
@@ -486,16 +653,17 @@ function KanbanTaskForm({
                     },
                     inputValue: keyPhoneSearch,
                   }}
-                  label='Phone'
+                  label={translate('pages.board.phone')}
                   name='phone'
                   options={phoneOptions}
                   disabled={!hasAddPermission}
                 />
               )}
             </Grid>
+
             <Grid item xs={6}>
               <RHFDatePicker
-                label={'Approach Date'}
+                label={translate('pages.board.approachDate')}
                 name='approachDate'
                 disabled={!hasAddPermission}
               />
@@ -506,7 +674,7 @@ function KanbanTaskForm({
         {card && (
           <Box mt={2}>
             <RHFDateTimePicker
-              label={'Expected Date'}
+              label={translate('pages.board.expectedDate')}
               name='expectedDate'
               disabled={!hasAddPermission}
             />
@@ -515,7 +683,7 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <RHFTextField
-            label={'Position'}
+            label={translate('pages.board.position')}
             name='position'
             disabled={!hasAddPermission}
           />
@@ -523,22 +691,21 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <KanbanFileUpload
-            label={'Link CV'}
+            label={translate('pages.board.uploadCV')}
             nameTextField='linkCv'
-            name={watch('name')}
-            nameJob={watch('nameJob')}
+            watch={watch}
             idJob={watchIdJob}
             hasAddPermission={hasAddPermission}
             setValue={setValue}
           />
         </Box>
+
         {card && (
           <Box mt={2}>
             <KanbanFileUpload
-              label={'Link Refine CV'}
+              label={translate('pages.board.uploadCVToLinkRefine')}
               nameTextField='refineCv'
-              name={watch('name')}
-              nameJob={watch('nameJob')}
+              watch={watch}
               idJob={watchIdJob}
               hasAddPermission={hasAddPermission}
               setValue={setValue}
@@ -548,16 +715,22 @@ function KanbanTaskForm({
 
         <Box mt={2}>
           <RHFTextField
-            label={'Approach Point'}
+            label={translate('pages.board.approachPoint')}
             name='noteApproach'
             multiline
-            rows={3}
+            InputProps={{
+              inputComponent: TextareaAutosize,
+              inputProps: {
+                minRows: 3,
+              },
+            }}
           />
         </Box>
+
         <Stack
           mt={2}
-          spacing={isSmall ? 2 : 0}
-          direction={isSmall ? 'column-reverse' : 'row'}
+          spacing={isMobile ? 2 : 0}
+          direction={isMobile ? 'column-reverse' : 'row'}
           justifyContent={cardByColumns || card ? 'space-between' : 'right'}
         >
           {cardByColumns && (
@@ -565,6 +738,7 @@ function KanbanTaskForm({
               Users={cardByColumns?.Users}
               laneId={cardByColumns?.laneId}
               cardId={cardByColumns?.id}
+              hasAddPermission={hasAddPermission}
             />
           )}
 
@@ -574,35 +748,71 @@ function KanbanTaskForm({
               laneId={card?.laneId}
               cardId={card?.id}
               cardNotInCol={true}
+              hasAddPermission={hasAddPermission}
             />
           )}
-          <Stack direction='row' sx={{ flexShrink: 0, maxHeight: '48px' }}>
+
+          <Stack direction='row' spacing={1} sx={{ height: 'fit-content' }}>
             {card && (
-              <Button type='button' variant='contained'>
-                {translate('Create Interview')}
-              </Button>
-            )}
-            {hasAddPermission && (
               <Button
-                type='submit'
+                type='button'
                 variant='contained'
-                sx={{ marginLeft: '8px' }}
+                size='large'
+                sx={{
+                  whiteSpace: 'nowrap',
+                }}
               >
-                {card ? translate('Update') : translate('Save')}
+                {translate('pages.board.createInterview')}
               </Button>
             )}
-            <Button
-              type='button'
-              sx={{ marginLeft: '8px' }}
-              onClick={() => {
-                card ? handleCloseUpdateTask() : handleCloseAddTask()
-              }}
-            >
-              {translate('Cancel')}
-            </Button>
+
+            {card?.cv && (
+              <>
+                <Button
+                  variant='contained'
+                  type='button'
+                  size='medium'
+                  sx={{
+                    '& a': { color: 'white' },
+                    '& a:hover': { textDecoration: 'none' },
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Link
+                    download={`${
+                      card?.Candidate?.name ? card.Candidate.name : ''
+                    }.pdf`}
+                    href={`${URL_DOWNLOAD_CV},${base64}`}
+                  >
+                    {translate('pages.board.downloadCV')}
+                  </Link>
+                </Button>
+
+                <LoadingButton
+                  sx={{
+                    '& a': { color: 'white' },
+                    '& a:hover': { textDecoration: 'none' },
+                    whiteSpace: 'nowrap',
+                  }}
+                  variant='contained'
+                  size='small'
+                  loading={isLoadingPDF}
+                  onClick={handleOpenPDF}
+                >
+                  {translate('pages.candidates.rawCV')}
+                </LoadingButton>
+              </>
+            )}
           </Stack>
         </Stack>
       </FormProvider>
+      {base64 && (
+        <PreviewPdf
+          isOpen={isOpenPDF}
+          onClose={() => setIsOpenPDF(false)}
+          base64={base64}
+        />
+      )}
     </>
   )
 }

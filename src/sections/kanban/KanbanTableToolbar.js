@@ -16,6 +16,7 @@ import {
   RHFDatePicker,
 } from '@/components/hook-form'
 import { useDebounce } from '@/hooks/useDebounce'
+import useLocales from '@/hooks/useLocales'
 import { getBoard } from '@/sections/kanban/kanbanSlice'
 
 import { useSearchCardsQuery } from './kanbanSlice'
@@ -33,6 +34,7 @@ const KanbanTableToolbar = ({
   const { enqueueSnackbar } = useSnackbar()
   const dispatch = useDispatch()
 
+  const { translate } = useLocales()
   const { data: cardData, isFetching: isCardFetching } = useSearchCardsQuery({
     search,
   })
@@ -108,43 +110,49 @@ const KanbanTableToolbar = ({
             ),
           }}
           name='search'
-          label='search'
+          label={translate('pages.board.search')}
           options={cardOptions}
           onChange={(e) => setKeySearch(e.target.value)}
         />
+
         <RHFBasicSelect
           hasBlankOption
-          label='Choose label'
+          label={translate('pages.board.chooseLabel')}
           name='label'
           options={labelOptions}
         />
+
         <RHFBasicSelect
           hasBlankOption
-          label='Choose client'
+          label={translate('pages.board.chooseClient')}
           name='clientId'
           options={clientOptions}
         />
+
         <RHFBasicSelect
           hasBlankOption
-          label='Choose member'
+          label={translate('pages.board.chooseMember')}
           name='userId'
           options={memberOptions}
         />
+
         <RHFBasicSelect
           hasBlankOption
-          label='Choose job'
+          label={translate('pages.board.chooseJob')}
           name='jobId'
           options={jobOptions}
         />
+
         <RHFDatePicker name='startDate' />
         <RHFDatePicker name='endDate' />
+
         <LoadingButton
           fullWidth
           type='submit'
           variant='contained'
           loading={isSubmitting}
         >
-          Search
+          {translate('pages.board.search')}
         </LoadingButton>
       </Box>
     </FormProvider>

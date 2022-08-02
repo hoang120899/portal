@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 // @mui
-import { Box, Button, Drawer, Stack, Typography } from '@mui/material'
+import { Box, Button, Drawer, Stack, Typography, useTheme } from '@mui/material'
 
 // @prop-types
 import PropTypes from 'prop-types'
 
 // components
 import Iconify from '@/components/Iconify'
+import Scrollbar from '@/components/Scrollbar'
 import useLocales from '@/hooks/useLocales'
 
 import KanbanTaskCommentInput from './KanbanTaskCommentInput'
@@ -53,6 +54,14 @@ function KanbanTaskAdd({
     onCloseUpdate()
     setOpenHistory(false)
   }
+  const [isScrolled, setIsScrolled] = useState(false)
+  const theme = useTheme()
+  const isLight = theme.palette.mode === 'light'
+
+  const handleScroll = (e) => {
+    setIsScrolled(e.target.scrollTop > 10)
+  }
+  const formRef = useRef()
 
   return (
     <Drawer
@@ -61,15 +70,10 @@ function KanbanTaskAdd({
         card ? handleCloseUpdateTask() : handleCloseAddTask()
       }}
       anchor='right'
-      PaperProps={{ sx: { width: { xs: 1, sm: 640 } } }}
+      PaperProps={{ sx: { width: { xs: 1, sm: 640 } }, onScroll: handleScroll }}
     >
-      <Box p={3}>
-        <Box component='header'>
-          <Typography variant='h5'>
-            {card ? translate('Update Card') : translate('Add Card')}
-          </Typography>
-        </Box>
-        <Box>
+      <Scrollbar sx={{ zIndex: 999, '& label': { zIndex: 0 } }}>
+        <Box pb={3} pl={3} pr={3} ref={formRef}>
           <KanbanTaskForm
             card={card}
             hasAddPermission={hasAddPermission}
@@ -79,6 +83,9 @@ function KanbanTaskAdd({
             onClose={onClose}
             onCloseUpdate={onCloseUpdate}
             setOpenHistory={setOpenHistory}
+            isScrolled={isScrolled}
+            isLight={isLight}
+            formRef={formRef}
           />
 
           {card && (
@@ -95,24 +102,29 @@ function KanbanTaskAdd({
                     height={20}
                   />
                   <Typography variant='span' sx={{ ml: 1 }}>
-                    {translate('History')}
+                    {translate('pages.board.history')}
                   </Typography>
                 </Stack>
+
                 <Button
                   type='button'
                   variant='outlined'
                   onClick={handleOpenHistory}
                 >
-                  {openHistory ? translate('Hide') : translate('Show')}
+                  {openHistory
+                    ? translate('pages.board.hide')
+                    : translate('pages.board.show')}
                 </Button>
               </Stack>
             </Box>
           )}
+
           {openHistory && card && (
             <Box mt={2}>
               <KanbanUpdateHistory
-                title={translate('News Update')}
+                title={translate('pages.board.newsUpdate')}
                 cardId={card.id}
+                isLight={isLight}
               />
             </Box>
           )}
@@ -125,22 +137,25 @@ function KanbanTaskAdd({
                   width={20}
                   height={20}
                 />
+
                 <Typography variant='span' sx={{ ml: 1 }}>
-                  {translate('Comment')}
+                  {translate('pages.board.comment')}
                 </Typography>
               </Stack>
 
               <KanbanTaskCommentInput cardId={card.id} />
+
               <Box mt={2}>
                 <KanbanTaskCommentList
-                  title={translate('List Comment')}
+                  title={translate('pages.board.listComment')}
                   cardId={card.id}
+                  isLight={isLight}
                 />
               </Box>
             </Box>
           )}
         </Box>
-      </Box>
+      </Scrollbar>
     </Drawer>
   )
 }

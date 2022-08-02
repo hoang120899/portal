@@ -18,6 +18,7 @@ import Iconify from '@/components/Iconify'
 // hooks
 import useIsScrollToBottom from '@/hooks/useIsScrollToBottom'
 import useKanban from '@/hooks/useKanban'
+import useLocales from '@/hooks/useLocales'
 // redux
 import { useDispatch, useSelector } from '@/redux/store'
 
@@ -42,6 +43,7 @@ function KanbanColumn({
 }) {
   const dispatch = useDispatch()
   const { isLoading } = useSelector((state) => state.kanban)
+  const { translate } = useLocales()
   const scrollRef = useRef(null)
   const { kanbanColumn: { lgHeight = 0, xsHeight = 0 } = {} } = useKanban()
   const { isScrollToBottom } = useIsScrollToBottom(scrollRef)
@@ -138,6 +140,9 @@ function KanbanColumn({
               ref={provided.innerRef}
               {...provided.droppableProps}
               spacing={2}
+              sx={{
+                minHeight: '200px',
+              }}
             >
               {CandidateJobs.map((value, index) => (
                 <KanbanTaskCard
@@ -151,6 +156,7 @@ function KanbanColumn({
               ))}
               {provided.placeholder}
             </Stack>
+
             {isScrollToBottom && isLoading && (
               <Box
                 sx={{
@@ -161,7 +167,7 @@ function KanbanColumn({
                 }}
               >
                 <CircularProgress size={24} sx={{ marginRight: 0.5 }} />
-                Waiting...
+                {translate('pages.board.waiting')}...
               </Box>
             )}
           </Box>

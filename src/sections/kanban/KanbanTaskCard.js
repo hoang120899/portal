@@ -1,7 +1,7 @@
 import React from 'react'
 
 // @mui
-import { Box, Paper, Stack, Typography } from '@mui/material'
+import { Box, Paper, Stack, Typography, useTheme } from '@mui/material'
 
 import PropTypes from 'prop-types'
 import { Draggable } from 'react-beautiful-dnd'
@@ -21,11 +21,20 @@ KanbanTaskCard.propTypes = {
   index: PropTypes.number,
   laneId: PropTypes.string,
   onOpenUpdateTask: PropTypes.func,
+  hasAddPermission: PropTypes.bool,
 }
 
-function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
+function KanbanTaskCard({
+  card,
+  index,
+  laneId,
+  onOpenUpdateTask,
+  hasAddPermission,
+}) {
   const { translate } = useLocales()
   const { Job, Candidate = {}, Labels = [], id: cardId } = card
+  const theme = useTheme()
+  const isLight = theme.palette.mode === 'light'
 
   const dispatch = useDispatch()
   const handleDeleteLabel = async (label) => {
@@ -39,21 +48,25 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
 
   const configUserInfo = [
     {
-      label: translate('Email'),
+      label: translate('pages.board.email'),
       value: Candidate?.email,
     },
     {
-      label: translate('Phone'),
+      label: translate('pages.board.phone'),
       value: Candidate?.phone,
     },
     {
-      label: translate('Position'),
+      label: translate('pages.board.position'),
       value: card?.position,
     },
   ]
 
   return (
-    <Draggable draggableId={card.id} index={index}>
+    <Draggable
+      draggableId={card.id}
+      index={index}
+      isDragDisabled={!hasAddPermission}
+    >
       {(provided) => (
         <div
           {...provided.draggableProps}
@@ -89,7 +102,7 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                   spacing={1}
                   sx={{
                     p: 2,
-                    background: 'white',
+                    background: isLight ? 'white' : '#2c3947',
                     boxShadow: '0 1px 0 rgb(9 30 66 / 25%)',
                   }}
                 >
@@ -97,26 +110,29 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                     Job={Job}
                     Labels={Labels}
                     handleDeleteLabel={handleDeleteLabel}
+                    hasAddPermission={hasAddPermission}
                   />
+
                   <KanbanBasicInfo
                     Candidate={Candidate}
                     card={card}
                     Job={Job}
                   />
+
                   <Box
-                    display={'Grid'}
-                    alignItems={'center'}
+                    display='Grid'
+                    alignItems='center'
                     gridTemplateColumns='60px 1fr'
                   >
                     {configUserInfo.map((item, index) => (
                       <React.Fragment key={`label${index}`}>
-                        <Typography variant='subtitle2' fontWeight={'bold'}>
+                        <Typography variant='subtitle2' fontWeight='bold'>
                           {item?.label}:
                         </Typography>
                         <Typography
+                          fontWeight='normal'
                           variant='subtitle2'
                           align='right'
-                          color='#777'
                           sx={{
                             overflow: 'hidden',
                             whiteSpace: 'nowrap',
@@ -128,10 +144,12 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                       </React.Fragment>
                     ))}
                   </Box>
+
                   <KanbanAssignee
                     Users={card?.Users}
                     laneId={laneId}
                     cardId={cardId}
+                    hasAddPermission={hasAddPermission}
                   />
                 </Stack>
               </Box>
@@ -147,6 +165,7 @@ function KanbanTaskCard({ card, index, laneId, onOpenUpdateTask }) {
                 laneId={laneId}
                 cardId={cardId}
                 Labels={Labels}
+                hasAddPermission={hasAddPermission}
               />
             </Box>
           </Paper>

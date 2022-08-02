@@ -128,7 +128,8 @@ export default function NotificationsPopover() {
         router.push(PATH_DASHBOARD.jobDetail.view(id))
         break
       case 'assignCard':
-        router.push(PATH_DASHBOARD.board)
+        handleClose()
+        router.push(PATH_DASHBOARD.board.view(id))
         break
       case 'assignTask':
         router.push(PATH_DASHBOARD.root)

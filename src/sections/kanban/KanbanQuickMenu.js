@@ -13,24 +13,32 @@ import useLocales from '@/hooks/useLocales'
 import KanbanActionCreateLabel from './KanbanActionCreateLabel'
 import KanbanActionMove from './KanbanActionMove'
 import KanbanActionStorage from './KanbanActionStorage'
+import { ACTION_STATUS } from './config'
 
 KanbanQuickMenu.propTypes = {
   laneId: PropTypes.string,
   cardId: PropTypes.string,
   Labels: PropTypes.array,
+  hasAddPermission: PropTypes.bool,
 }
 
-export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
+export default function KanbanQuickMenu({
+  laneId,
+  cardId,
+  Labels = [],
+  hasAddPermission,
+}) {
   const [actions, setActions] = useState('actions')
   const { translate } = useLocales()
+  const [openMenu, setOpenMenuActions] = useState(null)
 
   const configAction = () => {
     switch (actions) {
-      case 'move':
+      case ACTION_STATUS.MOVE:
         return (
           <KanbanActionMove laneId={laneId} sourceId={laneId} cardId={cardId} />
         )
-      case 'label':
+      case ACTION_STATUS.LABEL:
         return (
           <KanbanActionCreateLabel
             cardId={cardId}
@@ -39,38 +47,41 @@ export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
             laneId={laneId}
           />
         )
-      case 'storage':
+      case ACTION_STATUS.STORAGE:
         return <KanbanActionStorage cardId={cardId} laneId={laneId} />
       default:
         return (
           <>
+            {hasAddPermission && (
+              <MenuItem
+                onClick={() => {
+                  setActions(ACTION_STATUS.MOVE)
+                }}
+              >
+                {translate('pages.board.moveCard')}
+              </MenuItem>
+            )}
             <MenuItem
               onClick={() => {
-                setActions('move')
-              }}
-            >
-              {translate('pages.board.moveCard')}
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setActions('storage')
+                setActions(ACTION_STATUS.STORAGE)
               }}
             >
               {translate('pages.board.storageCard')}
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setActions('label')
-              }}
-            >
-              {translate('pages.board.createLabel')}
-            </MenuItem>
+            {hasAddPermission && (
+              <MenuItem
+                onClick={() => {
+                  setActions(ACTION_STATUS.LABEL)
+                }}
+              >
+                {translate('pages.board.createLabel')}
+              </MenuItem>
+            )}
           </>
         )
     }
   }
 
-  const [openMenu, setOpenMenuActions] = useState(null)
   const handleOpenMenu = (event) => {
     setOpenMenuActions(event.currentTarget)
     setActions('')
@@ -79,6 +90,7 @@ export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
   const handleCloseMenu = () => {
     setOpenMenuActions(null)
   }
+
   const handleOnback = () => {
     if (actions && actions !== 'actions') {
       setActions('actions')
@@ -86,6 +98,7 @@ export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
       setOpenMenuActions(null)
     }
   }
+
   return (
     <>
       <IconButton onClick={handleOpenMenu}>
@@ -122,6 +135,7 @@ export default function KanbanQuickMenu({ laneId, cardId, Labels = [] }) {
           >
             {actions || 'actions'}
           </Box>
+
           <IconButton
             onClick={handleOnback}
             sx={{

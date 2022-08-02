@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 // components
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
+import { DOMAIN_SERVER_API } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
 import useToggle from '@/hooks/useToggle'
@@ -35,13 +36,14 @@ export default function Assignee({
 
   return (
     <Stack direction='row' flexWrap='wrap' alignItems='center'>
-      {assignee.map(({ id, name, avatar }, index) => (
-        <Avatar
-          key={`${id}-${index}`}
-          alt={name}
-          src={avatar}
-          sx={{ m: 0.5, width: 36, height: 36 }}
-        />
+      {assignee.map(({ id, name, avatar, linkAvatar }, index) => (
+        <Tooltip key={`${id}-${index}`} title={name}>
+          <Avatar
+            alt={name}
+            src={`${DOMAIN_SERVER_API}/${avatar || linkAvatar}`}
+            sx={{ m: 0.5, width: 36, height: 36 }}
+          />
+        </Tooltip>
       ))}
       {hasAddAssignee && (
         <Tooltip title={translate('add_assignee')}>

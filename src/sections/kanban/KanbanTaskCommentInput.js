@@ -1,7 +1,13 @@
 import { useState } from 'react'
 
 // @mui
-import { Button, OutlinedInput, Paper, Stack } from '@mui/material'
+import {
+  Button,
+  OutlinedInput,
+  Paper,
+  Stack,
+  TextareaAutosize,
+} from '@mui/material'
 
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
@@ -42,8 +48,13 @@ export default function KanbanTaskCommentInput({ cardId }) {
         <OutlinedInput
           fullWidth
           multiline
-          rows={1}
-          placeholder={translate('Type a message')}
+          inputprops={{
+            inputComponent: TextareaAutosize,
+            inputProps: {
+              minRows: 1,
+            },
+          }}
+          placeholder={translate('pages.board.typeAMessage')}
           sx={{ '& fieldset': { display: 'none' } }}
           value={comment}
           onChange={handleChangeComment}
@@ -51,7 +62,7 @@ export default function KanbanTaskCommentInput({ cardId }) {
 
         <Stack direction='row' justifyContent='flex-end'>
           <Button variant='contained' onClick={handleCommentChange}>
-            {translate('Comment')}
+            {translate('pages.board.comment')}
           </Button>
         </Stack>
       </Paper>

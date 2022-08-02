@@ -2,6 +2,7 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import { format } from 'date-fns'
 import qs from 'query-string'
 
+import { DATE_YEAR_MONTH_DAY_FORMAT } from '@/config'
 import { apiSlice } from '@/redux/api/apiSlice'
 import {
   API_ADD_CARD,
@@ -177,7 +178,7 @@ export const getBoard = createAsyncThunk('kanban/getBoard', async (data) => {
       .reduce((obj, key) => {
         const getValue = (key) => {
           if (['startDate', 'endDate'].includes(key))
-            return format(data[key], 'yyyy-MM-dd')
+            return format(data[key], DATE_YEAR_MONTH_DAY_FORMAT)
           return data[key]
         }
         return {

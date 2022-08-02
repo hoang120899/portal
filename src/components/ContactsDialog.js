@@ -19,6 +19,7 @@ import PropTypes from 'prop-types'
 // components
 import Iconify from '@/components/Iconify'
 import Scrollbar from '@/components/Scrollbar'
+import { DOMAIN_SERVER_API } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
 
@@ -98,13 +99,13 @@ export default function ContactsDialog({
           },
         }}
       >
-        {dataFiltered.map(({ id, avatar, name, email }, index) => {
+        {dataFiltered.map(({ id, avatar, linkAvatar, name, email }, index) => {
           const checked = checkSelectedUser(id)
 
           return (
             <MenuItem key={`${id}-${index}`} onClick={onToggleMenuItem(id)}>
               <ListItemAvatar sx={{ position: 'relative' }}>
-                <Avatar src={avatar} />
+                <Avatar src={`${DOMAIN_SERVER_API}/${avatar || linkAvatar}`} />
               </ListItemAvatar>
 
               <ListItemText

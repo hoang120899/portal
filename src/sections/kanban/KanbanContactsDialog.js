@@ -20,6 +20,7 @@ import { _contacts } from '@/_mock'
 // components
 import Iconify from '@/components/Iconify'
 import Scrollbar from '@/components/Scrollbar'
+import useLocales from '@/hooks/useLocales'
 
 const ITEM_HEIGHT = 64
 
@@ -39,12 +40,13 @@ export default function KanbanContactsDialog({ open, onClose }) {
     listData: _contacts,
     filterName,
   })
+  const { translate } = useLocales()
 
   return (
     <Dialog fullWidth maxWidth='xs' open={open} onClose={onClose}>
       <Stack spacing={2} sx={{ p: 2.5, pb: 1 }}>
         <Typography variant='h6'>
-          Contacts{' '}
+          {translate('pages.board.contacts')}&nbsp;
           <Typography component='span'>({_contacts.length})</Typography>
         </Typography>
 
@@ -52,7 +54,7 @@ export default function KanbanContactsDialog({ open, onClose }) {
           fullWidth
           value={filterName}
           onChange={handleSearchQuery}
-          placeholder='Search...'
+          placeholder={`${translate('pages.board.search')}...`}
           InputProps={{
             startAdornment: (
               <InputAdornment position='start'>

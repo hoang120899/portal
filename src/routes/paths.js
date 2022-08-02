@@ -51,6 +51,7 @@ export const PATH_DASHBOARD = {
   },
   board: {
     root: path(ROOTS_DASHBOARD, 'board'),
+    view: (cardId) => path(ROOTS_DASHBOARD, `board?cardId=${cardId}`),
   },
   calculator: path(ROOTS_DASHBOARD, 'calculator'),
   recruiter: {

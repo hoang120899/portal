@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react'
 
+import { useRouter } from 'next/router'
+
 import {
   Collapse,
   IconButton,
@@ -13,15 +15,21 @@ import {
   Typography,
 } from '@mui/material'
 
+import PropTypes from 'prop-types'
+
 // component
 import Iconify from '@/components/Iconify'
 import { IconButtonAnimate } from '@/components/animate'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import { PATH_DASHBOARD } from '@/routes/paths'
 // utils
 import { fDate } from '@/utils/formatTime'
 import getColorPresets from '@/utils/getColorPresets'
 
+CollapsibleTableRow.propTypes = {
+  row: PropTypes.object,
+}
 function CollapsibleTableRow({ row }) {
   const { User, content, createdAt } = row
   const { translate } = useLocales()
@@ -46,6 +54,7 @@ function CollapsibleTableRow({ row }) {
     },
   }
 
+  const router = useRouter()
   const handleToggleDropdown = () => {
     setIsOpenDropdown(!isOpenDropdown)
   }
@@ -95,7 +104,13 @@ function CollapsibleTableRow({ row }) {
                   <TableRow sx={{ verticalAlign: 'top' }}>
                     <TableCell>{translate('Message')}</TableCell>
                     <TableCell sx={{ width: 644 }}>
-                      <Typography variant='body2' sx={styles.message}>
+                      <Typography
+                        variant='body2'
+                        sx={styles.message}
+                        onClick={() =>
+                          router.push(PATH_DASHBOARD.board.view(content?.id))
+                        }
+                      >
                         {content?.message} <strong>{content?.title}</strong>
                       </Typography>
                     </TableCell>

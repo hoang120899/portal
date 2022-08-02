@@ -29,6 +29,10 @@ function KanbanActionCreateLabel({
 }) {
   const { data: labelData } = useGetLabelQuery()
   const { translate } = useLocales()
+  const { enqueueSnackbar } = useSnackbar()
+  const dispatch = useDispatch()
+  const [background, setBackground] = useState('')
+
   const labelOptions = useMemo(() => {
     if (labelData) {
       return labelData.data.list.filter(Boolean).map((label) => ({
@@ -42,13 +46,12 @@ function KanbanActionCreateLabel({
   const defaultValues = {
     label: '',
   }
-  const { enqueueSnackbar } = useSnackbar()
 
   const methods = useForm({
     defaultValues,
   })
-  const [background, setBackground] = useState('')
   const labelWatch = methods.watch('label')
+
   useEffect(() => {
     if (labelWatch) {
       setBackground(
@@ -57,39 +60,45 @@ function KanbanActionCreateLabel({
       )
     }
   }, [labelWatch, labelOptions])
+
   const {
     handleSubmit,
     formState: { isSubmitting },
   } = methods
-  const dispatch = useDispatch()
+
   const onSubmit = async () => {
     if (!labelWatch || !background) {
-      enqueueSnackbar('You must select label', {
+      enqueueSnackbar(translate('pages.board.selectLabel'), {
         variant: 'error',
       })
       return
     }
+
     const data = {
       title: labelWatch,
       background: background,
       candidateJobId: cardId,
       laneId: laneId,
     }
+
     const isExist = labels.find(
       (item) =>
         item.background === background &&
         item.candidateJobId === data.candidateJobId &&
         item.title === data.title
     )
+
     if (isExist) {
-      enqueueSnackbar('label is exist', {
+      enqueueSnackbar(translate('pages.board.labelExist'), {
         variant: 'error',
       })
       return
     }
+    // wait for loading
     await dispatch(createLabel(data))
     setOpenMenuActions(null)
   }
+
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Box
