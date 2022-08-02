@@ -402,6 +402,10 @@ function KanbanTaskForm({
               AutocompleteProps={{
                 size: 'small',
                 defaultValue: card?.Lane?.nameColumn,
+                isOptionEqualToValue: (option, value) => {
+                  if (typeof value === 'string') return option.label === value
+                  return option.label === value.label
+                },
                 renderOption: (props, option) => (
                   <Box component='li' {...props} key={option.value}>
                     {option.label}
@@ -420,14 +424,6 @@ function KanbanTaskForm({
               disabled={!hasAddPermission}
             />
           </Box>
-          // <Box mt={2}>
-          //   <RHFBasicSelect
-          //     label={translate('pages.board.columnName')}
-          //     name='laneId'
-          //     options={listColumnName}
-          //     disabled={!hasAddPermission}
-          //   />
-          // </Box>
         )}
 
         <Box mt={2}>
@@ -435,6 +431,10 @@ function KanbanTaskForm({
             AutocompleteProps={{
               size: 'small',
               defaultValue: card?.Job.title,
+              isOptionEqualToValue: (option, value) => {
+                if (typeof value === 'string') return option.label === value
+                return option.label === value.label
+              },
               renderOption: (props, option) => (
                 <Box component='li' {...props} key={option.value}>
                   {option.label}
@@ -453,14 +453,6 @@ function KanbanTaskForm({
             disabled={!hasAddPermission}
           />
         </Box>
-        {/* <Box mt={2}>
-          <RHFBasicSelect
-            label={translate('pages.board.nameJob')}
-            name='idJob'
-            options={activeJobOptions}
-            disabled={!hasAddPermission}
-          />
-        </Box> */}
 
         <Box mt={2}>
           <Grid container spacing={1}>
