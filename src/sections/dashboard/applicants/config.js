@@ -6,4 +6,4 @@ export const APPLICANT_TABLE_ROW_HEIGHT = Math.floor(
 )
 
 export const TABLE_MOBILE_HEAD = [{ id: 'name', label: 'Name', align: 'left' }]
-export const TABLE_DESKTOP_HEAD = []
+export const TABLE_DESKTOP_HEAD = [{}]

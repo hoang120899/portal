@@ -17,8 +17,9 @@ import ApplicantsTableRow from './ApplicantsTableRow'
 import { useGetAllNewApplicantsQuery } from './applicantsSlice'
 import {
   APPLICANT_TABLE_HEIGHT,
-  DEFAULT_ROWS_PER_PAGE, // TABLE_DESKTOP_HEAD,
-  // TABLE_MOBILE_HEAD,
+  DEFAULT_ROWS_PER_PAGE,
+  TABLE_DESKTOP_HEAD,
+  TABLE_MOBILE_HEAD,
 } from './config'
 
 Applicants.propTypes = {
@@ -41,7 +42,7 @@ export default function Applicants({ title, subheader, ...other }) {
   })
   const { list: listNewApplicants = [], total: totalRecord = 0 } =
     data?.data || {}
-  // const columns = isMobileScreen ? TABLE_MOBILE_HEAD : TABLE_DESKTOP_HEAD
+  const columns = isMobileScreen ? TABLE_MOBILE_HEAD : TABLE_DESKTOP_HEAD
 
   const tableRowComp = useCallback(
     (row, index) => {
@@ -82,7 +83,7 @@ export default function Applicants({ title, subheader, ...other }) {
       <CardHeader title={title} subheader={subheader} />
 
       <BasicTable
-        columns={[]}
+        columns={isLoading || isFetching ? columns : []}
         page={page}
         rowsPerPage={rowsPerPage}
         dataSource={listNewApplicants}
@@ -90,6 +91,8 @@ export default function Applicants({ title, subheader, ...other }) {
         TableRowComp={tableRowComp}
         tableStyle={{
           height: isMobileScreen ? 'auto' : `${APPLICANT_TABLE_HEIGHT}px`,
+          overflow: 'hidden',
+          padding: '0 8px',
         }}
         heightEmptyRow={0}
       />
