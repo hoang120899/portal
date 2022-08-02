@@ -7,11 +7,10 @@ import PropTypes from 'prop-types'
 import CopyClipboard from '@/components/CopyClipboard'
 import Iconify from '@/components/Iconify'
 import { RHFTextField } from '@/components/hook-form'
+import { MAX_SIZE_FILEIMAGE } from '@/config'
 import useLocales from '@/hooks/useLocales'
 import { API_UPLOAD_LINK } from '@/routes/api'
 import { _postApi } from '@/utils/axios'
-
-import { MAXSIZE } from './config'
 
 KanbanFileUpload.propTypes = {
   label: PropTypes.string,
@@ -48,7 +47,7 @@ export default function KanbanFileUpload({
 
     const file = e.target.files[0]
 
-    if (file.size > MAXSIZE) {
+    if (file.size > MAX_SIZE_FILEIMAGE) {
       enqueueSnackbar(`${translate('pages.board.fileTooBig')}!`, {
         variant: 'info',
       })
