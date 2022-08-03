@@ -35,13 +35,13 @@ export const ACTIVITY_STATUS = {
   UPDATE_JOB: 'update_job',
 }
 
-export const TABLE_DESKTOP = [
+export const TABLE_HEAD_CANDIDATE_DESKTOP = [
   { id: 'name', label: 'NAME', align: 'left' },
   { id: 'fllower', label: 'FOLLOWER', align: 'left' },
   { id: 'actions', label: 'ACTIONS', align: 'right' },
 ]
 
-export const TABLE_MOBILE = [
+export const TABLE_HEAD_CANDIDATE_MOBILE = [
   {},
   { id: 'name', label: 'NAME', align: 'left' },
   { id: 'actions', label: 'ACTIONS', align: 'right' },

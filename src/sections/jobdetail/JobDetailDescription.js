@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import Link from 'next/link'
 
@@ -11,6 +11,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
@@ -64,11 +65,13 @@ function JobDetailDescription({
   } = job || {}
   const { name } = client || {}
 
-  const getAbout = () => {
-    let about = aboutFetch || ''
-    about += client?.about || ''
-    return about + responsibilities + requirement + niceToHave + benefit
-  }
+  const getAbout = useMemo(
+    () =>
+      `${aboutFetch || ''}${
+        client?.about || ''
+      }${responsibilities}${requirement}${niceToHave}${benefit}`,
+    [aboutFetch, client, responsibilities, requirement, niceToHave, benefit]
+  )
 
   const { data: shortLink } = useGetShortLinkQuery({
     token: token,
@@ -76,17 +79,17 @@ function JobDetailDescription({
   const { translate } = useLocales()
   const urlDownLoadPDF = () => `${DOMAIN_SERVER_API}${API_DOWNLOAD_JOB}/${id}`
 
+  const BoxContentCard = styled(CardContent)(({ isLight }) => ({
+    backgroundColor: isLight ? '#f8f8f8' : '#213142',
+    margin: '-24px -24px 0',
+    padding: '24px 24px 12px',
+    borderBottom: '1px solid #d8d8d8',
+  }))
+
   return (
     <Card sx={{ height: 'fit-content' }}>
       <CardContent>
-        <Box
-          sx={{
-            backgroundColor: isLight ? '#f8f8f8' : '#213142',
-            margin: '-24px -24px 0',
-            padding: '24px 24px 12px',
-            borderBottom: '1px solid #d8d8d8',
-          }}
-        >
+        <BoxContentCard isLight={isLight}>
           <Box
             sx={{
               display: 'flex',
@@ -189,7 +192,7 @@ function JobDetailDescription({
               <Iconify icon='bxs:time-five' /> {time}
             </Typography>
           </Box>
-        </Box>
+        </BoxContentCard>
 
         <Box
           sx={{
@@ -207,7 +210,7 @@ function JobDetailDescription({
               textAlign: 'justify',
               marginTop: '1rem',
             }}
-            dangerouslySetInnerHTML={{ __html: getAbout() }}
+            dangerouslySetInnerHTML={{ __html: getAbout }}
           />
         </Box>
       </CardContent>

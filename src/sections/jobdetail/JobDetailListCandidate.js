@@ -15,7 +15,10 @@ import useTable from '@/hooks/useTable'
 
 import CandidateModalDetail from './CandidateModalDetail'
 import ListCandidateRow from './ListCandidateRow'
-import { TABLE_DESKTOP, TABLE_MOBILE } from './config'
+import {
+  TABLE_HEAD_CANDIDATE_DESKTOP,
+  TABLE_HEAD_CANDIDATE_MOBILE,
+} from './config'
 import { useGetLaneQuery, useUpdateCandidateMutation } from './jobDetailSlice'
 
 JobDetailListCandidate.propTypes = {
@@ -80,9 +83,10 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
 
   const [updateCard] = useUpdateCandidateMutation()
 
-  const column = useMemo(() => {
-    smDown ? TABLE_MOBILE : TABLE_DESKTOP
-  }, [smDown])
+  const columns = useMemo(
+    () => (smDown ? TABLE_HEAD_CANDIDATE_MOBILE : TABLE_HEAD_CANDIDATE_DESKTOP),
+    [smDown]
+  )
 
   useEffect(() => {
     setData(listCandidate)
@@ -137,7 +141,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
 
         {data && (
           <BasicTable
-            columns={column}
+            columns={columns}
             page={page}
             rowsPerPage={rowsPerPage}
             dataSource={data?.slice(

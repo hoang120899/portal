@@ -12,8 +12,6 @@ import useSettings from '@/hooks/useSettings'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
-// sections
-// import JobNewEditForm from '@/sections/job/JobForm'
 // utils
 import { getRolesByPage } from '@/utils/role'
 

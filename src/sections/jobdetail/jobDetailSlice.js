@@ -98,14 +98,10 @@ export const getAssignUser = createAsyncThunk(
   async ({ jobId }) => {
     const url = `${API_ASSIGNMENT_JOB}/${jobId}`
     const response = await _getApi(url)
-    if (response.data?.result) {
-      const users = response.data?.result.map((user) => ({
-        ...user,
-        id: user.userId,
-      }))
-      return users
-    }
-    return []
+    return (response.data?.result || []).map((user) => ({
+      ...user,
+      id: user.userId,
+    }))
   }
 )
 export const getJobDetail = createAsyncThunk(
@@ -113,10 +109,8 @@ export const getJobDetail = createAsyncThunk(
   async ({ jobId }) => {
     const url = `${API_LIST_JOBS}/${jobId}`
     const response = await _getApi(url)
-    if (response.data.success) {
-      return response.data
-    }
-    return []
+
+    return response?.data?.success ? response.data : []
   }
 )
 export const updateJobDetail = createAsyncThunk(
@@ -141,7 +135,7 @@ export const removeAssignUser = createAsyncThunk(
         userId,
       })
       if (!response?.data?.success) {
-        throw new Error()
+        throw new Error('remove assign user failed')
       }
       return assignUser
     } catch (error) {
@@ -163,11 +157,7 @@ export const addAssignUser = createAsyncThunk(
         userId,
       })
       if (!response?.data?.success) {
-        throw new Error()
-        // return [
-        //   ...assignUser,
-        //   { ...response.data.result, id: response.data.result.userId },
-        // ]
+        throw new Error('add assign user failed')
       }
       return assignUser
     } catch (error) {
