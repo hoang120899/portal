@@ -80,6 +80,10 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
 
   const [updateCard] = useUpdateCandidateMutation()
 
+  const column = useMemo(() => {
+    smDown ? TABLE_MOBILE : TABLE_DESKTOP
+  }, [smDown])
+
   useEffect(() => {
     setData(listCandidate)
   }, [listCandidate])
@@ -118,7 +122,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
       <CardContent>
         <Box
           sx={{
-            marginBottom: '1rem',
+            marginBottom: (theme) => theme.spacing(2),
           }}
         >
           <FormProvider methods={methods}>
@@ -133,7 +137,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
 
         {data && (
           <BasicTable
-            columns={smDown ? TABLE_MOBILE : TABLE_DESKTOP}
+            columns={column}
             page={page}
             rowsPerPage={rowsPerPage}
             dataSource={data?.slice(

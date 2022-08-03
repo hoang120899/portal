@@ -30,7 +30,7 @@ import {
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 import { useDispatch, useSelector } from '@/redux/store'
-import { DETAIL_FIELD } from '@/sections/jobdetail/config'
+import { CARD_TRELLO_MODAL, DETAIL_FIELD } from '@/sections/jobdetail/config'
 
 import {
   convertDriverToBase64,
@@ -132,36 +132,49 @@ export default function CandidateModalDetail({
     data = {
       ...data,
       listAssign,
-      from: 'card_trello_modal',
+      from: CARD_TRELLO_MODAL,
       id: idCandidateJob,
     }
     await handleUpdateCandidate(data)
   }
+
   const onToggleAssignee = (checked, userId) => {
     if (checked) {
-      setListAssign(listAssign.filter((item) => item.id !== userId))
-    } else {
-      const user = assignListUser.find((item) => item.id === userId)
-      setListAssign([...listAssign, user])
+      const newListAssign = listAssign.filter((item) => item.id !== userId)
+      setListAssign(newListAssign)
+      return
     }
+    const user = assignListUser.find((item) => item.id === userId)
+    setListAssign([...listAssign, user])
   }
+
   useEffect(() => {
     if (!cv) return
     dispatch(convertDriverToBase64({ linkDrive: cv }))
   }, [cv, dispatch])
 
   useEffect(() => {
-    setValue(DETAIL_FIELD.NAME, Candidate?.name || '')
-    setValue(DETAIL_FIELD.JOB_NAME, Job?.title || '')
-    setValue(DETAIL_FIELD.LOCATION, Job?.Location?.name || '')
-    setValue(DETAIL_FIELD.CLIENT_ID, Job?.Client?.name || '')
-    setValue(DETAIL_FIELD.EMAIl, Candidate?.email || '')
-    setValue(DETAIL_FIELD.PHONE, Candidate?.phone || '')
+    const { name, email, phone } = Candidate || {}
+
+    const {
+      title,
+      Location: { name: locationName } = {},
+      Client: { name: clientName } = {},
+    } = Job || {}
+
+    const { nameColumn, id } = Lane || {}
+
+    setValue(DETAIL_FIELD.NAME, name || '')
+    setValue(DETAIL_FIELD.JOB_NAME, title || '')
+    setValue(DETAIL_FIELD.LOCATION, locationName || '')
+    setValue(DETAIL_FIELD.CLIENT_ID, clientName || '')
+    setValue(DETAIL_FIELD.EMAIl, email || '')
+    setValue(DETAIL_FIELD.PHONE, phone || '')
     setValue(DETAIL_FIELD.APPROACH_DATE, approachDate || '')
     setValue(DETAIL_FIELD.LINK_CV, cv || '')
     setValue(DETAIL_FIELD.POSITION, position || '')
-    setValue(DETAIL_FIELD.NOTE_APPROACH, Lane?.nameColumn || '')
-    setValue(DETAIL_FIELD.LANE, Lane?.id || '')
+    setValue(DETAIL_FIELD.NOTE_APPROACH, nameColumn || '')
+    setValue(DETAIL_FIELD.LANE, id || '')
     setListAssign(Users)
   }, [
     setValue,
@@ -174,6 +187,7 @@ export default function CandidateModalDetail({
     Lane,
     Users,
   ])
+
   return (
     <Drawer
       open={isOpen}
@@ -186,11 +200,10 @@ export default function CandidateModalDetail({
           variant='subtitle1'
           sx={{ fontWeight: 'bold', px: 2, mt: 2, fontSize: 18 }}
         >
-          {Candidate?.name}
-          {' - '}
-          {Job?.title}
+          {`${Candidate?.name || ''} - ${Job?.title || ''}`}
         </Typography>
         <Divider />
+
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2} sx={{ px: 2, pb: 2 }}>
             <Grid item xs={12}>
@@ -199,27 +212,29 @@ export default function CandidateModalDetail({
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.NAME}
-                  placeholder='Name'
+                  placeholder={translate('pages.jobs.name')}
                 />
               </Stack>
             </Grid>
+
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.jobs.jobName')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.JOB_NAME}
-                  placeholder='Job Name'
+                  placeholder={translate('pages.jobs.jobName')}
                 />
               </Stack>
             </Grid>
+
             <Grid item xs={12} sm={6}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.jobs.location')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.LOCATION}
-                  placeholder='Location'
+                  placeholder={translate('pages.jobs.location')}
                 />
               </Stack>
             </Grid>
@@ -230,20 +245,22 @@ export default function CandidateModalDetail({
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.CLIENT_ID}
-                  placeholder='Client Name'
+                  placeholder={translate('pages.jobs.clientName')}
                 />
               </Stack>
             </Grid>
+
             <Grid item xs={12}>
               <Stack>
                 <Typography>{translate('pages.jobs.email')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.EMAIl}
-                  placeholder='Email'
+                  placeholder={translate('pages.jobs.email')}
                 />
               </Stack>
             </Grid>
+
             <Grid item xs={12}>
               <Stack>
                 <Typography>{translate('pages.jobs.lane')}</Typography>
@@ -254,13 +271,14 @@ export default function CandidateModalDetail({
                 />
               </Stack>
             </Grid>
+
             <Grid item xs={12} sm={6}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.jobs.phone')}</Typography>
                 <RHFTextField
                   disabled={disabled}
                   name={DETAIL_FIELD.PHONE}
-                  placeholder='Phone'
+                  placeholder={translate('pages.jobs.phone')}
                 />
               </Stack>
             </Grid>
@@ -271,6 +289,7 @@ export default function CandidateModalDetail({
                 <RHFDateTimePicker name={DETAIL_FIELD.APPROACH_DATE} />
               </Stack>
             </Grid>
+
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.jobs.linkCv')}</Typography>
@@ -278,7 +297,7 @@ export default function CandidateModalDetail({
                   <RHFTextField
                     disabled={disabled}
                     name={DETAIL_FIELD.LINK_CV}
-                    placeholder='Enter link or import cv'
+                    placeholder={translate('pages.jobs.enterLinkOrImportCv')}
                   />
                   {base64 ? (
                     <Link
@@ -305,15 +324,17 @@ export default function CandidateModalDetail({
                 </Grid>
               </Stack>
             </Grid>
+
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.jobs.position')}:</Typography>
                 <RHFTextField
                   name={DETAIL_FIELD.POSITION}
-                  placeholder='Position'
+                  placeholder={translate('pages.jobs.position')}
                 />
               </Stack>
             </Grid>
+
             <Grid item xs={12}>
               <Stack spacing={1}>
                 <Typography>{translate('pages.jobs.noteApproach')}</Typography>
@@ -325,6 +346,7 @@ export default function CandidateModalDetail({
               </Stack>
             </Grid>
           </Grid>
+
           <Grid item xs={12} mt={3} mb={1}>
             <DialogActions
               sx={{
@@ -333,15 +355,7 @@ export default function CandidateModalDetail({
                 marginBottom: '1rem',
               }}
             >
-              <Box
-                sx={
-                  smDown
-                    ? {
-                        marginRight: 'auto !important',
-                      }
-                    : {}
-                }
-              >
+              <Box sx={{ ...(smDown && { marginRight: 'auto !important' }) }}>
                 <Assignee
                   onToggleAssignee={onToggleAssignee}
                   assignee={listAssign}
@@ -349,14 +363,16 @@ export default function CandidateModalDetail({
                   listContacts={assignListUser}
                 />
               </Box>
+
               <Stack
                 direction='row'
                 spacing={2}
-                sx={
-                  smDown
-                    ? { marginLeft: 'auto !important', marginTop: '16px' }
-                    : {}
-                }
+                sx={{
+                  ...(smDown && {
+                    marginLeft: 'auto !important',
+                    marginTop: '16px',
+                  }),
+                }}
               >
                 {cv && (
                   <LoadingButton
@@ -367,6 +383,7 @@ export default function CandidateModalDetail({
                     {translate('pages.jobs.rawCv')}
                   </LoadingButton>
                 )}
+
                 <LoadingButton
                   type='submit'
                   variant='contained'
@@ -374,6 +391,7 @@ export default function CandidateModalDetail({
                 >
                   {translate('common.save')}
                 </LoadingButton>
+
                 <Button variant='outlined' color='inherit' onClick={onClose}>
                   {translate('common.cancel')}
                 </Button>

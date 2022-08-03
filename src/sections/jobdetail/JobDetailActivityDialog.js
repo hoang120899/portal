@@ -10,17 +10,17 @@ import {
   DialogTitle,
   Stack,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
-import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 
 import Iconify from '@/components/Iconify'
 import Markdown from '@/components/Markdown'
 import { AMPM_DATETIME_FORMAT, DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
+import { fDate } from '@/utils/formatTime'
 
 import { ACTIVITY_STATUS } from './config'
 
@@ -37,20 +37,34 @@ export default function JobDetailActivityDialog({
 }) {
   const { translate } = useLocales()
 
-  const theme = useTheme()
-  const smDown = useMediaQuery(theme.breakpoints.down('sm'))
+  const smDown = useResponsive('down', 'sm')
 
   const activityContent = jobActivity?.map((activity) => {
     try {
+      const { content: activityContent, type } = activity || {}
       const content =
-        activity.type === ACTIVITY_STATUS.UPDATE_JOB
-          ? JSON.parse(activity?.content)
-          : activity?.content
+        type === ACTIVITY_STATUS.UPDATE_JOB
+          ? JSON.parse(activityContent)
+          : activityContent
       return { ...activity, content }
     } catch (error) {
       return { ...activity, content: '' }
     }
   })
+
+  const TypographyStyled = styled(Typography)(() => ({
+    '& .redColor': {
+      color: 'red',
+    },
+    paddingLeft: '40px',
+    display: 'block',
+    fontSize: '12px',
+    '& b:before': {
+      content: '"•"',
+      fontSize: '12px',
+      marginRight: '5px',
+    },
+  }))
 
   return (
     <Dialog fullWidth fullScreen={smDown} open={open} onClose={onClose}>
@@ -88,46 +102,32 @@ export default function JobDetailActivityDialog({
               >
                 <b>{activity.User.name}</b>&nbsp;
                 {activity.type === ACTIVITY_STATUS.UPDATE_JOB
-                  ? 'has update this job:'
+                  ? translate('pages.jobs.hasUpdateThisJob')
                   : activity.content}
               </Typography>
 
-              {typeof activity.content === 'object' &&
-                activity.content?.map((e, i) => (
-                  <Typography
-                    component='span'
-                    color='textSecondary'
-                    sx={{
-                      '& .redColor': {
-                        color: 'red',
-                      },
-                      paddingLeft: '40px',
-                      display: 'block',
-                      fontSize: '12px',
-                      '& b:before': {
-                        content: '"•"',
-                        fontSize: '12px',
-                        marginRight: '5px',
-                      },
-                    }}
-                    key={i}
-                  >
-                    <b>{`${e.path}: `}</b>
-                    <Markdown components={{}} children={e.lhs} />
-                    <span className='redColor'>
-                      {translate('pages.jobs.changeTo')}
-                    </span>
-                    &nbsp;
-                    <Markdown components={{}} children={e.rhs} />
-                  </Typography>
-                ))}
+              {[].concat(activity?.content).map((e, i) => (
+                <TypographyStyled
+                  component='span'
+                  color='textSecondary'
+                  key={i}
+                >
+                  <b>{`${e.path}: `}</b>
+                  <Markdown components={{}} children={e.lhs} />
+                  <span className='redColor'>
+                    {translate('pages.jobs.changeTo')}
+                  </span>
+                  &nbsp;
+                  <Markdown components={{}} children={e.rhs} />
+                </TypographyStyled>
+              ))}
 
               <Typography
                 variant='body2'
                 color='textSecondary'
                 sx={{ m: 0.5, fontSize: '11px' }}
               >
-                {format(new Date(activity.createdAt), AMPM_DATETIME_FORMAT)}
+                {fDate(new Date(activity.createdAt), AMPM_DATETIME_FORMAT)}
               </Typography>
             </Stack>
           </Stack>

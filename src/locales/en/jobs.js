@@ -81,5 +81,8 @@ const jobs = {
   failedToGetSkill: 'Failed to get skill!',
   failedToAddSkill: 'Failed to add skill!',
   addSkillSuccess: 'Add skill success!',
+  enterLinkOrImportCv: 'Enter link or import CV',
+  //has update this job:
+  hasUpdateThisJob: 'Has update this job',
 }
 export default jobs

@@ -17,14 +17,15 @@ import useLocales from '@/hooks/useLocales'
 
 JobDetailFollower.propTypes = {
   listFollower: PropTypes.array,
+  theme: PropTypes.object,
 }
 
-function JobDetailFollower({ listFollower }) {
+function JobDetailFollower({ listFollower, theme }) {
   return (
-    <Card sx={{ height: 'fit-content', marginTop: '1rem' }}>
+    <Card sx={{ height: 'fit-content', marginTop: theme.spacing(2) }}>
       <CardHeader title='Follower' sx={{ textAlign: 'center' }} />
-      {listFollower?.length > 0 && (
-        <CardContent sx={{ padding: '0 0 24px' }}>
+      {!!listFollower?.length && (
+        <CardContent sx={{ padding: theme.spacing(0, 0, 3) }}>
           <BasicTable
             dataSource={listFollower}
             columns={[]}

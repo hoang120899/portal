@@ -88,6 +88,12 @@ function JobDetail() {
   const smDown = useResponsive('down', 'sm')
   const theme = useTheme()
 
+  const ButtonStyle = styled(Button)(({ theme }) => ({
+    fontSize: pxToRem(12),
+    padding: theme.spacing(4, 2),
+    borderRadius: '50%',
+  }))
+
   useEffect(() => {
     dispatch(getJobDetail({ jobId }))
     dispatch(getAssignUser({ jobId }))
@@ -203,7 +209,7 @@ function JobDetail() {
               assignListUser={assignListUser?.data?.user}
             />
             {assignmentJob?.length > 0 && (
-              <JobDetailFollower listFollower={assignmentJob} />
+              <JobDetailFollower listFollower={assignmentJob} theme={theme} />
             )}
             <JobDetailNote job={job} />
           </Grid>
@@ -238,11 +244,5 @@ function JobDetail() {
     </Page>
   )
 }
-
-const ButtonStyle = styled(Button)(({ theme }) => ({
-  fontSize: pxToRem(12),
-  padding: theme.spacing(4, 2),
-  borderRadius: '50%',
-}))
 
 export default JobDetail

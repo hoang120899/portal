@@ -37,7 +37,9 @@ function JobDetailNote({ job }) {
     return null
 
   return (
-    <Card sx={{ height: 'fit-content', marginTop: '1rem' }}>
+    <Card
+      sx={{ height: 'fit-content', marginTop: (theme) => theme.spacing(2) }}
+    >
       <CardHeader
         title={translate('pages.jobs.noteFromLeader')}
         sx={{ textAlign: 'center' }}

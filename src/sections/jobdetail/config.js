@@ -46,3 +46,5 @@ export const TABLE_MOBILE = [
   { id: 'name', label: 'NAME', align: 'left' },
   { id: 'actions', label: 'ACTIONS', align: 'right' },
 ]
+
+export const CARD_TRELLO_MODAL = 'card_trello_modal'
