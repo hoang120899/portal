@@ -18,6 +18,7 @@ import PropTypes from 'prop-types'
 import Assignee from '@/components/Assignee'
 import CopyClipboard from '@/components/CopyClipboard'
 import Iconify from '@/components/Iconify'
+import Markdown from '@/components/Markdown'
 import { DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
@@ -35,30 +36,34 @@ JobDetailDescription.propTypes = {
 }
 
 const BoxContentCard = styled(CardContent)(
-  ({ ownerState: { isLight = false } = {} }) => ({
-    backgroundColor: isLight ? '#f8f8f8' : '#213142',
-    margin: '-24px -24px 0',
-    padding: '24px 24px 12px',
-    borderBottom: '1px solid #d8d8d8',
+  ({ theme, ownerState: { isLight = false } = {} }) => ({
+    backgroundColor: isLight
+      ? theme.palette.grey[100]
+      : theme.palette.grey[500_8],
+    margin: theme.spacing(-3, -3, 0),
+    padding: theme.spacing(3, 3, 1.5),
+    borderBottom: `1px solid ${theme.palette.grey[300]}`,
   })
 )
 
-const JobDesSalaryStyled = styled(Box)(() => ({
+const JobDesSalaryStyled = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'space-between',
   '& svg': {
-    marginBottom: '-2px',
+    marginBottom: theme.spacing(-0.25),
   },
-  marginBottom: (theme) => theme.spacing(1),
+  marginBottom: theme.spacing(1),
 }))
 
-const JobDesTitleStyled = styled(Box)(({ ownerState: { smDown } = {} }) => ({
-  display: 'flex',
-  flexDirection: smDown ? 'column' : 'row',
-  justifyContent: 'space-between',
-  marginBottom: '8px',
-}))
+const JobDesTitleStyled = styled(Box)(
+  ({ theme, ownerState: { smDown } = {} }) => ({
+    display: 'flex',
+    flexDirection: smDown ? 'column' : 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing(1),
+  })
+)
 
 function JobDetailDescription({
   job,
@@ -205,9 +210,12 @@ function JobDetailDescription({
           </JobDesSalaryStyled>
         </BoxContentCard>
 
-        <Box
+        <Stack
+          direction='column'
+          spacing={2}
           sx={{
             marginTop: (theme) => theme.spacing(1.5),
+            textAlign: 'justify',
           }}
         >
           <Assignee
@@ -216,14 +224,8 @@ function JobDetailDescription({
             listContacts={assignListUser?.user}
             onToggleAssignee={onToggleAssignee}
           />
-          <Box
-            sx={{
-              textAlign: 'justify',
-              marginTop: (theme) => theme.spacing(2),
-            }}
-            dangerouslySetInnerHTML={{ __html: getAbout }}
-          />
-        </Box>
+          <Markdown components={{}} children={getAbout} />
+        </Stack>
       </CardContent>
     </Card>
   )

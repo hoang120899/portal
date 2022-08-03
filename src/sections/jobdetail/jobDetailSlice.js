@@ -104,6 +104,7 @@ export const getAssignUser = createAsyncThunk(
     }))
   }
 )
+
 export const getJobDetail = createAsyncThunk(
   'jobDetail/getJobDetail',
   async ({ jobId }) => {
@@ -113,6 +114,7 @@ export const getJobDetail = createAsyncThunk(
     return response?.data?.success ? response.data : []
   }
 )
+
 export const updateJobDetail = createAsyncThunk(
   'jobDetail/updateJobDetail',
   async ({ jobId, data }) => {
@@ -124,6 +126,7 @@ export const updateJobDetail = createAsyncThunk(
     return []
   }
 )
+
 export const removeAssignUser = createAsyncThunk(
   'jobDetail/removeAssignUser',
   async ({ jobId, userId, assignUser }, { dispatch, rejectWithValue }) => {
@@ -143,6 +146,7 @@ export const removeAssignUser = createAsyncThunk(
     }
   }
 )
+
 export const addAssignUser = createAsyncThunk(
   'jobDetail/addAssignUser',
   async (
@@ -150,15 +154,17 @@ export const addAssignUser = createAsyncThunk(
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const newAssignUser = [...assignUser, assign]
-      dispatch(updateAssignUser(newAssignUser))
+      dispatch(updateAssignUser([...assignUser, assign]))
       const url = `${API_ASSIGNMENT_JOB}/${jobId}`
+
       const response = await _postApi(url, {
         userId,
       })
+
       if (!response?.data?.success) {
         throw new Error('add assign user failed')
       }
+
       return assignUser
     } catch (error) {
       return rejectWithValue(assignUser)
@@ -180,6 +186,7 @@ const initialState = {
     isLoading: false,
   },
 }
+
 export const convertDriverToBase64 = createAsyncThunk(
   'convertBase64/download',
   async ({ linkDrive }) => {

@@ -16,6 +16,7 @@ import useTable from '@/hooks/useTable'
 import CandidateModalDetail from './CandidateModalDetail'
 import ListCandidateRow from './ListCandidateRow'
 import {
+  LIST_CANDIDATE_DEFAULT_VALUE,
   TABLE_HEAD_CANDIDATE_DESKTOP,
   TABLE_HEAD_CANDIDATE_MOBILE,
 } from './config'
@@ -42,20 +43,22 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
 
   const laneSelected = useMemo(
     () =>
-      laneData?.data?.lane?.map(({ id: value, nameColumn: label }) => ({
+      (laneData?.data?.lane || []).map(({ id: value, nameColumn: label }) => ({
         value,
         label,
       })),
     [laneData]
   )
 
-  const defaultValues = {
-    status: '',
-  }
-
   const methods = useForm({
-    defaultValues,
+    defaultValues: LIST_CANDIDATE_DEFAULT_VALUE,
   })
+
+  const candidatePaging = useMemo(
+    () =>
+      data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [],
+    [data, page, rowsPerPage]
+  )
 
   const { watch } = methods
   const watchStatus = watch('status')
@@ -71,10 +74,10 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
       (item) => item.id === watchStatus
     )?.nameColumn
 
-    const rs = listCandidate.filter(
+    const response = listCandidate.filter(
       ({ nameColumn }) => columnName === nameColumn
     )
-    setData(rs)
+    setData(response)
   }, [watchStatus, listCandidate, laneData?.data?.lane])
 
   useEffect(() => {
@@ -147,10 +150,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
             columns={columns}
             page={page}
             rowsPerPage={rowsPerPage}
-            dataSource={data?.slice(
-              page * rowsPerPage,
-              page * rowsPerPage + rowsPerPage
-            )}
+            dataSource={candidatePaging}
             TableRowComp={(row, index) => (
               <ListCandidateRow
                 key={`${row?.id}-${index}`}

@@ -30,6 +30,7 @@ import {
 import useLocales from '@/hooks/useLocales'
 import useRole from '@/hooks/useRole'
 import { useDispatch, useSelector } from '@/redux/store'
+import { URL_DOWNLOAD_CV } from '@/sections/candidate/config'
 import { CARD_TRELLO_MODAL, DETAIL_FIELD } from '@/sections/jobdetail/config'
 
 import {
@@ -302,7 +303,7 @@ export default function CandidateModalDetail({
                   {base64 ? (
                     <Link
                       download={`${Candidate?.name || ''}.pdf`}
-                      href={`data:application/pdf;base64,${base64}`}
+                      href={`${URL_DOWNLOAD_CV},${base64}`}
                     >
                       <Button>
                         <Iconify
@@ -352,7 +353,7 @@ export default function CandidateModalDetail({
               sx={{
                 justifyContent: 'space-between',
                 flexDirection: smDown ? 'column' : 'row',
-                marginBottom: '1rem',
+                marginBottom: (theme) => theme.spacing(2),
               }}
             >
               <Box sx={{ ...(smDown && { marginRight: 'auto !important' }) }}>
@@ -370,7 +371,7 @@ export default function CandidateModalDetail({
                 sx={{
                   ...(smDown && {
                     marginLeft: 'auto !important',
-                    marginTop: '16px',
+                    marginTop: (theme) => theme.spacing(2),
                   }),
                 }}
               >

@@ -21,6 +21,7 @@ import { AMPM_DATETIME_FORMAT, DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 import { fDate } from '@/utils/formatTime'
+import { pxToRem } from '@/utils/getFontValue'
 
 import { ACTIVITY_STATUS } from './config'
 
@@ -29,6 +30,30 @@ JobDetailActivityDialog.propTypes = {
   onClose: PropTypes.func,
   jobActivity: PropTypes.array,
 }
+
+const TypographyChangeToStyled = styled(Typography)(({ theme }) => ({
+  '& .redColor': {
+    color: 'red',
+  },
+  paddingLeft: theme.spacing(5),
+  display: 'block',
+  fontSize: pxToRem(12),
+  '& b:before': {
+    content: '"•"',
+    fontSize: pxToRem(12),
+    marginRight: theme.spacing(0.5),
+  },
+}))
+
+const TypographyUpdateJobStyled = styled(Typography)(({ theme }) => ({
+  margin: theme.spacing(0.5),
+  fontSize: pxToRem(12),
+}))
+
+const UpdateAtTypographyStyled = styled(Typography)(({ theme }) => ({
+  margin: theme.spacing(0.5),
+  fontSize: pxToRem(11),
+}))
 
 export default function JobDetailActivityDialog({
   open,
@@ -52,27 +77,13 @@ export default function JobDetailActivityDialog({
     }
   })
 
-  const TypographyStyled = styled(Typography)(() => ({
-    '& .redColor': {
-      color: 'red',
-    },
-    paddingLeft: '40px',
-    display: 'block',
-    fontSize: '12px',
-    '& b:before': {
-      content: '"•"',
-      fontSize: '12px',
-      marginRight: '5px',
-    },
-  }))
-
   return (
     <Dialog fullWidth fullScreen={smDown} open={open} onClose={onClose}>
       <DialogTitle
         sx={{
-          borderBottom: '1px solid #e0e0e0',
-          padding: '24px',
-          '& svg': { marginBottom: '-4px' },
+          borderBottom: (theme) => `1px solid ${theme.palette.grey[300]}`,
+          padding: (theme) => theme.spacing(3),
+          '& svg': { marginBottom: (theme) => theme.spacing(-0.5) },
         }}
       >
         <Iconify icon={'bx:calendar'} width={24} height={24} />
@@ -84,7 +95,10 @@ export default function JobDetailActivityDialog({
           <Stack
             key={activity.id}
             direction='row'
-            sx={{ borderBottom: '1px solid #e0e0e0', padding: '0.5rem' }}
+            sx={{
+              borderBottom: (theme) => `1px solid ${theme.palette.grey[300]}`,
+              padding: (theme) => theme.spacing(1),
+            }}
           >
             <Avatar
               alt={activity.User.name}
@@ -93,21 +107,15 @@ export default function JobDetailActivityDialog({
             />
 
             <Stack direction='column'>
-              <Typography
-                variant='body2'
-                sx={{
-                  m: 0.5,
-                  fontSize: '12px',
-                }}
-              >
+              <TypographyUpdateJobStyled variant='body2'>
                 <b>{activity.User.name}</b>&nbsp;
                 {activity.type === ACTIVITY_STATUS.UPDATE_JOB
                   ? translate('pages.jobs.hasUpdateThisJob')
                   : activity.content}
-              </Typography>
+              </TypographyUpdateJobStyled>
 
               {[].concat(activity?.content).map((e, i) => (
-                <TypographyStyled
+                <TypographyChangeToStyled
                   component='span'
                   color='textSecondary'
                   key={i}
@@ -119,16 +127,12 @@ export default function JobDetailActivityDialog({
                   </span>
                   &nbsp;
                   <Markdown components={{}} children={e.rhs} />
-                </TypographyStyled>
+                </TypographyChangeToStyled>
               ))}
 
-              <Typography
-                variant='body2'
-                color='textSecondary'
-                sx={{ m: 0.5, fontSize: '11px' }}
-              >
+              <UpdateAtTypographyStyled variant='body2' color='textSecondary'>
                 {fDate(new Date(activity.createdAt), AMPM_DATETIME_FORMAT)}
-              </Typography>
+              </UpdateAtTypographyStyled>
             </Stack>
           </Stack>
         ))}

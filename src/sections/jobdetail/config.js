@@ -68,3 +68,7 @@ export const TABLE_HEAD_CANDIDATE_MOBILE = ({ translate }) => [
 ]
 
 export const CARD_TRELLO_MODAL = 'card_trello_modal'
+
+export const LIST_CANDIDATE_DEFAULT_VALUE = {
+  status: '',
+}

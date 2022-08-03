@@ -8,17 +8,29 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
 import BasicTable from '@/components/BasicTable'
 import CopyClipboard from '@/components/CopyClipboard'
 import useLocales from '@/hooks/useLocales'
+import { pxToRem } from '@/utils/getFontValue'
 
 JobDetailFollower.propTypes = {
   listFollower: PropTypes.array,
   theme: PropTypes.object,
 }
+
+const TableRowStyled = styled(TableRow)(({ theme }) => ({
+  '& p': {
+    fontSize: pxToRem(12),
+    color: theme.palette.grey[500],
+  },
+  '& td': {
+    paddingY: 0,
+  },
+}))
 
 function JobDetailFollower({ listFollower, theme }) {
   return (
@@ -59,17 +71,7 @@ const ListFollowerRow = ({ row }) => {
         </TableCell>
       </TableRow>
 
-      <TableRow
-        sx={{
-          '& p': {
-            fontSize: '12px',
-            color: '#B5B5C3',
-          },
-          '& td': {
-            paddingY: 0,
-          },
-        }}
-      >
+      <TableRowStyled>
         <TableCell align='left' width='40%'>
           <CopyClipboard value={urlShort} placement='bottom-start' arrow>
             <Typography variant='body1' sx={{ cursor: 'pointer' }}>
@@ -85,7 +87,7 @@ const ListFollowerRow = ({ row }) => {
         <TableCell align='left' width='25%'>
           <Typography variant='body1'>{numberCandidate}</Typography>
         </TableCell>
-      </TableRow>
+      </TableRowStyled>
     </>
   )
 }

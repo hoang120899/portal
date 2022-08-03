@@ -145,9 +145,9 @@ function JobDetail() {
 
   const handleSubmit = async (values) => {
     values.tags = values.tags.map((item) => item.value)
-    const rs = await dispatch(updateJobDetail({ jobId, data: values }))
+    const response = await dispatch(updateJobDetail({ jobId, data: values }))
 
-    if (rs?.meta?.requestStatus === 'rejected') {
+    if (response?.meta?.requestStatus === 'rejected') {
       enqueueSnackbar(translate('pages.jobs.updateJobFailed'), {
         variant: 'error',
       })

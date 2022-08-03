@@ -44,6 +44,14 @@ const ActionButtonStyle = styled(Button)(
   })
 )
 
+const FollowerRowStyle = styled(Box)(({ theme }) => ({
+  marginLeft: `${theme.spacing(2)} !important`,
+  lineHeight: 'initial',
+  '& p:not(:last-child)': {
+    marginBottom: theme.spacing(2),
+  },
+}))
+
 function ListCandidateRow({ row, handleClick, smDown }) {
   const { translate } = useLocales()
   const [isOpen, setIsOpen] = useState(false)
@@ -58,7 +66,7 @@ function ListCandidateRow({ row, handleClick, smDown }) {
       <TableRow
         hover
         sx={{
-          borderBottom: '1px solid #ebedf3',
+          borderBottom: (theme) => `1px solid ${theme.palette.grey[300]}`,
           cursor: 'pointer',
         }}
         onClick={() => handleClick(row?.id)}
@@ -102,7 +110,7 @@ function ListCandidateRow({ row, handleClick, smDown }) {
               lineHeight: 'initial',
               paddingX: 0,
               '& p:not(:last-child)': {
-                marginBottom: '16px',
+                marginBottom: (theme) => theme.spacing(2),
               },
             }}
           >
@@ -131,7 +139,7 @@ function ListCandidateRow({ row, handleClick, smDown }) {
         </TableCell>
       </TableRow>
 
-      {isOpen && smDown && follower.length > 0 && (
+      {isOpen && smDown && !!follower.length && (
         <TableRow
           sx={{
             borderRadius: 1.5,
@@ -143,21 +151,14 @@ function ListCandidateRow({ row, handleClick, smDown }) {
               <Typography fontWeight='bold' sx={{ opacity: '0.5' }}>
                 {translate('pages.jobs.followers')}:
               </Typography>
-              <Box
-                sx={{
-                  marginLeft: '16px !important',
-                  lineHeight: 'initial',
-                  '& p:not(:last-child)': {
-                    marginBottom: '16px',
-                  },
-                }}
-              >
+
+              <FollowerRowStyle>
                 {follower?.map((item, i) => (
                   <Typography variant='body2' key={`${item}-${i}`}>
                     {item}
                   </Typography>
                 ))}
-              </Box>
+              </FollowerRowStyle>
             </Stack>
           </TableCell>
         </TableRow>
