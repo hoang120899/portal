@@ -37,6 +37,7 @@ function JobDetailFollower({ listFollower }) {
     </Card>
   )
 }
+
 const ListFollowerRow = ({ row }) => {
   const { User, urlShort, totalClick, numberCandidate } = row || {}
   const { translate } = useLocales()
@@ -87,6 +88,7 @@ const ListFollowerRow = ({ row }) => {
     </>
   )
 }
+
 ListFollowerRow.propTypes = {
   row: PropTypes.object,
 }

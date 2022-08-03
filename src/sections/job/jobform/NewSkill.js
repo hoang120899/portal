@@ -6,8 +6,7 @@ import { useSnackbar } from 'notistack'
 
 import Iconify from '@/components/Iconify'
 import useLocales from '@/hooks/useLocales'
-
-import { useCreateSkillMutation } from '../jobSlice'
+import { useCreateSkillMutation } from '@/sections/job/jobSlice'
 
 function NewSkill() {
   const { translate } = useLocales()
@@ -28,9 +27,11 @@ function NewSkill() {
     try {
       await createSkill({ skill }).unwrap()
       setSkill('')
-      enqueueSnackbar('Add skill success!')
+      enqueueSnackbar(translate('pages.jobs.addSkillSuccess'))
     } catch (error) {
-      enqueueSnackbar('Failed to add skill!', { variant: 'error' })
+      enqueueSnackbar(translate('pages.jobs.failedToAddSkill'), {
+        variant: 'error',
+      })
     }
   }
 
@@ -49,6 +50,7 @@ function NewSkill() {
           <Iconify icon={'eva:plus-fill'} width={20} height={20} />
         </Button>
       </Stack>
+
       {isOpen && (
         <Stack direction='row' pt={1} spacing={2}>
           <TextField

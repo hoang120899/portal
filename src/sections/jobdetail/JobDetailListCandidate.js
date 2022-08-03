@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Box, Card, CardContent, CardHeader } from '@mui/material'
 
 import { useSnackbar } from 'notistack'
 import PropTypes from 'prop-types'
@@ -16,6 +9,8 @@ import { useForm } from 'react-hook-form'
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
 import { FormProvider, RHFBasicSelect } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
 import useTable from '@/hooks/useTable'
 
 import CandidateModalDetail from './CandidateModalDetail'
@@ -38,15 +33,15 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
     setIsOpenCandidateDetail(false)
   }
 
-  const theme = useTheme()
-  const smDown = useMediaQuery(theme.breakpoints.down('sm'))
+  const smDown = useResponsive('down', 'sm')
   const { data: laneData } = useGetLaneQuery()
+  const { translate } = useLocales()
 
   const laneSelected = useMemo(
     () =>
-      (laneData?.data?.lane || []).map((item) => ({
-        value: item.id,
-        label: item.nameColumn,
+      laneData?.data?.lane?.map(({ id: value, nameColumn: label }) => ({
+        value,
+        label,
       })),
     [laneData]
   )
@@ -68,10 +63,14 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
       setData(listCandidate)
       return
     }
+
     const columnName = laneData?.data?.lane?.find(
       (item) => item.id === watchStatus
     )?.nameColumn
-    let rs = listCandidate.filter((item) => columnName === item.nameColumn)
+
+    const rs = listCandidate.filter(
+      ({ nameColumn }) => columnName === nameColumn
+    )
     setData(rs)
   }, [watchStatus, listCandidate, laneData?.data?.lane])
 
@@ -80,6 +79,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
   }, [setPage])
 
   const [updateCard] = useUpdateCandidateMutation()
+
   useEffect(() => {
     setData(listCandidate)
   }, [listCandidate])
@@ -94,15 +94,16 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
     try {
       await updateCard({ ...data })
       setIsOpenCandidateDetail(false)
-      enqueueSnackbar('Update candidate success', {
+      enqueueSnackbar(translate('pages.jobs.updateCandidateSuccess'), {
         variant: 'success',
       })
     } catch (err) {
-      enqueueSnackbar('Update candidate fail', {
+      enqueueSnackbar(translate('pages.jobs.updateCandidateFail'), {
         variant: 'error',
       })
     }
   }
+
   return (
     <Card
       sx={{
@@ -110,7 +111,10 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
         '& .MuiTableContainer-root': { padding: 0 },
       }}
     >
-      <CardHeader title='Candidate' sx={{ textAlign: 'center' }} />
+      <CardHeader
+        title={translate('pages.jobs.candidate')}
+        sx={{ textAlign: 'center' }}
+      />
       <CardContent>
         <Box
           sx={{
@@ -120,7 +124,7 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
           <FormProvider methods={methods}>
             <RHFBasicSelect
               hasBlankOption
-              label='Select status'
+              label={translate('pages.jobs.selectStatus')}
               name='status'
               options={laneSelected}
             />

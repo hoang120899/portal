@@ -72,14 +72,20 @@ export default function CandidateModalDetail({
     [DETAIL_FIELD.LANE]: '',
   }
 
+  const { translate } = useLocales()
+
   const candidateSchema = Yup.object().shape({
-    [DETAIL_FIELD.POSITION]: Yup.string().required('Position is required'),
-    [DETAIL_FIELD.LANE]: Yup.string().required('Lane is required'),
+    [DETAIL_FIELD.POSITION]: Yup.string().required(
+      translate('pages.jobs.positionMessage')
+    ),
+    [DETAIL_FIELD.LANE]: Yup.string().required(
+      translate('pages.jobs.laneMessage')
+    ),
     [DETAIL_FIELD.APPROACH_DATE]: Yup.string().required(
-      'Approach Date is required'
+      translate('pages.jobs.approachDateMessage')
     ),
     [DETAIL_FIELD.NOTE_APPROACH]: Yup.string().required(
-      'Note Approach title is required'
+      translate('pages.jobs.noteApproachTitle')
     ),
   })
   const methods = useForm({
@@ -109,6 +115,7 @@ export default function CandidateModalDetail({
     Users,
     Lane,
   } = card || {}
+
   const base64 = useSelector((state) => state.jobs.candidateJob.base64)
   const isLoadingBase = useSelector(
     (state) => state.jobs.candidateJob.isLoading
@@ -116,10 +123,10 @@ export default function CandidateModalDetail({
   const dispatch = useDispatch()
   const [listAssign, setListAssign] = useState([])
   const [isOpenCV, setIsOpenCV] = useState(false)
+
   const onCloseCV = () => {
     setIsOpenCV(false)
   }
-  const { translate } = useLocales()
 
   const onSubmit = async (data) => {
     data = {

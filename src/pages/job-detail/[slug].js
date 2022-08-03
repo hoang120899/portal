@@ -3,14 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
 // @mui
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Box, Button, Container, Grid } from '@mui/material'
+import { styled, useTheme } from '@mui/material/styles'
 
 import { useSnackbar } from 'notistack'
 
@@ -23,6 +17,7 @@ import Page from '@/components/Page'
 import { PAGES } from '@/config'
 // hooks
 import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
 import useRole from '@/hooks/useRole'
 import useSettings from '@/hooks/useSettings'
 import useToggle from '@/hooks/useToggle'
@@ -48,6 +43,7 @@ import {
   useGetCandidateJobQuery,
   useGetJobActivityQuery,
 } from '@/sections/jobdetail/jobDetailSlice'
+import { pxToRem } from '@/utils/getFontValue'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -89,26 +85,26 @@ function JobDetail() {
   const { data: job, isLoading } = jobDetail
   const { data: assignmentJob } = assignUser
   const dispatch = useDispatch()
+  const smDown = useResponsive('down', 'sm')
   const theme = useTheme()
-  const smDown = useMediaQuery(theme.breakpoints.down('sm'))
 
   useEffect(() => {
     dispatch(getJobDetail({ jobId }))
-  }, [dispatch, jobId])
-
-  useEffect(() => {
-    dispatch(getAssignUser({ jobId: jobId }))
+    dispatch(getAssignUser({ jobId }))
   }, [dispatch, jobId])
 
   const { data: candidateJob } = useGetCandidateJobQuery({
-    jobId: jobId,
+    jobId,
     currentRole,
   })
+
   const { data: jobActivity } = useGetJobActivityQuery({
     idJob: jobId,
     currentRole,
   })
+
   const { data: assignListUser } = useGetAssignListUserQuery({ currentRole })
+
   const onToggleAssignee = async (checked, userId) => {
     if (checked) {
       dispatch(
@@ -118,20 +114,21 @@ function JobDetail() {
           assignUser: assignmentJob,
         })
       )
-    } else {
-      const assign = assignListUser?.data?.user.find(
-        (item) => item.id === userId
-      )
-      dispatch(
-        addAssignUser({
-          jobId: jobId,
-          userId: userId,
-          assignUser: assignmentJob,
-          assign: assign,
-        })
-      )
+      return
     }
+
+    const assign = assignListUser?.data?.user.find((item) => item.id === userId)
+
+    dispatch(
+      addAssignUser({
+        jobId: jobId,
+        userId: userId,
+        assignUser: assignmentJob,
+        assign: assign,
+      })
+    )
   }
+
   const {
     toggle: openDialog,
     onOpen: onOpenDialog,
@@ -143,30 +140,33 @@ function JobDetail() {
   const handleSubmit = async (values) => {
     values.tags = values.tags.map((item) => item.value)
     const rs = await dispatch(updateJobDetail({ jobId, data: values }))
+
     if (rs?.meta?.requestStatus === 'rejected') {
-      enqueueSnackbar('Update job failed', { variant: 'error' })
+      enqueueSnackbar(translate('pages.jobs.updateJobFailed'), {
+        variant: 'error',
+      })
       return
     }
     await dispatch(getJobDetail({ jobId }))
 
     handleCloseJobForm()
-    enqueueSnackbar('Update job success', { variant: 'success' })
+    enqueueSnackbar(translate('pages.jobs.updateJobSuccess'), {
+      variant: 'success',
+    })
   }
 
-  if (isLoading) {
-    return <LoadingScreen />
-  }
-  if (!job && !isLoading) {
-    return <Page404 />
-  }
+  if (isLoading) return <LoadingScreen />
+
+  if (!job) return <Page404 />
+
   return (
     <Page title={translate('nav.jobDetail')}>
       <Container
         maxWidth={themeStretch ? false : 'xl'}
-        sx={smDown ? { padding: 0 } : {}}
+        sx={{ ...(smDown && { padding: 0 }) }}
       >
         <HeaderBreadcrumbs
-          heading={''}
+          heading=''
           links={[
             {
               name: translate('nav.dashboard'),
@@ -177,13 +177,14 @@ function JobDetail() {
               href: PATH_DASHBOARD.jobs.root,
             },
             {
-              name: translate('Job Detail'),
+              name: translate('nav.jobDetail'),
             },
           ]}
           sx={{
-            paddingX: '16px',
+            px: theme.spacing(2),
           }}
         />
+
         <Grid container spacing={2} mb={8}>
           <Grid item xs={12} md={7}>
             <JobDetailDescription
@@ -195,6 +196,7 @@ function JobDetail() {
               hasPermission={hasPermission}
             />
           </Grid>
+
           <Grid item xs={12} md={5}>
             <JobDetailListCandidate
               listCandidate={candidateJob?.data?.list}
@@ -206,23 +208,27 @@ function JobDetail() {
             <JobDetailNote job={job} />
           </Grid>
         </Grid>
-        <Box sx={{ position: 'fixed', right: '40px', bottom: '40px' }}>
-          <Button
-            size='large'
-            variant='contained'
-            sx={{ fontSize: 12, padding: '32px 16px', borderRadius: '50%' }}
-            onClick={onOpenDialog}
-          >
+
+        <Box
+          sx={{
+            position: 'fixed',
+            right: theme.spacing(5),
+            bottom: theme.spacing(5),
+          }}
+        >
+          <ButtonStyle size='large' variant='contained' onClick={onOpenDialog}>
             <Iconify icon={'bx:calendar'} width={24} height={24} />
-          </Button>
+          </ButtonStyle>
         </Box>
+
         <JobModal
           isOpen={isOpen}
-          isEdit={true}
+          isEdit
           onClose={handleCloseJobForm}
           job={job}
           onSubmit={handleSubmit}
         />
+
         <JobDetailActivityDialog
           open={openDialog}
           onClose={onCloseDialog}
@@ -232,5 +238,11 @@ function JobDetail() {
     </Page>
   )
 }
+
+const ButtonStyle = styled(Button)(({ theme }) => ({
+  fontSize: pxToRem(12),
+  padding: theme.spacing(4, 2),
+  borderRadius: '50%',
+}))
 
 export default JobDetail

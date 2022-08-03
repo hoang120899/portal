@@ -11,8 +11,8 @@ import {
   Stack,
   TextareaAutosize,
   Typography,
-  useTheme,
 } from '@mui/material'
+import { styled, useTheme } from '@mui/material/styles'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useSnackbar } from 'notistack'
@@ -34,6 +34,14 @@ import { useDebounce } from '@/hooks/useDebounce'
 import useIsMountedRef from '@/hooks/useIsMountedRef'
 import useLocales from '@/hooks/useLocales'
 import {
+  JOB_ACTIVE_STATUS,
+  JOB_EDITOR_DEFAULT_TEXT,
+  JOB_FORM_STICKY_BAR_COLOR,
+  JOB_FORM_STICKY_BAR_TEXT,
+  JOB_STATUS_OPTIONS,
+  JOB_TYPE_OPTIONS,
+} from '@/sections/job/config'
+import {
   useCreateJobMutation,
   useGetListClientQuery,
   useGetListLocationQuery,
@@ -41,14 +49,8 @@ import {
   useSearchSkillMutation,
 } from '@/sections/job/jobSlice'
 import palette from '@/theme/palette'
+import { pxToRem } from '@/utils/getFontValue'
 
-import {
-  JOB_ACTIVE_STATUS,
-  JOB_EDITOR_DEFAULT_TEXT,
-  JOB_FORM_STICKY_BAR_COLOR,
-  JOB_STATUS_OPTIONS,
-  JOB_TYPE_OPTIONS,
-} from '../config'
 import NewSkill from './NewSkill'
 
 JobForm.propTypes = {
@@ -77,9 +79,11 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
       .required(translate('pages.jobs.meteJobMessage')),
     clientId: Yup.string().required(translate('pages.jobs.clientMessage')),
   })
+
   const defaultValues = useMemo(() => {
     const primaryMainColor = theme.palette.primary.main
     const defaultJobEditorConfig = JOB_EDITOR_DEFAULT_TEXT(primaryMainColor)
+
     const {
       externalRecruiter = false,
       title = '',
@@ -106,6 +110,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
       niceToHave = defaultJobEditorConfig.niceToHave,
       benefit = defaultJobEditorConfig.benefit,
     } = job || {}
+
     const { id: clientId = '' } = client || {}
 
     return {
@@ -160,31 +165,31 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
   const { data: clientData } = useGetListClientQuery()
   const { data: tagData } = useGetListTagsQuery()
 
-  const locationOptions = useMemo(() => {
-    if (!locationData) return []
+  const [widthRef, setWidthRef] = useState(ref?.current?.clientWidth)
+  const isMountedRef = useIsMountedRef()
 
-    const { data: { location = [] } = {} } = locationData
-    return location.map(({ id, name }) => ({
+  const locationOptions = useMemo(() => {
+    const { data: { location = [] } = {} } = locationData || {}
+
+    return location?.map(({ id, name }) => ({
       value: id,
       label: name,
     }))
   }, [locationData])
 
   const clientOptions = useMemo(() => {
-    if (!clientData) return []
+    const { data: { clients = [] } = {} } = clientData || {}
 
-    const { data: { clients = [] } = {} } = clientData
-    return clients.map(({ id, name }) => ({
+    return clients?.map(({ id, name }) => ({
       value: id,
       label: name,
     }))
   }, [clientData])
 
   const tagOptions = useMemo(() => {
-    if (!tagData) return []
+    const { data: { tags = [] } = {} } = tagData || {}
 
-    const { data: { tags = [] } = {} } = tagData
-    return tags.map(({ id, title }) => ({
+    return tags?.map(({ id, title }) => ({
       value: id,
       label: title,
     }))
@@ -194,21 +199,23 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
     async function getSkill(data) {
       try {
         const response = await searchSkill(data).unwrap()
-        const skillList = response.map(({ id, name }) => ({
+        const skillList = (response || []).map(({ id, name }) => ({
           value: id,
           label: name,
         }))
+
+        if (!isMountedRef.current) return
         setSkillOptions(skillList)
       } catch (error) {
-        enqueueSnackbar('Failed to get skill!', { variant: 'error' })
+        enqueueSnackbar(translate('pages.jobs.failedToGetSkill'), {
+          variant: 'error',
+        })
       }
     }
-    if (skillKeyword) {
-      getSkill({ skill: skillKeyword })
-    }
-  }, [skillKeyword, searchSkill, enqueueSnackbar])
-  const [widthRef, setWidthRef] = useState(ref?.current?.clientWidth)
-  const isMountedRef = useIsMountedRef()
+
+    if (!skillKeyword) return
+    getSkill({ skill: skillKeyword })
+  }, [skillKeyword, searchSkill, enqueueSnackbar, translate, isMountedRef])
 
   useEffect(() => {
     const handleClientWidthRef = () => {
@@ -220,41 +227,55 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
 
     if (typeof window === 'undefined') return
     window.addEventListener('resize', handleClientWidthRef)
+
     return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', handleClientWidthRef)
-      }
+      if (typeof window === 'undefined') return
+      window.removeEventListener('resize', handleClientWidthRef)
     }
   }, [isMountedRef])
 
   const onSubmit = async (data) => {
-    const reqData = { ...data }
+    const { skillRequired = [], skillNotRequired = [], ...rest } = data || {}
+    const { type, clientId, locationId } = rest || {}
+
     const location = locationData.data.location.find(
-      (item) => item.id === data.locationId
+      (item) => item.id === locationId
     )
-    const content = `${location.descLocation}<p><span style="color: rgb(136, 136, 136);">${data.type}</span></p>`
-    reqData.clientId = Number(data.clientId)
-    reqData.content = content
-    reqData.skill = [...data.skillRequired, ...data.skillNotRequired]
-    delete reqData.skillRequired
-    delete reqData.skillNotRequired
+    const { descLocation = '' } = location || {}
+    const queries = {
+      ...rest,
+      content: `${descLocation}${JOB_FORM_STICKY_BAR_TEXT(type)}`,
+      clientId: parseInt(clientId, 10),
+      skill: [...skillRequired, ...skillNotRequired],
+    }
+
     if (isEdit) {
-      await onEditSubmit(reqData)
+      await onEditSubmit(queries)
       return
     }
+
     try {
-      delete reqData.externalRecruiter
-      delete reqData.tags
-      delete reqData.description
-      await createJob(reqData).unwrap()
-      enqueueSnackbar('Create job success!')
+      delete queries.externalRecruiter
+      delete queries.tags
+      delete queries.description
+
+      await createJob(queries).unwrap()
+      enqueueSnackbar(translate('pages.jobs.createJobSuccess'))
       onClose()
       reset()
     } catch (error) {
-      enqueueSnackbar('Fail to create!', { variant: 'error' })
+      enqueueSnackbar(translate('pages.jobs.createJobFailed'), {
+        variant: 'error',
+      })
     }
   }
   const ref = useRef(null)
+
+  const TypographyStyled = styled(Typography)(({ theme }) => ({
+    fontSize: pxToRem(14),
+    color: palette.light.grey[600],
+    marginRight: theme.spacing(1),
+  }))
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -273,18 +294,17 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
               ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.COLOR
               : JOB_FORM_STICKY_BAR_COLOR.DARK.COLOR
           }`,
-          paddingRight: '24px',
+          pr: theme.spacing(3),
           boxShadow: `0 1px ${isScrolled ? '8px' : '1px'} 0px ${
             isLight
               ? JOB_FORM_STICKY_BAR_COLOR.LIGHT.SHADOW
               : JOB_FORM_STICKY_BAR_COLOR.DARK.SHADOW
           }`,
-          height: '60px',
+          height: theme.spacing(8),
         }}
       >
         <Box
           sx={{
-            height: '56px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -296,12 +316,13 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
           <Typography
             component='h6'
             variant='h6'
-            sx={{ padding: '16px 24px 16px' }}
+            sx={{ p: theme.spacing(2, 3, 2) }}
           >
             {isEdit
               ? translate('pages.jobs.editJob')
               : translate('pages.jobs.addJob')}
           </Typography>
+
           <Stack direction='row' spacing={2}>
             <LoadingButton
               type='submit'
@@ -310,17 +331,20 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
             >
               {isEdit ? 'Save' : 'Create'}
             </LoadingButton>
+
             <Button variant='outlined' color='inherit' onClick={onClose}>
               {translate('pages.jobs.cancel')}
             </Button>
           </Stack>
         </Box>
       </Box>
-      <Box pl={3} pr={3} pb={3} marginTop='60px' ref={ref}>
+
+      <Box pl={3} pr={3} pb={3} mt={theme.spacing(8)} ref={ref}>
         <Box>
           <Typography sx={{ fontWeight: 'bold' }} pt={2}>
             {translate('pages.jobs.jobInfo')}:
           </Typography>
+
           <Box pt={2}>
             <RHFTextField
               name='title'
@@ -333,6 +357,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
               name='salary'
               label={translate('pages.jobs.salary')}
             />
+
             <RHFBasicSelect
               name='locationId'
               label={translate('pages.jobs.location')}
@@ -342,6 +367,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
 
           <Stack direction='row' pt={2} spacing={2}>
             <RHFTextField name='time' label={translate('pages.jobs.time')} />
+
             <RHFBasicSelect
               name='type'
               label={translate('pages.jobs.chooseType')}
@@ -365,25 +391,23 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
             <>
               <Stack direction='row' pt={2} spacing={2} alignItems='center'>
                 <Stack direction='row' width='100%' alignItems='center'>
-                  <Typography
-                    sx={{
-                      fontSize: '0.875rem',
-                      color: palette.light.grey[600],
-                      marginRight: '8px',
-                    }}
-                  >
+                  <TypographyStyled>
                     {translate('pages.jobs.allowShare')}
-                  </Typography>
+                  </TypographyStyled>
+
                   <RHFSwitch
                     name='externalRecruiter'
                     onChange={(e) => e.target.checked}
                   />
                 </Stack>
+
                 <RHFAutocomplete
                   AutocompleteProps={{
                     multiple: true,
                     defaultValue: job?.tags,
                     size: 'small',
+                    isOptionEqualToValue: (option, value) =>
+                      option.value === value.value,
                     renderTags: (value, getTagProps) =>
                       value.map(({ label, id }, index) => (
                         <Chip
@@ -401,19 +425,16 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                   options={tagOptions}
                 />
               </Stack>
-              <Stack
-                pt={2}
-                sx={{
-                  '& .ql-toolbar.ql-snow': {
-                    display: 'none',
-                  },
-                }}
-              >
-                <RHFEditor name='description' initialValue='Description' />
-              </Stack>
+
+              <RHFEditor
+                name='description'
+                initialValue='Description'
+                sx={{ mt: 2 }}
+              />
             </>
           )}
         </Box>
+
         <Stack spacing={2} py={2}>
           <Typography sx={{ fontWeight: 'bold' }}>
             {translate('pages.jobs.noteFromLeader')}:
@@ -551,11 +572,16 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                 AutocompleteProps={{
                   multiple: true,
                   size: 'small',
+
+                  isOptionEqualToValue: (option, value) =>
+                    option.value === value.value,
+
                   renderOption: (props, option) => (
                     <Box component='li' {...props} key={option.value}>
                       {option.label}
                     </Box>
                   ),
+
                   renderTags: (value, getTagProps) =>
                     value.map(({ name, label, id }, index) => (
                       <Chip
@@ -567,14 +593,18 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                         sx={{ color: 'white' }}
                       />
                     )),
+
                   onChange: (field) => (event, newValue) => {
-                    const newSkillValue = newValue.map((skill) => ({
-                      isRequired: true,
-                      id: skill.value,
-                      label: skill.label,
-                    }))
+                    const newSkillValue = newValue.map(
+                      ({ value: id, label }) => ({
+                        isRequired: true,
+                        id,
+                        label,
+                      })
+                    )
                     field.onChange(newSkillValue)
                   },
+
                   onInputChange: (e, newInputValue) => {
                     setKeySkillSearch(newInputValue)
                   },
@@ -594,11 +624,16 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                 AutocompleteProps={{
                   multiple: true,
                   size: 'small',
+
+                  isOptionEqualToValue: (option, value) =>
+                    option.value === value.value,
+
                   renderOption: (props, option) => (
                     <Box component='li' {...props} key={option.value}>
                       {option.label}
                     </Box>
                   ),
+
                   renderTags: (value, getTagProps) =>
                     value.map(({ name, label, id }, index) => (
                       <Chip
@@ -610,6 +645,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                         sx={{ color: 'white' }}
                       />
                     )),
+
                   onChange: (field) => (event, newValue) => {
                     const newSkillValue = newValue.map((skill) => ({
                       isRequired: false,
@@ -618,6 +654,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                     }))
                     field.onChange(newSkillValue)
                   },
+
                   onInputChange: (e, newInputValue) => {
                     setKeySkillSearch(newInputValue)
                   },
@@ -628,7 +665,9 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
             </Grid>
           </Grid>
         </Stack>
+
         <Divider />
+
         <Grid container spacing={2}>
           <Grid item xs={12} sm={3} />
           <Grid item xs={12} sm={9} pb={2}>

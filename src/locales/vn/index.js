@@ -49,6 +49,17 @@ const vn = {
     login,
     jobs,
   },
+  common: {
+    add: 'Add',
+    edit: 'Edit',
+    delete: 'Delete',
+    save: 'Save',
+    cancel: 'Cancel',
+    close: 'Close',
+    back: 'Back',
+    next: 'Next',
+    search: 'Search',
+  },
 }
 
 export default vn

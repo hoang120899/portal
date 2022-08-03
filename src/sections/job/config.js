@@ -75,3 +75,6 @@ export const JOB_FORM_STICKY_BAR_COLOR = {
 }
 
 export const REPLACE_LABEL_TYPE = (type) => type.replace(/ /g, '-')
+
+export const JOB_FORM_STICKY_BAR_TEXT = (title) =>
+  `<h1 style="font-size: 16px;"><span style="color: #FCCC4B;">${title}</span></h1>`

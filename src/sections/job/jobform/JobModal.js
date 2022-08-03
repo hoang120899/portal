@@ -20,11 +20,7 @@ function JobModal({ isOpen, isEdit, onClose, job, onSubmit }) {
   const [isScrolled, setIsScrolled] = useState(false)
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop <= 10) {
-      setIsScrolled(false)
-    } else {
-      setIsScrolled(true)
-    }
+    setIsScrolled(e.target.scrollTop > 10)
   }
 
   return (

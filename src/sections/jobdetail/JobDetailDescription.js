@@ -9,7 +9,6 @@ import {
   CardContent,
   Stack,
   Typography,
-  useMediaQuery,
   useTheme,
 } from '@mui/material'
 
@@ -20,6 +19,7 @@ import CopyClipboard from '@/components/CopyClipboard'
 import Iconify from '@/components/Iconify'
 import { DOMAIN_SERVER_API } from '@/config'
 import useLocales from '@/hooks/useLocales'
+import useResponsive from '@/hooks/useResponsive'
 import { API_DOWNLOAD_JOB } from '@/routes/api'
 
 import { useGetShortLinkQuery } from './jobDetailSlice'
@@ -42,10 +42,12 @@ function JobDetailDescription({
   hasPermission,
 }) {
   const theme = useTheme()
+
   const isLight = theme.palette.mode === 'light'
-  const mdDown = useMediaQuery(theme.breakpoints.down('md'))
-  const smUp = useMediaQuery(theme.breakpoints.up('sm'))
-  const smDown = useMediaQuery(theme.breakpoints.down('sm'))
+  const mdDown = useResponsive('down', 'md')
+  const smUp = useResponsive('up', 'sm')
+  const smDown = useResponsive('down', 'sm')
+
   const {
     location,
     salary,

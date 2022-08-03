@@ -13,6 +13,7 @@ import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 
 import { FormProvider, RHFTextField } from '@/components/hook-form'
+import useLocales from '@/hooks/useLocales'
 
 JobDetailNote.propTypes = {
   job: PropTypes.object,
@@ -20,6 +21,8 @@ JobDetailNote.propTypes = {
 
 function JobDetailNote({ job }) {
   const { note, keyword, descJob, interviewProcess, extraBenefit } = job || {}
+  const { translate } = useLocales()
+
   const methods = useForm({
     defaultValues: {
       note,
@@ -35,15 +38,24 @@ function JobDetailNote({ job }) {
 
   return (
     <Card sx={{ height: 'fit-content', marginTop: '1rem' }}>
-      <CardHeader title='Note from leader' sx={{ textAlign: 'center' }} />
+      <CardHeader
+        title={translate('pages.jobs.noteFromLeader')}
+        sx={{ textAlign: 'center' }}
+      />
       <CardContent>
         <FormProvider methods={methods}>
           <Stack spacing={2}>
-            <NoteItem name='note' title='Note' />
-            <NoteItem name='keyword' title='Key word' />
-            <NoteItem name='descJob' title='Desc job' />
-            <NoteItem name='interviewProcess' title='Interview process' />
-            <NoteItem name='extraBenefit' title='Extra benefit' />
+            <NoteItem name='note' title={translate('pages.jobs.note')} />
+            <NoteItem name='keyword' title={translate('pages.jobs.keyword')} />
+            <NoteItem name='descJob' title={translate('pages.jobs.descJob')} />
+            <NoteItem
+              name='interviewProcess'
+              title={translate('pages.jobs.interviewProcess')}
+            />
+            <NoteItem
+              name='extraBenefit'
+              title={translate('pages.jobs.extraBenefit')}
+            />
           </Stack>
         </FormProvider>
       </CardContent>
@@ -67,6 +79,7 @@ const NoteItem = ({ name = '', title }) => (
     />
   </Stack>
 )
+
 NoteItem.propTypes = {
   name: PropTypes.string,
   title: PropTypes.string,
