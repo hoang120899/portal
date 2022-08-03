@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
+import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
@@ -31,6 +32,7 @@ export default function Applicants({ title, subheader, ...other }) {
   const { page, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } =
     useTable({ defaultRowsPerPage: DEFAULT_ROWS_PER_PAGE })
 
+  const { translate } = useLocales()
   const { currentRole } = useRole()
   const isMobileScreen = useResponsive('down', 'sm')
   const [isOpen, setIsOpen] = useState(false)
@@ -45,9 +47,10 @@ export default function Applicants({ title, subheader, ...other }) {
     data?.data || {}
 
   const columns = useMemo(() => {
-    if (isLoading || isFetching || isMobileScreen) return TABLE_MOBILE_HEAD
+    if (isLoading || isFetching || isMobileScreen)
+      return TABLE_MOBILE_HEAD({ translate })
     return TABLE_DESKTOP_HEAD
-  }, [isMobileScreen, isLoading, isFetching])
+  }, [isMobileScreen, isLoading, isFetching, translate])
 
   const tableRowComp = useCallback(
     (row, index) => {

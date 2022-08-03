@@ -33,6 +33,7 @@ export default function PerformanceDetails({ list = [] }) {
                   {`${total} ${translate('CV')}`}
                 </Typography>
               </Box>
+
               <Stack>
                 {memberTeam.map(
                   ({ linkAvatar = '', name = '', totalCv = 0 }, index) => (
@@ -46,6 +47,7 @@ export default function PerformanceDetails({ list = [] }) {
                         src={`${DOMAIN_SERVER_API}/${linkAvatar}`}
                         sx={{ width: 48, height: 48 }}
                       />
+
                       <Box>
                         <Typography
                           variant='subtitle2'
@@ -55,6 +57,7 @@ export default function PerformanceDetails({ list = [] }) {
                           {name}
                         </Typography>
                       </Box>
+
                       <Box
                         sx={{
                           flexGrow: 1,

@@ -94,6 +94,7 @@ export default function RecruitmentProgressTableRow({ row }) {
           </TimelineItem>
         </Box>
       </TableCell>
+
       <TableCell align='left' sx={{ py: '2px', width: '45%' }}>
         <ColorPreview component='span'>
           <TimelineDot sx={{ bgcolor: `${background}` }} />

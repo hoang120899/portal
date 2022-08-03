@@ -83,7 +83,7 @@ export default function ApplicantsCollapsibleTableRow({
                 <TableBody>
                   <TableRow sx={{ verticalAlign: 'top' }}>
                     <TableCell sx={{ width: '30%' }}>
-                      {translate('Applied for')}
+                      {translate('pages.dashboard.applicants.applyFor')}
                     </TableCell>
 
                     <TableCell sx={{ width: 644 }}>
@@ -92,15 +92,23 @@ export default function ApplicantsCollapsibleTableRow({
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>{translate('Date')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.applicants.date')}
+                    </TableCell>
                     <TableCell>{fDate(createdAt)}</TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>{translate('Detail')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.applicants.viewDetail')}
+                    </TableCell>
 
                     <TableCell>
-                      <Tooltip title='Detail'>
+                      <Tooltip
+                        title={translate(
+                          'pages.dashboard.applicants.viewDetail'
+                        )}
+                      >
                         <IconButtonAnimate
                           sx={{
                             border: (theme) =>
