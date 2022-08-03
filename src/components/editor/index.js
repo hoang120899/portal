@@ -30,31 +30,38 @@ const ReactQuill = dynamic(() => import('react-quill'), {
   ),
 })
 
-const RootStyle = styled(Box)(({ theme }) => ({
-  overflow: 'hidden',
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  border: `solid 1px ${theme.palette.grey[500_32]}`,
-  '& .ql-container.ql-snow': {
-    borderColor: 'transparent',
-    ...theme.typography.body1,
-    fontFamily: theme.typography.fontFamily,
-  },
-  '& .ql-editor': {
-    minHeight: 200,
-    maxHeight: 640,
-    '&.ql-blank::before': {
-      fontStyle: 'normal',
-      color: theme.palette.text.disabled,
+const RootStyle = styled(Box)(
+  ({ theme, ownerState: { invisibleToolbar = false } = {} }) => ({
+    overflow: 'hidden',
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    border: `solid 1px ${theme.palette.grey[500_32]}`,
+    '& .ql-container.ql-snow': {
+      borderColor: 'transparent',
+      ...theme.typography.body1,
+      fontFamily: theme.typography.fontFamily,
     },
-    '& pre.ql-syntax': {
-      ...theme.typography.body2,
-      padding: theme.spacing(2),
-      borderRadius: theme.shape.borderRadius,
-      backgroundColor: theme.palette.grey[900],
+    '& .ql-editor': {
+      minHeight: 200,
+      maxHeight: 640,
+      '&.ql-blank::before': {
+        fontStyle: 'normal',
+        color: theme.palette.text.disabled,
+      },
+      '& pre.ql-syntax': {
+        ...theme.typography.body2,
+        padding: theme.spacing(2),
+        borderRadius: theme.shape.borderRadius,
+        backgroundColor: theme.palette.grey[900],
+      },
     },
-  },
-}))
+    ...(invisibleToolbar && {
+      '& .ql-toolbar.ql-snow': {
+        display: 'none',
+      },
+    }),
+  })
+)
 
 Editor.propTypes = {
   id: PropTypes.string.isRequired,
@@ -92,10 +99,14 @@ export default function Editor({
       matchVisual: false,
     },
   }
+  const ownerState = {
+    invisibleToolbar,
+  }
 
   return (
     <div>
       <RootStyle
+        ownerState={ownerState}
         sx={{
           ...(error && {
             border: (theme) => `solid 1px ${theme.palette.error.main}`,
@@ -103,11 +114,7 @@ export default function Editor({
           ...sx,
         }}
       >
-        <EditorToolbar
-          id={id}
-          isSimple={simple}
-          invisibleToolbar={invisibleToolbar}
-        />
+        <EditorToolbar id={id} isSimple={simple} />
         <ReactQuill
           value={value}
           onChange={onChange}

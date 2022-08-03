@@ -40,16 +40,9 @@ export const formats = [
 EditorToolbar.propTypes = {
   id: PropTypes.string.isRequired,
   isSimple: PropTypes.bool,
-  invisibleToolbar: PropTypes.bool,
 }
 
-export default function EditorToolbar({
-  id,
-  isSimple,
-  invisibleToolbar,
-  ...other
-}) {
-  if (invisibleToolbar) return
+export default function EditorToolbar({ id, isSimple, ...other }) {
   return (
     <EditorToolbarStyle {...other}>
       <div id={id}>
