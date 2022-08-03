@@ -34,6 +34,32 @@ JobDetailDescription.propTypes = {
   hasPermission: PropTypes.bool,
 }
 
+const BoxContentCard = styled(CardContent)(
+  ({ ownerState: { isLight = false } = {} }) => ({
+    backgroundColor: isLight ? '#f8f8f8' : '#213142',
+    margin: '-24px -24px 0',
+    padding: '24px 24px 12px',
+    borderBottom: '1px solid #d8d8d8',
+  })
+)
+
+const JobDesSalaryStyled = styled(Box)(() => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  '& svg': {
+    marginBottom: '-2px',
+  },
+  marginBottom: (theme) => theme.spacing(1),
+}))
+
+const JobDesTitleStyled = styled(Box)(({ ownerState: { smDown } = {} }) => ({
+  display: 'flex',
+  flexDirection: smDown ? 'column' : 'row',
+  justifyContent: 'space-between',
+  marginBottom: '8px',
+}))
+
 function JobDetailDescription({
   job,
   assignmentJob,
@@ -79,25 +105,16 @@ function JobDetailDescription({
   const { translate } = useLocales()
   const urlDownLoadPDF = () => `${DOMAIN_SERVER_API}${API_DOWNLOAD_JOB}/${id}`
 
-  const BoxContentCard = styled(CardContent)(({ isLight }) => ({
-    backgroundColor: isLight ? '#f8f8f8' : '#213142',
-    margin: '-24px -24px 0',
-    padding: '24px 24px 12px',
-    borderBottom: '1px solid #d8d8d8',
-  }))
+  const flexDirection = useMemo(
+    () => (mdDown && smUp ? 'row' : 'column-reverse'),
+    [mdDown, smUp]
+  )
 
   return (
     <Card sx={{ height: 'fit-content' }}>
       <CardContent>
-        <BoxContentCard isLight={isLight}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: smDown ? 'column' : 'row',
-              justifyContent: 'space-between',
-              marginBottom: '8px',
-            }}
-          >
+        <BoxContentCard ownerState={{ isLight }}>
+          <JobDesTitleStyled ownerState={{ smDown }}>
             <Box
               sx={{
                 display: 'flex',
@@ -105,6 +122,7 @@ function JobDetailDescription({
               }}
             >
               <Typography variant='h5'>{title}</Typography>
+
               <Typography
                 variant='body1'
                 sx={{
@@ -118,7 +136,7 @@ function JobDetailDescription({
             <Box
               sx={{
                 display: 'flex',
-                flexDirection: mdDown && smUp ? 'row' : 'column-reverse',
+                flexDirection: flexDirection,
               }}
             >
               <CopyClipboard
@@ -131,8 +149,8 @@ function JobDetailDescription({
                   color='#1BC5BD'
                   sx={{
                     cursor: 'pointer',
-                    marginRight: '4px',
-                    marginTop: '8px',
+                    marginRight: (theme) => theme.spacing(0.5),
+                    marginTop: (theme) => theme.spacing(1),
                   }}
                 >
                   {shortLink?.data?.url}
@@ -145,7 +163,10 @@ function JobDetailDescription({
                     color='primary'
                     variant='contained'
                     onClick={handleOpenJobForm}
-                    sx={{ height: 'fit-content', marginRight: '4px' }}
+                    sx={{
+                      height: 'fit-content',
+                      marginRight: (theme) => theme.spacing(0.5),
+                    }}
                   >
                     {translate('common.edit')}
                   </Button>
@@ -166,19 +187,9 @@ function JobDetailDescription({
                 </Button>
               </Stack>
             </Box>
-          </Box>
+          </JobDesTitleStyled>
 
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              '& svg': {
-                marginBottom: '-2px',
-              },
-              marginBottom: '8px',
-            }}
-          >
+          <JobDesSalaryStyled>
             <Typography variant='body1' color='#ffa800'>
               <Iconify icon='carbon:currency-dollar' />
               {salary}
@@ -191,12 +202,12 @@ function JobDetailDescription({
             <Typography variant='body1' color='#3699ff'>
               <Iconify icon='bxs:time-five' /> {time}
             </Typography>
-          </Box>
+          </JobDesSalaryStyled>
         </BoxContentCard>
 
         <Box
           sx={{
-            marginTop: '12px',
+            marginTop: (theme) => theme.spacing(1.5),
           }}
         >
           <Assignee
@@ -208,7 +219,7 @@ function JobDetailDescription({
           <Box
             sx={{
               textAlign: 'justify',
-              marginTop: '1rem',
+              marginTop: (theme) => theme.spacing(2),
             }}
             dangerouslySetInnerHTML={{ __html: getAbout }}
           />

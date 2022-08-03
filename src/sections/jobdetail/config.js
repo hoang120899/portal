@@ -35,16 +35,36 @@ export const ACTIVITY_STATUS = {
   UPDATE_JOB: 'update_job',
 }
 
-export const TABLE_HEAD_CANDIDATE_DESKTOP = [
-  { id: 'name', label: 'NAME', align: 'left' },
-  { id: 'fllower', label: 'FOLLOWER', align: 'left' },
-  { id: 'actions', label: 'ACTIONS', align: 'right' },
+export const TABLE_HEAD_CANDIDATE_DESKTOP = ({ translate }) => [
+  {
+    id: 'name',
+    label: (translate('pages.jobs.name') + '').toUpperCase(),
+    align: 'left',
+  },
+  {
+    id: 'fllower',
+    label: (translate('pages.jobs.followers') + '').toUpperCase(),
+    align: 'left',
+  },
+  {
+    id: 'actions',
+    label: (translate('pages.jobs.actions') + '').toUpperCase(),
+    align: 'right',
+  },
 ]
 
-export const TABLE_HEAD_CANDIDATE_MOBILE = [
+export const TABLE_HEAD_CANDIDATE_MOBILE = ({ translate }) => [
   {},
-  { id: 'name', label: 'NAME', align: 'left' },
-  { id: 'actions', label: 'ACTIONS', align: 'right' },
+  {
+    id: 'name',
+    label: (translate('pages.jobs.name') + '').toUpperCase(),
+    align: 'left',
+  },
+  {
+    id: 'actions',
+    label: (translate('pages.jobs.actions') + '').toUpperCase(),
+    align: 'right',
+  },
 ]
 
 export const CARD_TRELLO_MODAL = 'card_trello_modal'

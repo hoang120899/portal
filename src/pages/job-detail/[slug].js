@@ -43,8 +43,8 @@ import {
   useGetCandidateJobQuery,
   useGetJobActivityQuery,
 } from '@/sections/jobdetail/jobDetailSlice'
-import { pxToRem } from '@/utils/getFontValue'
 // utils
+import { pxToRem } from '@/utils/getFontValue'
 import { getRolesByPage } from '@/utils/role'
 
 JobDetail.getLayout = function getLayout({ roles = [] }, page) {
@@ -58,6 +58,12 @@ export async function getServerSideProps() {
     },
   }
 }
+
+const ButtonStyle = styled(Button)(({ theme }) => ({
+  fontSize: pxToRem(12),
+  padding: theme.spacing(4, 2),
+  borderRadius: '50%',
+}))
 
 function JobDetail() {
   const { themeStretch } = useSettings()
@@ -87,12 +93,6 @@ function JobDetail() {
   const dispatch = useDispatch()
   const smDown = useResponsive('down', 'sm')
   const theme = useTheme()
-
-  const ButtonStyle = styled(Button)(({ theme }) => ({
-    fontSize: pxToRem(12),
-    padding: theme.spacing(4, 2),
-    borderRadius: '50%',
-  }))
 
   useEffect(() => {
     dispatch(getJobDetail({ jobId }))
@@ -153,6 +153,7 @@ function JobDetail() {
       })
       return
     }
+
     await dispatch(getJobDetail({ jobId }))
 
     handleCloseJobForm()
@@ -208,9 +209,11 @@ function JobDetail() {
               listCandidate={candidateJob?.data?.list}
               assignListUser={assignListUser?.data?.user}
             />
+
             {assignmentJob?.length > 0 && (
               <JobDetailFollower listFollower={assignmentJob} theme={theme} />
             )}
+
             <JobDetailNote job={job} />
           </Grid>
         </Grid>

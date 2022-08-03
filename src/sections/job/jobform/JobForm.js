@@ -61,6 +61,12 @@ JobForm.propTypes = {
   isScrolled: PropTypes.bool,
 }
 
+const TypographyStyled = styled(Typography)(({ theme }) => ({
+  fontSize: pxToRem(14),
+  color: palette.light.grey[600],
+  marginRight: theme.spacing(1),
+}))
+
 function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
   const theme = useTheme()
   const { translate } = useLocales()
@@ -171,7 +177,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
   const locationOptions = useMemo(() => {
     const { data: { location = [] } = {} } = locationData || {}
 
-    return location?.map(({ id, name }) => ({
+    return (location || []).map(({ id, name }) => ({
       value: id,
       label: name,
     }))
@@ -180,7 +186,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
   const clientOptions = useMemo(() => {
     const { data: { clients = [] } = {} } = clientData || {}
 
-    return clients?.map(({ id, name }) => ({
+    return (clients || []).map(({ id, name }) => ({
       value: id,
       label: name,
     }))
@@ -189,7 +195,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
   const tagOptions = useMemo(() => {
     const { data: { tags = [] } = {} } = tagData || {}
 
-    return tags?.map(({ id, title }) => ({
+    return (tags || []).map(({ id, title }) => ({
       value: id,
       label: title,
     }))
@@ -238,7 +244,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
     const { skillRequired = [], skillNotRequired = [], ...rest } = data || {}
     const { type, clientId, locationId } = rest || {}
 
-    const location = locationData.data.location.find(
+    const location = locationData?.data?.location?.find(
       (item) => item.id === locationId
     )
     const { descLocation = '' } = location || {}
@@ -270,12 +276,6 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
     }
   }
   const ref = useRef(null)
-
-  const TypographyStyled = styled(Typography)(({ theme }) => ({
-    fontSize: pxToRem(14),
-    color: palette.light.grey[600],
-    marginRight: theme.spacing(1),
-  }))
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -431,6 +431,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                 name='description'
                 initialValue='Description'
                 sx={{ mt: 2 }}
+                invisibleToolbar
               />
             </>
           )}
@@ -573,16 +574,13 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                 AutocompleteProps={{
                   multiple: true,
                   size: 'small',
-
                   isOptionEqualToValue: (option, value) =>
                     option.value === value.value,
-
                   renderOption: (props, option) => (
                     <Box component='li' {...props} key={option.value}>
                       {option.label}
                     </Box>
                   ),
-
                   renderTags: (value, getTagProps) =>
                     value.map(({ name, label, id }, index) => (
                       <Chip
@@ -594,7 +592,6 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                         sx={{ color: 'white' }}
                       />
                     )),
-
                   onChange: (field) => (event, newValue) => {
                     const newSkillValue = newValue.map(
                       ({ value: id, label }) => ({
@@ -605,7 +602,6 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                     )
                     field.onChange(newSkillValue)
                   },
-
                   onInputChange: (e, newInputValue) => {
                     setKeySkillSearch(newInputValue)
                   },
@@ -625,16 +621,13 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                 AutocompleteProps={{
                   multiple: true,
                   size: 'small',
-
                   isOptionEqualToValue: (option, value) =>
                     option.value === value.value,
-
                   renderOption: (props, option) => (
                     <Box component='li' {...props} key={option.value}>
                       {option.label}
                     </Box>
                   ),
-
                   renderTags: (value, getTagProps) =>
                     value.map(({ name, label, id }, index) => (
                       <Chip
@@ -646,7 +639,6 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                         sx={{ color: 'white' }}
                       />
                     )),
-
                   onChange: (field) => (event, newValue) => {
                     const newSkillValue = newValue.map((skill) => ({
                       isRequired: false,
@@ -655,7 +647,6 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
                     }))
                     field.onChange(newSkillValue)
                   },
-
                   onInputChange: (e, newInputValue) => {
                     setKeySkillSearch(newInputValue)
                   },

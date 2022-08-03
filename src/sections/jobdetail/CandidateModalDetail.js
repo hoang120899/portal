@@ -301,7 +301,7 @@ export default function CandidateModalDetail({
                   />
                   {base64 ? (
                     <Link
-                      download={`${Candidate?.name ? Candidate?.name : ''}.pdf`}
+                      download={`${Candidate?.name || ''}.pdf`}
                       href={`data:application/pdf;base64,${base64}`}
                     >
                       <Button>

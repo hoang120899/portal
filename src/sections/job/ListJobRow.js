@@ -47,7 +47,7 @@ const styledFontsize = {
 function ListJobRow({ row, handleEditClient }) {
   const { translate } = useLocales()
   const { Client, jobStatus, title, salary, type, time, id } = row
-  const { name } = Client || { name: '' }
+  const { name = '' } = Client || {}
 
   const editClient = () => {
     handleEditClient(Client)

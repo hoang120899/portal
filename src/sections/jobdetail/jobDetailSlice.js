@@ -118,7 +118,7 @@ export const updateJobDetail = createAsyncThunk(
   async ({ jobId, data }) => {
     const url = `${API_LIST_JOBS}/${jobId}`
     const response = await _patchApi(url, data)
-    if (response.data.success) {
+    if (response?.data?.success) {
       return response.data
     }
     return []

@@ -84,8 +84,11 @@ function JobDetailListCandidate({ listCandidate, assignListUser }) {
   const [updateCard] = useUpdateCandidateMutation()
 
   const columns = useMemo(
-    () => (smDown ? TABLE_HEAD_CANDIDATE_MOBILE : TABLE_HEAD_CANDIDATE_DESKTOP),
-    [smDown]
+    () =>
+      smDown
+        ? TABLE_HEAD_CANDIDATE_MOBILE({ translate })
+        : TABLE_HEAD_CANDIDATE_DESKTOP({ translate }),
+    [smDown, translate]
   )
 
   useEffect(() => {
