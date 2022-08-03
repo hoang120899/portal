@@ -63,6 +63,7 @@ Editor.propTypes = {
   error: PropTypes.bool,
   helperText: PropTypes.node,
   simple: PropTypes.bool,
+  invisibleToolbar: PropTypes.bool,
   sx: PropTypes.object,
 }
 
@@ -72,6 +73,7 @@ export default function Editor({
   value,
   onChange,
   simple = false,
+  invisibleToolbar = false,
   helperText,
   sx,
   ...other
@@ -101,7 +103,11 @@ export default function Editor({
           ...sx,
         }}
       >
-        <EditorToolbar id={id} isSimple={simple} />
+        <EditorToolbar
+          id={id}
+          isSimple={simple}
+          invisibleToolbar={invisibleToolbar}
+        />
         <ReactQuill
           value={value}
           onChange={onChange}
