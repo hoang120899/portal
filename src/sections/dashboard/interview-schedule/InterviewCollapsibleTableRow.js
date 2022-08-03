@@ -98,27 +98,40 @@ export default function InterviewCollapsibleTableRow({
               <Table size='small' aria-label='purchases'>
                 <TableBody>
                   <TableRow>
-                    <TableCell>{translate('Link zoom')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.interviewSchedule.linkZoom')}
+                    </TableCell>
                     <TableCell>{linkZoom}</TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>{translate('Location')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.interviewSchedule.location')}
+                    </TableCell>
                     <TableCell>{locationName}</TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>{translate('Time start')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.interviewSchedule.timeStart')}
+                    </TableCell>
                     <TableCell>{timeInterviewStr}</TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>{translate('Time end')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.interviewSchedule.timeEnd')}
+                    </TableCell>
                     <TableCell>{timeInterviewEndStr}</TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell>{translate('View detail')}</TableCell>
+                    <TableCell>
+                      {translate(
+                        'pages.dashboard.interviewSchedule.viewDetail'
+                      )}
+                    </TableCell>
+
                     <TableCell>
                       <IconButtonAnimate onClick={handleOpenInterviewDetail}>
                         <Iconify

@@ -53,7 +53,7 @@ export default function ApplicantsTableRow({ row, handleOpenDetail }) {
                 minWidth: '73px',
               }}
             >
-              {translate('Applied for')}
+              {translate('pages.dashboard.applicants.applyFor')}
             </Typography>
 
             <TextMaxLine

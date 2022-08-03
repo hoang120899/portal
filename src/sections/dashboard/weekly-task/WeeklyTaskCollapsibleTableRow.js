@@ -43,7 +43,6 @@ function WeeklyTaskCollapsibleTableRow({ row, handleGetDetail }) {
     },
     buttonDetail: {
       p: 1,
-      ml: 0.5,
       border: (theme) => `dashed 1px ${theme.palette.divider}`,
       transition: 'all 0.15s',
       '&:hover': {
@@ -77,6 +76,7 @@ function WeeklyTaskCollapsibleTableRow({ row, handleGetDetail }) {
               }
             />
           </IconButton>
+
           <Typography
             variant='subtitle2'
             sx={{ cursor: 'pointer', fontWeight: 'bold' }}
@@ -85,6 +85,7 @@ function WeeklyTaskCollapsibleTableRow({ row, handleGetDetail }) {
           </Typography>
         </TableCell>
       </TableRow>
+
       <TableRow>
         <TableCell sx={{ pl: '16px !important' }}>
           <Collapse in={isOpenDropdown} timeout='auto' unmountOnExit>
@@ -99,19 +100,27 @@ function WeeklyTaskCollapsibleTableRow({ row, handleGetDetail }) {
               <Table size='small'>
                 <TableBody>
                   <TableRow sx={{ verticalAlign: 'top' }}>
-                    <TableCell>{translate('Team')}</TableCell>
-                    <TableCell sx={{ width: 644 }}>
+                    <TableCell>
+                      {translate('pages.dashboard.weeklyTask.team')}
+                    </TableCell>
+                    <TableCell>
                       <Typography variant='subtitle2'>
                         {user?.nameTeam}
                       </Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow>
-                    <TableCell>{translate('Time')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.weeklyTask.time')}
+                    </TableCell>
                     <TableCell>{`${startDate} - ${endDate}`}</TableCell>
                   </TableRow>
+
                   <TableRow>
-                    <TableCell>{translate('Content')}</TableCell>
+                    <TableCell>
+                      {translate('pages.dashboard.weeklyTask.content')}
+                    </TableCell>
                     <TableCell>
                       <Typography
                         variant='body2'
@@ -124,10 +133,17 @@ function WeeklyTaskCollapsibleTableRow({ row, handleGetDetail }) {
                       </Typography>
                     </TableCell>
                   </TableRow>
+
                   <TableRow>
-                    <TableCell>{translate('Detail')}</TableCell>
                     <TableCell>
-                      <Tooltip title='Detail'>
+                      {translate('pages.dashboard.weeklyTask.viewDetail')}
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip
+                        title={translate(
+                          'pages.dashboard.weeklyTask.viewDetail'
+                        )}
+                      >
                         <IconButtonAnimate
                           sx={styles.buttonDetail}
                           onClick={() => handleGetDetail(row)}

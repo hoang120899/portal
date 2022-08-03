@@ -54,6 +54,7 @@ export default function RecruitementProgressDetail({ item }) {
           </TimelineContentStyle>
         </TimelineItem>
       </Box>
+
       <ColorPreview component='span'>
         <TimelineDot color='primary' />
         <Typography variant='subtitle2' sx={{ mt: '6px', ml: '4px' }}>

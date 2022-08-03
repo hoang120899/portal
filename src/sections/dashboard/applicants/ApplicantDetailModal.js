@@ -80,7 +80,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
               <Stack direction='column'>
                 <Box sx={{ mb: 2, mt: 1 }}>
                   <Typography>
-                    {translate('Name')}
+                    {translate('pages.dashboard.applicants.name')}
                     <AsteriskStyle> *</AsteriskStyle>
                   </Typography>
                   <RHFTextField name='candidateName' disabled />
@@ -88,7 +88,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
 
                 <Box sx={{ mb: 2 }}>
                   <Typography>
-                    {translate('Name job')}
+                    {translate('pages.dashboard.applicants.nameJob')}
                     <AsteriskStyle> *</AsteriskStyle>
                   </Typography>
                   <RHFTextField name='jobTitle' disabled />
@@ -101,21 +101,23 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                 >
                   <Box sx={{ width: '100%', mb: 1 }}>
                     <Typography>
-                      {translate('Location')}
+                      {translate('pages.dashboard.applicants.location')}
                       <AsteriskStyle> *</AsteriskStyle>
                     </Typography>
                     <RHFTextField name='locationName' disabled />
                   </Box>
 
                   <Box sx={{ width: '100%', mb: 1 }}>
-                    <Typography>{translate('Client Name')}</Typography>
+                    <Typography>
+                      {translate('pages.dashboard.applicants.clientName')}
+                    </Typography>
                     <RHFTextField name='clientName' disabled />
                   </Box>
                 </Stack>
 
                 <Box sx={{ mb: 2 }}>
                   <Typography>
-                    {translate('Email')}
+                    {translate('pages.dashboard.applicants.email')}
                     <AsteriskStyle> *</AsteriskStyle>
                   </Typography>
                   <RHFTextField name='email' disabled />
@@ -128,7 +130,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                 >
                   <Box sx={{ width: '100%', mb: 1 }}>
                     <Typography>
-                      {translate('Phone')}
+                      {translate('pages.dashboard.applicants.phone')}
                       <AsteriskStyle> *</AsteriskStyle>
                     </Typography>
                     <RHFTextField name='phone' disabled />
@@ -136,7 +138,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
 
                   <Box sx={{ width: '100%', mb: 1 }}>
                     <Typography>
-                      {translate('Approach Date')}
+                      {translate('pages.dashboard.applicants.approachDate')}
                       <AsteriskStyle> *</AsteriskStyle>
                     </Typography>
                     <RHFDatePicker
@@ -148,7 +150,9 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
 
                 <Stack spacing={2} direction='row' sx={{ width: '100%' }}>
                   <Box sx={{ width: '95%', mb: 2 }}>
-                    <Typography>{translate('Link CV')}</Typography>
+                    <Typography>
+                      {translate('pages.dashboard.applicants.linkCv')}
+                    </Typography>
                     <RHFTextField name='linkCV' disabled />
                   </Box>
 
@@ -171,12 +175,16 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                 </Stack>
 
                 <Box sx={{ width: '100%', mb: 2 }}>
-                  <Typography>{translate('Position')}</Typography>
+                  <Typography>
+                    {translate('pages.dashboard.applicants.position')}
+                  </Typography>
                   <RHFTextField name='position' disabled />
                 </Box>
 
                 <Box sx={{ width: '100%', mb: 2 }}>
-                  <Typography>{translate('Note Approach')}</Typography>
+                  <Typography>
+                    {translate('pages.dashboard.applicants.noteApproach')}
+                  </Typography>
                   <RHFTextField
                     name='noteApproach'
                     multiline
@@ -200,7 +208,7 @@ export default function ApplicantDetailModal({ isOpen, onClose, row }) {
                   },
                 }}
               >
-                {translate('Cancel')}
+                {translate('pages.dashboard.applicants.cancel')}
               </Button>
             </Box>
           </FormProvider>
