@@ -17,6 +17,7 @@ export const listJobSlice = apiSlice.injectEndpoints({
         url: `${API_MEMBER_ACTIVITIES_USER_INFO}/${userId}`,
         method: 'GET',
       }),
+      keepUnusedDataFor: 0,
     }),
   }),
 })

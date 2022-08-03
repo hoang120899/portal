@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 
 // mui
 import {
@@ -70,12 +70,9 @@ export default function WeeklyTaskModal({
   setIsReloading = {},
   isReloading = false,
 }) {
-  const { startDate, endDate, content: taskContents = [] } = task
+  const { startDate, endDate } = task
   const { currentRole } = useRole()
   const isEditScreen = HANDLE_TYPE.EDIT === handleType
-  const [contentTask, setContentTask] = useState(
-    isEditScreen ? taskContents : [].concat(defaultContentTask)
-  )
   const { enqueueSnackbar } = useSnackbar()
   const { translate } = useLocales()
   const theme = useTheme()
@@ -134,7 +131,7 @@ export default function WeeklyTaskModal({
   })
 
   const { handleSubmit, reset, control, watch, setValue } = methods
-  const { remove } = useFieldArray({
+  const { remove, append, fields } = useFieldArray({
     control,
     name: 'content',
   })
@@ -163,7 +160,6 @@ export default function WeeklyTaskModal({
           body: data,
         }
 
-        setContentTask(data?.content)
         await updateWeeklyTask(payload)
 
         enqueueSnackbar(translate('Update task success!'))
@@ -178,7 +174,6 @@ export default function WeeklyTaskModal({
         body: data,
       }
 
-      setContentTask(data?.content)
       await createWeeklyTask(payload)
 
       enqueueSnackbar(translate('Create task success!'))
@@ -190,21 +185,21 @@ export default function WeeklyTaskModal({
   }
 
   const handleAddContentTask = () => {
-    setContentTask([...contentTask, defaultContentTask])
+    append(defaultContentTask)
   }
 
   const handleRemoveContentTask = (index) => {
-    if (contentTask.length <= 1) return
+    if (fields.length <= 1) return
 
-    const newContentTask = [...contentTask]
-
+    const newContentTask = [...contentField]
     newContentTask.splice(index, 1)
-    setContentTask([...newContentTask])
+
     remove(index)
+
     reset({
       ...task,
-      startDate: fDateCalendar(startDate),
-      endDate: fDateCalendar(endDate),
+      startDate: startDate ? fDateCalendar(startDate) : startDateFormat,
+      endDate: endDate ? fDateCalendar(endDate) : endDateFormat,
       content: [...newContentTask],
     })
   }
@@ -331,7 +326,7 @@ export default function WeeklyTaskModal({
                       <Typography />
                     </Grid>
 
-                    {contentTask.map((_, index) => (
+                    {fields.map((_, index) => (
                       <React.Fragment key={index}>
                         <Grid item xs={4.5}>
                           <RHFTextField name={`content.${index}.content`} />
