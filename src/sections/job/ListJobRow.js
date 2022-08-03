@@ -100,7 +100,7 @@ function ListJobRow({ row, handleEditClient }) {
           <IconButtonAnimate sx={{ padding: '8px 9px 3px' }}>
             <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
               <LinkRootStyle>
-                <TextMaxLine asLink line={1}>
+                <TextMaxLine asLink>
                   <Iconify icon={'eva:eye-fill'} width={20} height={20} />
                 </TextMaxLine>
               </LinkRootStyle>

@@ -397,7 +397,6 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
 
                   <RHFSwitch
                     name='externalRecruiter'
-                    checked
                     onChange={(e) => e.target.checked}
                   />
                 </Stack>

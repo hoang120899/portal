@@ -12,3 +12,10 @@ export const HANDLE_TYPE = {
   EDIT: 'edit',
   ADD: 'add',
 }
+
+export const DEFAULT_CLIENT_DATA = {
+  name: '',
+  website: '',
+  background: '#1890FF',
+  about: '',
+}

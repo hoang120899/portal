@@ -2,14 +2,7 @@ import React, { Fragment, memo, useState } from 'react'
 
 import Link from 'next/link'
 
-import {
-  IconButton,
-  Stack,
-  TableCell,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { IconButton, Stack, TableCell, TableRow, Tooltip } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
@@ -42,13 +35,23 @@ const TypographyRootStyle = styled('div')(() => ({
   },
 }))
 
+const fontSizeStyled = {
+  fontSize: pxToRem(14),
+}
+
+const styledLabel = {
+  marginBottom: (theme) => theme.spacing(2),
+  fontSize: pxToRem(14),
+}
+
+const TextMaxLineRootStyle = styled(TextMaxLine)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  fontSize: pxToRem(14),
+}))
+
 ListJobRowMobile.propTypes = {
   row: PropTypes.object,
   handleEditClient: PropTypes.func,
-}
-
-const fontSizeStyled = {
-  fontSize: pxToRem(12),
 }
 
 function ListJobRowMobile({ row, handleEditClient }) {
@@ -56,7 +59,7 @@ function ListJobRowMobile({ row, handleEditClient }) {
   const [isOpen, setIsOpen] = useState(true)
 
   const { Client, jobStatus, title, salary, type, time, id } = row
-  const { name } = Client || { name: '' }
+  const { name = '' } = Client || {}
 
   const handleToggleDropdown = () => {
     setIsOpen((prevState) => !prevState)
@@ -89,9 +92,9 @@ function ListJobRowMobile({ row, handleEditClient }) {
           <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
             <LinkRootStyle>
               <TextMaxLine
-                sx={{ fontWeight: 'bold', ...fontSizeStyled }}
-                asLink
                 line={1}
+                asLink
+                sx={{ fontWeight: 'bold', ...fontSizeStyled }}
               >
                 {title}
               </TextMaxLine>
@@ -101,7 +104,7 @@ function ListJobRowMobile({ row, handleEditClient }) {
 
         <TableCell width='35%'>
           <TypographyRootStyle>
-            <TextMaxLine sx={fontSizeStyled} line={1} onClick={editClient}>
+            <TextMaxLine line={1} onClick={editClient} sx={fontSizeStyled}>
               {name}
             </TextMaxLine>
           </TypographyRootStyle>
@@ -120,50 +123,44 @@ function ListJobRowMobile({ row, handleEditClient }) {
 
             <TableCell>
               <Stack>
-                <TextMaxLine line={1} mb={2} sx={fontSizeStyled}>
-                  {time}
-                </TextMaxLine>
-                <TextMaxLine line={1} mb={2} sx={fontSizeStyled}>
-                  {salary}
-                </TextMaxLine>
-                <Typography sx={fontSizeStyled}>
+                <TextMaxLineRootStyle line={1}>{time}</TextMaxLineRootStyle>
+                <TextMaxLineRootStyle line={1}>{salary}</TextMaxLineRootStyle>
+                <TextMaxLineRootStyle>
                   {translate('pages.jobs.actions')}
-                </Typography>
+                </TextMaxLineRootStyle>
               </Stack>
             </TableCell>
 
             <TableCell>
-              <Stack sx={fontSizeStyled} alignItems='flex-start'>
-                <Label
-                  color='info'
-                  variant='filled'
-                  sx={{ marginBottom: '16px' }}
-                >
+              <Stack alignItems='flex-start'>
+                <Label color='info' variant='filled' sx={styledLabel}>
                   {REPLACE_LABEL_TYPE(type)}
                 </Label>
 
                 <CustomLabel
-                  mb={2}
-                  sx={{ color: JOB_STATUS_COLORS[jobStatus.toLowerCase()] }}
+                  sx={{
+                    ...styledLabel,
+                    color: JOB_STATUS_COLORS[jobStatus.toLowerCase()],
+                  }}
                 >
                   {jobStatus}
                 </CustomLabel>
 
-                <Tooltip title={translate('pages.jobs.viewDetail')}>
-                  <IconButtonAnimate sx={{ padding: '8px 10px 4px' }}>
-                    <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
-                      <LinkRootStyle>
-                        <TextMaxLine asLink line={1}>
+                <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
+                  <LinkRootStyle>
+                    <TextMaxLineRootStyle asLink>
+                      <Tooltip title={translate('pages.jobs.viewDetail')}>
+                        <IconButtonAnimate>
                           <Iconify
                             icon={'eva:eye-fill'}
                             width={16}
                             height={16}
                           />
-                        </TextMaxLine>
-                      </LinkRootStyle>
-                    </Link>
-                  </IconButtonAnimate>
-                </Tooltip>
+                        </IconButtonAnimate>
+                      </Tooltip>
+                    </TextMaxLineRootStyle>
+                  </LinkRootStyle>
+                </Link>
               </Stack>
             </TableCell>
           </TableRow>

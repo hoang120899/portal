@@ -72,10 +72,12 @@ export default function Jobs() {
             </Button>
           }
         />
-        {hasPermission && <ListJobTable />}
 
         {hasPermission && (
-          <JobModal isOpen={isOpen} onClose={handleCloseJobForm} />
+          <>
+            <ListJobTable />
+            <JobModal isOpen={isOpen} onClose={handleCloseJobForm} />
+          </>
         )}
       </Container>
     </Page>

@@ -10,6 +10,8 @@ import * as Yup from 'yup'
 import { FormProvider, RHFEditor, RHFTextField } from '@/components/hook-form'
 import useLocales from '@/hooks/useLocales'
 
+import { DEFAULT_CLIENT_DATA } from './list/config'
+
 ClientForm.propTypes = {
   client: PropTypes.object,
   disabled: PropTypes.bool,
@@ -30,19 +32,14 @@ export default function ClientForm({
   const { translate } = useLocales()
   const { enqueueSnackbar } = useSnackbar()
 
+  const { id: clientId, name, website, background, about } = client
   const {
-    id: clientId,
-    name,
-    website,
-    background,
-    about,
-  } = client || {
-    id: '',
-    name: '',
-    website: '',
-    background: '#1890FF',
-    about: '',
-  }
+    name: defaultName,
+    website: defaultWebsite,
+    background: defaultBackground,
+    about: defaultAbout,
+  } = DEFAULT_CLIENT_DATA
+
   const ClientFormSchema = Yup.object().shape({
     name: Yup.string().max(5000).required('Name is required'),
     about: Yup.string().max(5000).required('About is required'),
@@ -51,10 +48,10 @@ export default function ClientForm({
   const methods = useForm({
     resolver: yupResolver(ClientFormSchema),
     defaultValues: {
-      name,
-      website,
-      background,
-      about,
+      name: name || defaultName,
+      website: website || defaultWebsite,
+      background: background || defaultBackground,
+      about: about || defaultAbout,
     },
   })
   const {
