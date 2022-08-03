@@ -114,7 +114,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
     const { id: clientId = '' } = client || {}
 
     return {
-      externalRecruiter,
+      externalRecruiter: externalRecruiter || false,
       title,
       salary,
       locationId,
@@ -126,7 +126,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
       keyword,
       note,
       descJob,
-      description,
+      description: description || '',
       interviewProcess,
       extraBenefit,
       jobStatus,
@@ -397,6 +397,7 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
 
                   <RHFSwitch
                     name='externalRecruiter'
+                    checked
                     onChange={(e) => e.target.checked}
                   />
                 </Stack>

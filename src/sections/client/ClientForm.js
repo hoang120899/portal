@@ -32,11 +32,17 @@ export default function ClientForm({
 
   const {
     id: clientId,
-    name = '',
-    website = '',
-    background = '#1890FF',
-    about = '',
-  } = client || {}
+    name,
+    website,
+    background,
+    about,
+  } = client || {
+    id: '',
+    name: '',
+    website: '',
+    background: '#1890FF',
+    about: '',
+  }
   const ClientFormSchema = Yup.object().shape({
     name: Yup.string().max(5000).required('Name is required'),
     about: Yup.string().max(5000).required('About is required'),

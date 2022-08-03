@@ -49,6 +49,10 @@ function ListJobRow({ row, handleEditClient }) {
   const { Client, jobStatus, title, salary, type, time, id } = row
   const { name } = Client || { name: '' }
 
+  const editClient = () => {
+    handleEditClient(Client)
+  }
+
   return (
     <TableRow hover>
       <TableCell align='left' width='20%'>
@@ -63,11 +67,7 @@ function ListJobRow({ row, handleEditClient }) {
 
       <TableCell align='left' width='15%'>
         <TypographyRootStyle>
-          <TextMaxLine
-            sx={styledFontsize}
-            line={1}
-            onClick={handleEditClient.bind(null, Client)}
-          >
+          <TextMaxLine sx={styledFontsize} line={1} onClick={editClient}>
             {name}
           </TextMaxLine>
         </TypographyRootStyle>

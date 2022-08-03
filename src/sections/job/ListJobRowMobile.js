@@ -62,6 +62,10 @@ function ListJobRowMobile({ row, handleEditClient }) {
     setIsOpen((prevState) => !prevState)
   }
 
+  const editClient = () => {
+    handleEditClient(Client)
+  }
+
   return (
     <Fragment>
       <TableRow>
@@ -97,11 +101,7 @@ function ListJobRowMobile({ row, handleEditClient }) {
 
         <TableCell width='35%'>
           <TypographyRootStyle>
-            <TextMaxLine
-              sx={fontSizeStyled}
-              line={1}
-              onClick={handleEditClient.bind(null, Client)}
-            >
+            <TextMaxLine sx={fontSizeStyled} line={1} onClick={editClient}>
               {name}
             </TextMaxLine>
           </TypographyRootStyle>
