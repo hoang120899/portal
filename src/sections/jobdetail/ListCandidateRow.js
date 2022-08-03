@@ -9,11 +9,13 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
 import Iconify from '@/components/Iconify'
 import useLocales from '@/hooks/useLocales'
+import { pxToRem } from '@/utils/getFontValue'
 
 ListCandidateRow.propTypes = {
   row: PropTypes.object,
@@ -21,14 +23,35 @@ ListCandidateRow.propTypes = {
   smDown: PropTypes.bool,
 }
 
+const ActionButtonStyle = styled(Button)(
+  ({ ownerState: { colorColumn = '' } = {} }) => ({
+    width: '80px',
+    fontSize: pxToRem(11),
+    boxShadow: 'none',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    display: 'inline-block',
+    ...(colorColumn && {
+      background: colorColumn,
+      '&:hover': {
+        backgroundColor: colorColumn,
+      },
+    }),
+    ...(!colorColumn && {
+      paddingX: 0,
+    }),
+  })
+)
+
 function ListCandidateRow({ row, handleClick, smDown }) {
-  const { name, follower, nameColumn, colorColumn } = row || {}
+  const { translate } = useLocales()
   const [isOpen, setIsOpen] = useState(false)
+  const { name, follower, nameColumn, colorColumn } = row || {}
 
   const handleToggleDropdown = () => {
     setIsOpen((prevState) => !prevState)
   }
-  const { translate } = useLocales()
 
   return (
     <>
@@ -60,6 +83,7 @@ function ListCandidateRow({ row, handleClick, smDown }) {
             </IconButton>
           </TableCell>
         )}
+
         <TableCell
           align='left'
           width='50%'
@@ -69,6 +93,7 @@ function ListCandidateRow({ row, handleClick, smDown }) {
         >
           {name}
         </TableCell>
+
         {!smDown && (
           <TableCell
             align='left'
@@ -88,46 +113,24 @@ function ListCandidateRow({ row, handleClick, smDown }) {
             ))}
           </TableCell>
         )}
+
         <TableCell align='right' width='30%'>
           {nameColumn ? (
-            <Button
+            <ActionButtonStyle
               size='small'
               variant='contained'
-              sx={{
-                width: '80px',
-                fontSize: '11px',
-                background: colorColumn,
-                boxShadow: 'none',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                display: 'inline-block',
-                '&:hover': {
-                  backgroundColor: colorColumn,
-                },
-              }}
+              ownerState={{ colorColumn }}
             >
               {nameColumn}
-            </Button>
+            </ActionButtonStyle>
           ) : (
-            <Button
-              variant='contained'
-              sx={{
-                width: '80px',
-                fontSize: '11px',
-                boxShadow: 'none',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                display: 'inline-block',
-                paddingX: '0px',
-              }}
-            >
+            <ActionButtonStyle variant='contained'>
               {translate('pages.jobs.addToBoard')}
-            </Button>
+            </ActionButtonStyle>
           )}
         </TableCell>
       </TableRow>
+
       {isOpen && smDown && follower.length > 0 && (
         <TableRow
           sx={{
