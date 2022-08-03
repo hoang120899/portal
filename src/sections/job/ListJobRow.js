@@ -13,10 +13,12 @@ import Iconify from '@/components/Iconify'
 import Label from '@/components/Label'
 import TextMaxLine from '@/components/TextMaxLine'
 import { IconButtonAnimate } from '@/components/animate'
+import useLocales from '@/hooks/useLocales'
 import { PATH_DASHBOARD } from '@/routes/paths'
 import palette from '@/theme/palette'
+import { pxToRem } from '@/utils/getFontValue'
 
-import { JOB_STATUS_COLORS } from './config'
+import { JOB_STATUS_COLORS, REPLACE_LABEL_TYPE } from './config'
 
 const LinkRootStyle = styled('div')(() => ({
   '&:hover .MuiLink-root': {
@@ -38,15 +40,21 @@ ListJobRow.propTypes = {
   handleEditClient: PropTypes.func,
 }
 
+const styledFontsize = {
+  fontSize: pxToRem(14),
+}
+
 function ListJobRow({ row, handleEditClient }) {
+  const { translate } = useLocales()
   const { Client, jobStatus, title, salary, type, time, id } = row
+  const { name } = Client || { name: '' }
 
   return (
     <TableRow hover>
       <TableCell align='left' width='20%'>
         <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
           <LinkRootStyle>
-            <TextMaxLine sx={{ fontSize: '0.875rem' }} asLink line={1}>
+            <TextMaxLine sx={styledFontsize} asLink line={1}>
               {title}
             </TextMaxLine>
           </LinkRootStyle>
@@ -56,11 +64,11 @@ function ListJobRow({ row, handleEditClient }) {
       <TableCell align='left' width='15%'>
         <TypographyRootStyle>
           <TextMaxLine
-            sx={{ fontSize: '0.875rem' }}
+            sx={styledFontsize}
             line={1}
             onClick={handleEditClient.bind(null, Client)}
           >
-            {Client?.name || ''}
+            {name}
           </TextMaxLine>
         </TypographyRootStyle>
       </TableCell>
@@ -71,7 +79,7 @@ function ListJobRow({ row, handleEditClient }) {
 
       <TableCell align='left'>
         <Label color='info' variant='filled'>
-          {type.replace(/ /g, '-')}
+          {REPLACE_LABEL_TYPE(type)}
         </Label>
       </TableCell>
 
@@ -80,7 +88,7 @@ function ListJobRow({ row, handleEditClient }) {
           sx={{
             padding: 0,
             color: JOB_STATUS_COLORS[jobStatus.toLowerCase()],
-            fontSize: '0.875rem',
+            ...styledFontsize,
           }}
         >
           {jobStatus}
@@ -88,7 +96,7 @@ function ListJobRow({ row, handleEditClient }) {
       </TableCell>
 
       <TableCell>
-        <Tooltip title='View details'>
+        <Tooltip title={translate('pages.jobs.viewDetail')}>
           <IconButtonAnimate sx={{ padding: '8px 9px 3px' }}>
             <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
               <LinkRootStyle>

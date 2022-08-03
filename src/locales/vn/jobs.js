@@ -66,5 +66,6 @@ const jobs = {
   activity: 'Activity',
   click: 'Click',
   candidate: 'Candidate',
+  viewDetail: 'Xem chi tiết',
 }
 export default jobs

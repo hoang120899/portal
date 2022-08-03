@@ -14,16 +14,18 @@ import { styled } from '@mui/material/styles'
 
 import PropTypes from 'prop-types'
 
-import CustomLabel from '@/components/CustomLabel'
 // component
+import CustomLabel from '@/components/CustomLabel'
 import Iconify from '@/components/Iconify'
 import Label from '@/components/Label'
 import TextMaxLine from '@/components/TextMaxLine'
 import { IconButtonAnimate } from '@/components/animate'
+import useLocales from '@/hooks/useLocales'
 import { PATH_DASHBOARD } from '@/routes/paths'
 import palette from '@/theme/palette'
+import { pxToRem } from '@/utils/getFontValue'
 
-import { JOB_STATUS_COLORS } from './config'
+import { JOB_STATUS_COLORS, REPLACE_LABEL_TYPE } from './config'
 
 const LinkRootStyle = styled('div')(() => ({
   '&:hover .MuiLink-root': {
@@ -45,9 +47,16 @@ ListJobRowMobile.propTypes = {
   handleEditClient: PropTypes.func,
 }
 
+const fontSizeStyled = {
+  fontSize: pxToRem(12),
+}
+
 function ListJobRowMobile({ row, handleEditClient }) {
-  const { Client, jobStatus, title, salary, type, time, id } = row
+  const { translate } = useLocales()
   const [isOpen, setIsOpen] = useState(true)
+
+  const { Client, jobStatus, title, salary, type, time, id } = row
+  const { name } = Client || { name: '' }
 
   const handleToggleDropdown = () => {
     setIsOpen((prevState) => !prevState)
@@ -71,11 +80,12 @@ function ListJobRowMobile({ row, handleEditClient }) {
             />
           </IconButton>
         </TableCell>
+
         <TableCell width='65%'>
           <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
             <LinkRootStyle>
               <TextMaxLine
-                sx={{ fontWeight: 'bold', fontSize: '0.875rem' }}
+                sx={{ fontWeight: 'bold', ...fontSizeStyled }}
                 asLink
                 line={1}
               >
@@ -84,14 +94,15 @@ function ListJobRowMobile({ row, handleEditClient }) {
             </LinkRootStyle>
           </Link>
         </TableCell>
+
         <TableCell width='35%'>
           <TypographyRootStyle>
             <TextMaxLine
-              sx={{ fontSize: '0.875rem' }}
+              sx={fontSizeStyled}
               line={1}
               onClick={handleEditClient.bind(null, Client)}
             >
-              {Client?.name || ''}
+              {name}
             </TextMaxLine>
           </TypographyRootStyle>
         </TableCell>
@@ -106,33 +117,39 @@ function ListJobRowMobile({ row, handleEditClient }) {
             }}
           >
             <TableCell />
+
             <TableCell>
               <Stack>
-                <TextMaxLine line={1} mb={2} sx={{ fontSize: '0.75rem' }}>
+                <TextMaxLine line={1} mb={2} sx={fontSizeStyled}>
                   {time}
                 </TextMaxLine>
-                <TextMaxLine line={1} mb={2} sx={{ fontSize: '0.75rem' }}>
+                <TextMaxLine line={1} mb={2} sx={fontSizeStyled}>
                   {salary}
                 </TextMaxLine>
-                <Typography sx={{ fontSize: '0.75rem' }}>Action</Typography>
+                <Typography sx={fontSizeStyled}>
+                  {translate('pages.jobs.actions')}
+                </Typography>
               </Stack>
             </TableCell>
+
             <TableCell>
-              <Stack sx={{ fontSize: '0.75rem' }} alignItems='flex-start'>
+              <Stack sx={fontSizeStyled} alignItems='flex-start'>
                 <Label
                   color='info'
                   variant='filled'
                   sx={{ marginBottom: '16px' }}
                 >
-                  {type.replace(/ /g, '-')}
+                  {REPLACE_LABEL_TYPE(type)}
                 </Label>
+
                 <CustomLabel
                   mb={2}
                   sx={{ color: JOB_STATUS_COLORS[jobStatus.toLowerCase()] }}
                 >
                   {jobStatus}
                 </CustomLabel>
-                <Tooltip title='View details'>
+
+                <Tooltip title={translate('pages.jobs.viewDetail')}>
                   <IconButtonAnimate sx={{ padding: '8px 10px 4px' }}>
                     <Link href={PATH_DASHBOARD.jobDetail.view(id)} passHref>
                       <LinkRootStyle>

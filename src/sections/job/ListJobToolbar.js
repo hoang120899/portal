@@ -34,6 +34,7 @@ function ListJobToolbar() {
           ),
         }}
       />
+
       <RHFBasicSelect
         name='status'
         label={translate('pages.jobs.status')}

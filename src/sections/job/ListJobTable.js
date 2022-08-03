@@ -3,20 +3,21 @@ import { memo, useCallback, useEffect, useReducer, useState } from 'react'
 // @mui
 import { Card } from '@mui/material'
 
+import ldDebounce from 'lodash.debounce'
 import { useForm } from 'react-hook-form'
 
 // components
 import BasicTable from '@/components/BasicTable'
 import Pagination from '@/components/Pagination'
 import { FormProvider } from '@/components/hook-form'
-import useLocales from '@/hooks/useLocales'
 // hooks
+import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
+import ClientModal from '@/sections/client/ClientModal'
+import { HANDLE_TYPE } from '@/sections/client/list/config'
 
-import ClientModal from '../client/ClientModal'
-import { HANDLE_TYPE } from '../client/list/config'
 import ListJobRow from './ListJobRow'
 import ListJobRowMobile from './ListJobRowMobile'
 import ListJobToolbar from './ListJobToolbar'
@@ -74,13 +75,14 @@ function ListJobTable() {
   const watchStatus = watch('status')
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timmer = ldDebounce(() => {
       dispatch({
         type: 'search',
         payload: { title: watchTitle, status: watchStatus },
       })
     }, 500)
-    return () => clearTimeout(timer)
+    timmer()
+    return () => timmer.cancel()
   }, [watchTitle, watchStatus])
 
   const { data, isLoading, isFetching } = useGetListJobsQuery({
@@ -92,16 +94,8 @@ function ListJobTable() {
 
   const { list: listJobs = [], total: totalRecord = 0 } = data?.data || {}
   const columns = isMobileScreen
-    ? TABLE_HEAD_MOBILE.map((col) => ({
-        ...col,
-        label: col.label
-          ? translate(`pages.jobs.${col.label.toLocaleLowerCase()}`)
-          : '',
-      }))
-    : TABLE_HEAD.map((col) => ({
-        ...col,
-        label: translate(`pages.jobs.${col.label.toLocaleLowerCase()}`),
-      }))
+    ? TABLE_HEAD_MOBILE({ translate })
+    : TABLE_HEAD({ translate })
 
   const tableRowComp = useCallback(
     (row, index) => {
