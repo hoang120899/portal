@@ -31,6 +31,7 @@ import useRole from '@/hooks/useRole'
 import useSettings from '@/hooks/useSettings'
 // layouts
 import Layout from '@/layouts'
+import { useGetAdminSearchListJobsQuery } from '@/redux/api/apiSlice'
 // redux
 import { useDispatch, useSelector } from '@/redux/store'
 // sections
@@ -43,7 +44,6 @@ import {
   useGetActiveJobsQuery,
   useGetCardDetailMutation,
   useGetClientQuery,
-  useGetJobQuery,
   useGetLabelQuery,
   useGetMemberQuery,
 } from '@/sections/kanban/kanbanSlice'
@@ -134,7 +134,7 @@ export default function Board() {
 
   const { data: listLabels } = useGetLabelQuery()
   const { data: listClients } = useGetClientQuery()
-  const { data: listJobs } = useGetJobQuery()
+  const { data: listJobs } = useGetAdminSearchListJobsQuery()
   const { data: listMembers } = useGetMemberQuery()
   const { data: listActiveJobs } = useGetActiveJobsQuery()
   const [getCardDetail] = useGetCardDetailMutation()

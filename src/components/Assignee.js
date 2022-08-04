@@ -36,8 +36,8 @@ export default function Assignee({
 
   return (
     <Stack direction='row' flexWrap='wrap' alignItems='center'>
-      {assignee.map(({ id, name, avatar, linkAvatar }, index) => (
-        <Tooltip key={`${id}-${index}`} title={name}>
+      {assignee.map(({ id, name, avatar, linkAvatar, User }, index) => (
+        <Tooltip key={`${id}-${index}`} title={name || User?.name}>
           <Avatar
             alt={name}
             src={`${DOMAIN_SERVER_API}/${avatar || linkAvatar}`}

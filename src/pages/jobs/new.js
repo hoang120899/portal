@@ -12,8 +12,6 @@ import useSettings from '@/hooks/useSettings'
 import Layout from '@/layouts'
 // routes
 import { PATH_DASHBOARD } from '@/routes/paths'
-// sections
-import JobNewEditForm from '@/sections/job/JobNewEditForm'
 // utils
 import { getRolesByPage } from '@/utils/role'
 
@@ -43,7 +41,6 @@ export default function UserCreate() {
             { name: 'New job' },
           ]}
         />
-        <JobNewEditForm />
       </Container>
     </Page>
   )

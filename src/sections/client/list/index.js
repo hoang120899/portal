@@ -19,7 +19,11 @@ import useRole from '@/hooks/useRole'
 import useTable from '@/hooks/useTable'
 import ClientConfirmDialog from '@/sections/client/ClientConfirmDialog'
 import ClientModal from '@/sections/client/ClientModal'
-import { useGetAdminClientListQuery } from '@/sections/client/clientSlice'
+import {
+  useCreateClientMutation,
+  useGetAdminClientListQuery,
+  useUpdateClientMutation,
+} from '@/sections/client/clientSlice'
 
 import ClientCollapsibleTableRow from './ClientCollapsibleTableRow'
 import ClientsTableRow from './ClientTableRow'
@@ -35,6 +39,8 @@ function ClientList(props, ref) {
   const [isOpen, setIsOpen] = useState(false)
   const [handleType, setHandleType] = useState('')
   const [chosenClient, setChosenClient] = useState({})
+  const [createClient] = useCreateClientMutation()
+  const [updateClient] = useUpdateClientMutation()
 
   const { data, isLoading, isFetching } = useGetAdminClientListQuery({
     pageSize: rowsPerPage,
@@ -144,6 +150,8 @@ function ClientList(props, ref) {
         handleType={handleType}
         client={chosenClient}
         onClose={handleCloseClientForm}
+        createClient={createClient}
+        updateClient={updateClient}
       />
 
       <ClientConfirmDialog ref={confirmDialogRef} />

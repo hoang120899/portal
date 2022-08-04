@@ -7,7 +7,6 @@ import { apiSlice } from '@/redux/api/apiSlice'
 import {
   API_ADD_CARD,
   API_ADMIN_CARDS,
-  API_ADMIN_LIST_JOB,
   API_ASSIGNMENT,
   API_LIST_ACTIVE_JOB,
   API_LIST_CARD,
@@ -41,12 +40,6 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
     getClient: builder.query({
       query: () => ({
         url: API_LIST_CLIENT,
-        method: 'GET',
-      }),
-    }),
-    getJob: builder.query({
-      query: () => ({
-        url: API_ADMIN_LIST_JOB,
         method: 'GET',
       }),
     }),
@@ -152,7 +145,6 @@ export const kanbanApiSlice = apiWithTag.injectEndpoints({
 
 export const {
   useGetClientQuery,
-  useGetJobQuery,
   useGetLabelQuery,
   useGetMemberQuery,
   useSearchCardsQuery,

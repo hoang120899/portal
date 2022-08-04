@@ -10,13 +10,15 @@ import * as Yup from 'yup'
 import { FormProvider, RHFEditor, RHFTextField } from '@/components/hook-form'
 import useLocales from '@/hooks/useLocales'
 
-import { useCreateClientMutation, useUpdateClientMutation } from './clientSlice'
+import { DEFAULT_CLIENT_DATA, FORM_FIELD } from './list/config'
 
 ClientForm.propTypes = {
   client: PropTypes.object,
   disabled: PropTypes.bool,
   canEdit: PropTypes.bool,
   onClose: PropTypes.func,
+  createClient: PropTypes.func,
+  updateClient: PropTypes.func,
 }
 
 export default function ClientForm({
@@ -24,18 +26,14 @@ export default function ClientForm({
   disabled = false,
   canEdit = false,
   onClose,
+  createClient,
+  updateClient,
 }) {
   const { translate } = useLocales()
   const { enqueueSnackbar } = useSnackbar()
-  const [createClient] = useCreateClientMutation()
-  const [updateClient] = useUpdateClientMutation()
-  const {
-    id: clientId,
-    name = '',
-    website = '',
-    background = '#1890FF',
-    about = '',
-  } = client || {}
+
+  const { id: clientId } = client || {}
+
   const ClientFormSchema = Yup.object().shape({
     name: Yup.string().max(5000).required('Name is required'),
     about: Yup.string().max(5000).required('About is required'),
@@ -43,25 +41,28 @@ export default function ClientForm({
 
   const methods = useForm({
     resolver: yupResolver(ClientFormSchema),
-    defaultValues: {
-      name,
-      website,
-      background,
-      about,
-    },
+    defaultValues: Object.keys(FORM_FIELD).reduce((acc, cur) => {
+      const field = FORM_FIELD[cur]
+      return {
+        ...acc,
+        [field]: client[field] || DEFAULT_CLIENT_DATA[field],
+      }
+    }, {}),
   })
+
   const {
     reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods
+
   const onSubmit = async (data) => {
     try {
       if (clientId) {
-        await updateClient({ clientId, data })
+        await updateClient({ clientId, data }).unwrap()
         enqueueSnackbar(translate('Update client success!'))
       } else {
-        await createClient(data)
+        await createClient(data).unwrap()
         enqueueSnackbar(translate('Create client success!'))
       }
       reset()
