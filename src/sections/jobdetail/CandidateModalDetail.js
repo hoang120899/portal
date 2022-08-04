@@ -267,7 +267,6 @@ export default function CandidateModalDetail({
                 <Typography>{translate('pages.jobs.lane')}</Typography>
                 <RHFBasicSelect
                   name={DETAIL_FIELD.LANE}
-                  label=''
                   options={laneSelected}
                 />
               </Stack>

@@ -1,5 +1,5 @@
 // @mui
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import {
   Avatar,
@@ -64,18 +64,23 @@ export default function JobDetailActivityDialog({
 
   const smDown = useResponsive('down', 'sm')
 
-  const activityContent = jobActivity?.map((activity) => {
-    try {
-      const { content: activityContent, type } = activity || {}
-      const content =
-        type === ACTIVITY_STATUS.UPDATE_JOB
-          ? JSON.parse(activityContent)
-          : activityContent
-      return { ...activity, content }
-    } catch (error) {
-      return { ...activity, content: '' }
-    }
-  })
+  const activityContent = useMemo(
+    () =>
+      jobActivity?.map((activity) => {
+        try {
+          const { content: activityContent, type } = activity || {}
+          const content =
+            type === ACTIVITY_STATUS.UPDATE_JOB
+              ? JSON.parse(activityContent)
+              : activityContent
+
+          return { ...activity, content }
+        } catch (error) {
+          return { ...activity, content: '' }
+        }
+      }),
+    [jobActivity]
+  )
 
   return (
     <Dialog fullWidth fullScreen={smDown} open={open} onClose={onClose}>

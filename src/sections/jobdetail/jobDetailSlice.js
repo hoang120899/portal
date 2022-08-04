@@ -62,7 +62,7 @@ export const jobDetailApiSlice = apiWithTag.injectEndpoints({
       query: ({ idJob }) => ({
         url: API_HISTORY_JOB,
         method: 'POST',
-        data: { idJob: idJob },
+        data: { idJob },
       }),
     }),
     getAdminCandidateDetail: builder.query({
@@ -75,7 +75,7 @@ export const jobDetailApiSlice = apiWithTag.injectEndpoints({
       query: (data) => ({
         url: `${API_ADD_CARD}/${data.id}`,
         method: 'PATCH',
-        data: { ...data },
+        data,
       }),
     }),
   }),
@@ -120,10 +120,8 @@ export const updateJobDetail = createAsyncThunk(
   async ({ jobId, data }) => {
     const url = `${API_LIST_JOBS}/${jobId}`
     const response = await _patchApi(url, data)
-    if (response?.data?.success) {
-      return response.data
-    }
-    return []
+
+    return response?.data?.success ? response.data : []
   }
 )
 

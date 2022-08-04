@@ -24,6 +24,7 @@ import useLocales from '@/hooks/useLocales'
 import useResponsive from '@/hooks/useResponsive'
 import { API_DOWNLOAD_JOB } from '@/routes/api'
 
+import { JOB_DETAIL_HEAD_COLOR } from './config'
 import { useGetShortLinkQuery } from './jobDetailSlice'
 
 JobDetailDescription.propTypes = {
@@ -195,16 +196,16 @@ function JobDetailDescription({
           </JobDesTitleStyled>
 
           <JobDesSalaryStyled>
-            <Typography variant='body1' color='#ffa800'>
+            <Typography variant='body1' color={JOB_DETAIL_HEAD_COLOR.SALARY}>
               <Iconify icon='carbon:currency-dollar' />
               {salary}
             </Typography>
 
-            <Typography variant='body1' color='#f64e60'>
+            <Typography variant='body1' color={JOB_DETAIL_HEAD_COLOR.LOCATION}>
               <Iconify icon='entypo:location-pin' /> {location}
             </Typography>
 
-            <Typography variant='body1' color='#3699ff'>
+            <Typography variant='body1' color={JOB_DETAIL_HEAD_COLOR.TIME}>
               <Iconify icon='bxs:time-five' /> {time}
             </Typography>
           </JobDesSalaryStyled>

@@ -38,17 +38,17 @@ export const ACTIVITY_STATUS = {
 export const TABLE_HEAD_CANDIDATE_DESKTOP = ({ translate }) => [
   {
     id: 'name',
-    label: (translate('pages.jobs.name') + '').toUpperCase(),
+    label: String(translate('pages.jobs.name')).toUpperCase(),
     align: 'left',
   },
   {
     id: 'fllower',
-    label: (translate('pages.jobs.followers') + '').toUpperCase(),
+    label: String(translate('pages.jobs.followers')).toUpperCase(),
     align: 'left',
   },
   {
     id: 'actions',
-    label: (translate('pages.jobs.actions') + '').toUpperCase(),
+    label: String(translate('pages.jobs.actions')).toUpperCase(),
     align: 'right',
   },
 ]
@@ -57,12 +57,12 @@ export const TABLE_HEAD_CANDIDATE_MOBILE = ({ translate }) => [
   {},
   {
     id: 'name',
-    label: (translate('pages.jobs.name') + '').toUpperCase(),
+    label: String(translate('pages.jobs.name')).toUpperCase(),
     align: 'left',
   },
   {
     id: 'actions',
-    label: (translate('pages.jobs.actions') + '').toUpperCase(),
+    label: String(translate('pages.jobs.actions')).toUpperCase(),
     align: 'right',
   },
 ]
@@ -71,4 +71,10 @@ export const CARD_TRELLO_MODAL = 'card_trello_modal'
 
 export const LIST_CANDIDATE_DEFAULT_VALUE = {
   status: '',
+}
+
+export const JOB_DETAIL_HEAD_COLOR = {
+  SALARY: '#ffa800',
+  LOCATION: '#f64e60',
+  TIME: '#3699ff',
 }
