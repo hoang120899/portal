@@ -40,13 +40,13 @@ const fontSizeStyled = {
 }
 
 const styledLabel = {
+  ...fontSizeStyled,
   marginBottom: (theme) => theme.spacing(2),
-  fontSize: pxToRem(14),
 }
 
 const TextMaxLineRootStyle = styled(TextMaxLine)(({ theme }) => ({
+  ...fontSizeStyled,
   marginBottom: theme.spacing(2),
-  fontSize: pxToRem(14),
 }))
 
 ListJobRowMobile.propTypes = {

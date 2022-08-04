@@ -221,7 +221,8 @@ function JobForm({ onClose, isEdit, job, onEditSubmit, isScrolled }) {
 
     if (!skillKeyword) return
     getSkill({ skill: skillKeyword })
-  }, [skillKeyword, searchSkill, enqueueSnackbar, translate, isMountedRef])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skillKeyword, searchSkill, enqueueSnackbar, isMountedRef])
 
   useEffect(() => {
     const handleClientWidthRef = () => {

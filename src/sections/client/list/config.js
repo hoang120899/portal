@@ -13,6 +13,13 @@ export const HANDLE_TYPE = {
   ADD: 'add',
 }
 
+export const FORM_FIELD = {
+  NAME: 'name',
+  WEBSITE: 'website',
+  BACKGROUND: 'background',
+  ABOUT: 'about',
+}
+
 export const DEFAULT_CLIENT_DATA = {
   name: '',
   website: '',
